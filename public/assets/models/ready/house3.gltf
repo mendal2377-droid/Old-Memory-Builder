@@ -1,0 +1,175 @@
+{
+    "asset": {
+        "version": "1.0",
+        "generator": "Open Asset Import Library (assimp v4.1.0)"
+    },
+    "accessors": {
+        "Cube.006_accessor": {
+            "bufferView": "Cube.006_view",
+            "byteOffset": 0,
+            "byteStride": 0,
+            "componentType": 5126,
+            "count": 2403,
+            "type": "VEC3",
+            "max": [
+                1.2385430335998536,
+                0.9043577909469605,
+                1.396876573562622
+            ],
+            "min": [
+                -1.2385430335998536,
+                -0.896079421043396,
+                0.002340257866308093
+            ]
+        },
+        "Cube.006_accessor_0": {
+            "bufferView": "Cube.006_view_0",
+            "byteOffset": 0,
+            "byteStride": 0,
+            "componentType": 5126,
+            "count": 2403,
+            "type": "VEC3",
+            "max": [
+                0.999969482421875,
+                0.999908447265625,
+                0.982879102230072
+            ],
+            "min": [
+                -0.999969482421875,
+                -0.999969482421875,
+                -0.9072237014770508
+            ]
+        },
+        "Cube.006_accessor_1": {
+            "bufferView": "Cube.006_view_1",
+            "byteOffset": 0,
+            "byteStride": 0,
+            "componentType": 5126,
+            "count": 2403,
+            "type": "VEC2",
+            "max": [
+                0.9638977646827698,
+                0.9052179455757141
+            ],
+            "min": [
+                0.055719345808029178,
+                0.04400056600570679
+            ]
+        },
+        "Cube.006_accessor_2": {
+            "bufferView": "Cube.006_view_2",
+            "byteOffset": 0,
+            "byteStride": 0,
+            "componentType": 5123,
+            "count": 4314,
+            "type": "SCALAR",
+            "max": [
+                2402.0
+            ],
+            "min": [
+                0.0
+            ]
+        }
+    },
+    "buffers": {
+        "../../download/btx6cyfnb7sj/btx6cyfnb7sj": {
+            "byteLength": 85524,
+            "type": "arraybuffer",
+            "uri": "../../download/btx6cyfnb7sj/btx6cyfnb7sj.bin"
+        }
+    },
+    "bufferViews": {
+        "Cube.006_view": {
+            "buffer": "../../download/btx6cyfnb7sj/btx6cyfnb7sj",
+            "byteOffset": 0,
+            "byteLength": 28836,
+            "target": 34962
+        },
+        "Cube.006_view_0": {
+            "buffer": "../../download/btx6cyfnb7sj/btx6cyfnb7sj",
+            "byteOffset": 28836,
+            "byteLength": 28836,
+            "target": 34962
+        },
+        "Cube.006_view_1": {
+            "buffer": "../../download/btx6cyfnb7sj/btx6cyfnb7sj",
+            "byteOffset": 57672,
+            "byteLength": 19224,
+            "target": 34962
+        },
+        "Cube.006_view_2": {
+            "buffer": "../../download/btx6cyfnb7sj/btx6cyfnb7sj",
+            "byteOffset": 76896,
+            "byteLength": 8628,
+            "target": 34963
+        }
+    },
+    "materials": {
+        "Shop": {
+            "values": {
+                "ambient": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "diffuse": [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929,
+                    1.0
+                ],
+                "specular": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "emission": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "shininess": 50.0
+            }
+        }
+    },
+    "meshes": {
+        "Cube.006": {
+            "name": "",
+            "primitives": [
+                {
+                    "mode": 4,
+                    "material": "Shop",
+                    "indices": "Cube.006_accessor_2",
+                    "attributes": {
+                        "POSITION": "Cube.006_accessor",
+                        "NORMAL": "Cube.006_accessor_0",
+                        "TEXCOORD_0": "Cube.006_accessor_1"
+                    }
+                }
+            ]
+        }
+    },
+    "nodes": {
+        "<BlenderRoot>": {
+            "children": [
+                "Shop_node"
+            ]
+        },
+        "Shop_node": {
+            "meshes": [
+                "Cube.006"
+            ]
+        }
+    },
+    "scenes": {
+        "defaultScene": {
+            "nodes": [
+                "<BlenderRoot>"
+            ]
+        }
+    },
+    "scene": "defaultScene"
+}

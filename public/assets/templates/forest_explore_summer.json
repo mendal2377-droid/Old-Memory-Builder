@@ -1,0 +1,506 @@
+{
+  "version": 1,
+  "savedAt": "2026-05-30T10:00:00.000Z",
+  "terrainMode": "Field Path",
+  "atmospherePreset": "Clear Morning",
+  "isGridVisible": false,
+  "cameraMode": "build",
+  "sceneObjects": [
+    {
+      "id": "fes_001_rockpath_round_small_1",
+      "assetId": "rockpath_round_small_1",
+      "category": "Paths",
+      "position": [9.0, 0, 9.5],
+      "rotation": [0, 0.3, 0],
+      "scale": [1.05, 1, 1.05]
+    },
+    {
+      "id": "fes_002_rockpath_round_small_2",
+      "assetId": "rockpath_round_small_2",
+      "category": "Paths",
+      "position": [7.5, 0, 7.0],
+      "rotation": [0, 0.1, 0],
+      "scale": [1.0, 1, 1.0]
+    },
+    {
+      "id": "fes_003_rockpath_round_small_3",
+      "assetId": "rockpath_round_small_3",
+      "category": "Paths",
+      "position": [6.0, 0, 4.5],
+      "rotation": [0, -0.2, 0],
+      "scale": [1.05, 1, 1.05]
+    },
+    {
+      "id": "fes_004_rockpath_round_small_1b",
+      "assetId": "rockpath_round_small_1",
+      "category": "Paths",
+      "position": [4.5, 0, 2.0],
+      "rotation": [0, -0.4, 0],
+      "scale": [1.0, 1, 1.0]
+    },
+    {
+      "id": "fes_005_rockpath_round_wide",
+      "assetId": "rockpath_round_wide",
+      "category": "Paths",
+      "position": [2.5, 0, 0.0],
+      "rotation": [0, -0.5, 0],
+      "scale": [1.0, 1, 1.0]
+    },
+    {
+      "id": "fes_006_rockpath_round_small_2b",
+      "assetId": "rockpath_round_small_2",
+      "category": "Paths",
+      "position": [0.5, 0, -1.5],
+      "rotation": [0, 0.2, 0],
+      "scale": [1.05, 1, 1.05]
+    },
+    {
+      "id": "fes_007_rockpath_round_small_3b",
+      "assetId": "rockpath_round_small_3",
+      "category": "Paths",
+      "position": [-1.5, 0, -2.5],
+      "rotation": [0, 0.5, 0],
+      "scale": [1.0, 1, 1.0]
+    },
+    {
+      "id": "fes_008_rockpath_round_thin",
+      "assetId": "rockpath_round_thin",
+      "category": "Paths",
+      "position": [-2.0, 0, -3.5],
+      "rotation": [0, 0.8, 0],
+      "scale": [1.0, 1, 1.0]
+    },
+    {
+      "id": "fes_009_pine_3_focal",
+      "assetId": "pine_3",
+      "category": "Trees",
+      "position": [0.0, 0, -8.5],
+      "rotation": [0, 0.8, 0],
+      "scale": [2.3, 2.3, 2.3]
+    },
+    {
+      "id": "fes_010_water_pond_small",
+      "assetId": "water_pond_small",
+      "category": "Water",
+      "position": [-4.5, 0, -6.0],
+      "rotation": [0, 0, 0],
+      "scale": [1.8, 1, 1.6]
+    },
+    {
+      "id": "fes_011_pine_4_flank_left",
+      "assetId": "pine_4",
+      "category": "Trees",
+      "position": [-3.5, 0, -11.0],
+      "rotation": [0, 1.2, 0],
+      "scale": [1.5, 1.5, 1.5]
+    },
+    {
+      "id": "fes_012_pine_1_flank_right",
+      "assetId": "pine_1",
+      "category": "Trees",
+      "position": [3.5, 0, -10.5],
+      "rotation": [0, -0.7, 0],
+      "scale": [1.4, 1.4, 1.4]
+    },
+    {
+      "id": "fes_013_pine_5_flank_far",
+      "assetId": "pine_5",
+      "category": "Trees",
+      "position": [-6.0, 0, -9.0],
+      "rotation": [0, 2.0, 0],
+      "scale": [1.3, 1.3, 1.3]
+    },
+    {
+      "id": "fes_014_pine_5_east",
+      "assetId": "pine_5",
+      "category": "Trees",
+      "position": [18.0, 0, 8.0],
+      "rotation": [0, 1.1, 0],
+      "scale": [1.8, 1.8, 1.8]
+    },
+    {
+      "id": "fes_015_pine_4_east",
+      "assetId": "pine_4",
+      "category": "Trees",
+      "position": [16.0, 0, -2.0],
+      "rotation": [0, 2.5, 0],
+      "scale": [1.6, 1.6, 1.6]
+    },
+    {
+      "id": "fes_016_pine_2_ne",
+      "assetId": "pine_2",
+      "category": "Trees",
+      "position": [19.0, 0, -12.0],
+      "rotation": [0, 0.4, 0],
+      "scale": [1.7, 1.7, 1.7]
+    },
+    {
+      "id": "fes_017_pine_1_se",
+      "assetId": "pine_1",
+      "category": "Trees",
+      "position": [14.0, 0, 15.0],
+      "rotation": [0, 1.8, 0],
+      "scale": [1.5, 1.5, 1.5]
+    },
+    {
+      "id": "fes_018_commontree_3_south",
+      "assetId": "commontree_3",
+      "category": "Trees",
+      "position": [10.0, 0, 18.0],
+      "rotation": [0, 0.6, 0],
+      "scale": [1.4, 1.4, 1.4]
+    },
+    {
+      "id": "fes_019_pine_3_south",
+      "assetId": "pine_3",
+      "category": "Trees",
+      "position": [2.0, 0, 20.0],
+      "rotation": [0, 3.0, 0],
+      "scale": [1.7, 1.7, 1.7]
+    },
+    {
+      "id": "fes_020_pine_4_sw",
+      "assetId": "pine_4",
+      "category": "Trees",
+      "position": [-6.0, 0, 18.0],
+      "rotation": [0, 2.2, 0],
+      "scale": [1.6, 1.6, 1.6]
+    },
+    {
+      "id": "fes_021_commontree_5_sw",
+      "assetId": "commontree_5",
+      "category": "Trees",
+      "position": [-12.0, 0, 16.0],
+      "rotation": [0, 1.4, 0],
+      "scale": [1.4, 1.4, 1.4]
+    },
+    {
+      "id": "fes_022_pine_5_west",
+      "assetId": "pine_5",
+      "category": "Trees",
+      "position": [-18.0, 0, 10.0],
+      "rotation": [0, 0.8, 0],
+      "scale": [1.8, 1.8, 1.8]
+    },
+    {
+      "id": "fes_023_pine_2_west",
+      "assetId": "pine_2",
+      "category": "Trees",
+      "position": [-20.0, 0, 0.0],
+      "rotation": [0, 2.8, 0],
+      "scale": [1.9, 1.9, 1.9]
+    },
+    {
+      "id": "fes_024_pine_1_nw",
+      "assetId": "pine_1",
+      "category": "Trees",
+      "position": [-18.0, 0, -10.0],
+      "rotation": [0, 1.5, 0],
+      "scale": [1.7, 1.7, 1.7]
+    },
+    {
+      "id": "fes_025_pine_3_north",
+      "assetId": "pine_3",
+      "category": "Trees",
+      "position": [-14.0, 0, -18.0],
+      "rotation": [0, 0.3, 0],
+      "scale": [1.8, 1.8, 1.8]
+    },
+    {
+      "id": "fes_026_pine_4_north",
+      "assetId": "pine_4",
+      "category": "Trees",
+      "position": [-4.0, 0, -20.0],
+      "rotation": [0, 2.1, 0],
+      "scale": [1.7, 1.7, 1.7]
+    },
+    {
+      "id": "fes_027_pine_5_ne",
+      "assetId": "pine_5",
+      "category": "Trees",
+      "position": [8.0, 0, -18.0],
+      "rotation": [0, 3.5, 0],
+      "scale": [1.8, 1.8, 1.8]
+    },
+    {
+      "id": "fes_028_pine_2_ene",
+      "assetId": "pine_2",
+      "category": "Trees",
+      "position": [16.0, 0, -16.0],
+      "rotation": [0, 0.9, 0],
+      "scale": [1.6, 1.6, 1.6]
+    },
+    {
+      "id": "fes_029_commontree_1_inner_e",
+      "assetId": "commontree_1",
+      "category": "Trees",
+      "position": [10.0, 0, 5.0],
+      "rotation": [0, 1.3, 0],
+      "scale": [1.2, 1.2, 1.2]
+    },
+    {
+      "id": "fes_030_commontree_2_inner_ne",
+      "assetId": "commontree_2",
+      "category": "Trees",
+      "position": [8.0, 0, -6.0],
+      "rotation": [0, 2.2, 0],
+      "scale": [1.3, 1.3, 1.3]
+    },
+    {
+      "id": "fes_031_commontree_4_inner_ene",
+      "assetId": "commontree_4",
+      "category": "Trees",
+      "position": [11.0, 0, -12.0],
+      "rotation": [0, 0.7, 0],
+      "scale": [1.2, 1.2, 1.2]
+    },
+    {
+      "id": "fes_032_commontree_3_inner_nw",
+      "assetId": "commontree_3",
+      "category": "Trees",
+      "position": [-8.0, 0, -12.0],
+      "rotation": [0, 1.9, 0],
+      "scale": [1.3, 1.3, 1.3]
+    },
+    {
+      "id": "fes_033_commontree_5_inner_w",
+      "assetId": "commontree_5",
+      "category": "Trees",
+      "position": [-11.0, 0, 5.0],
+      "rotation": [0, 0.4, 0],
+      "scale": [1.2, 1.2, 1.2]
+    },
+    {
+      "id": "fes_034_pine_1_inner_sw",
+      "assetId": "pine_1",
+      "category": "Trees",
+      "position": [-9.0, 0, 10.0],
+      "rotation": [0, 2.7, 0],
+      "scale": [1.3, 1.3, 1.3]
+    },
+    {
+      "id": "fes_035_pine_2_inner_s",
+      "assetId": "pine_2",
+      "category": "Trees",
+      "position": [3.0, 0, 11.0],
+      "rotation": [0, 1.6, 0],
+      "scale": [1.2, 1.2, 1.2]
+    },
+    {
+      "id": "fes_036_deer_01",
+      "assetId": "deer_01",
+      "category": "Animals",
+      "position": [-5.5, 0, -7.0],
+      "rotation": [0, 1.2, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_037_fox_01",
+      "assetId": "fox_01",
+      "category": "Animals",
+      "position": [4.5, 0, -4.5],
+      "rotation": [0, 2.6, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_038_rock_medium_1",
+      "assetId": "rock_medium_1",
+      "category": "Rocks",
+      "position": [-3.5, 0, -5.5],
+      "rotation": [0, 0.8, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_039_rock_medium_2",
+      "assetId": "rock_medium_2",
+      "category": "Rocks",
+      "position": [-6.5, 0, -5.0],
+      "rotation": [0, 2.1, 0],
+      "scale": [1.1, 1.1, 1.1]
+    },
+    {
+      "id": "fes_040_rock_medium_3",
+      "assetId": "rock_medium_3",
+      "category": "Rocks",
+      "position": [-4.8, 0, -7.5],
+      "rotation": [0, 1.3, 0],
+      "scale": [0.9, 0.9, 0.9]
+    },
+    {
+      "id": "fes_041_pebble_round_1",
+      "assetId": "pebble_round_1",
+      "category": "Rocks",
+      "position": [-2.5, 0, -4.8],
+      "rotation": [0, 0.5, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_042_pebble_round_3",
+      "assetId": "pebble_round_3",
+      "category": "Rocks",
+      "position": [1.0, 0, -1.0],
+      "rotation": [0, 1.8, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_043_pebble_square_2",
+      "assetId": "pebble_square_2",
+      "category": "Rocks",
+      "position": [5.5, 0, 3.0],
+      "rotation": [0, 0.7, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_044_pebble_round_5",
+      "assetId": "pebble_round_5",
+      "category": "Rocks",
+      "position": [8.0, 0, 6.5],
+      "rotation": [0, 2.3, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_045_mushroom_common_a",
+      "assetId": "mushroom_common",
+      "category": "Plants",
+      "position": [-1.5, 0, -1.0],
+      "rotation": [0, 0.4, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_046_mushroom_common_b",
+      "assetId": "mushroom_common",
+      "category": "Plants",
+      "position": [3.0, 0, -3.5],
+      "rotation": [0, 2.1, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_047_mushroom_laetiporus_a",
+      "assetId": "mushroom_laetiporus",
+      "category": "Plants",
+      "position": [-6.5, 0, -3.5],
+      "rotation": [0, 1.0, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_048_mushroom_laetiporus_b",
+      "assetId": "mushroom_laetiporus",
+      "category": "Plants",
+      "position": [1.0, 0, -5.5],
+      "rotation": [0, 2.8, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_049_fern_1_a",
+      "assetId": "fern_1",
+      "category": "Plants",
+      "position": [-2.5, 0, -1.5],
+      "rotation": [0, 0.6, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_050_fern_1_b",
+      "assetId": "fern_1",
+      "category": "Plants",
+      "position": [2.5, 0, 0.5],
+      "rotation": [0, 1.5, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_051_fern_1_c",
+      "assetId": "fern_1",
+      "category": "Plants",
+      "position": [-4.0, 0, -2.5],
+      "rotation": [0, 2.2, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_052_fern_1_d",
+      "assetId": "fern_1",
+      "category": "Plants",
+      "position": [0.5, 0, -3.0],
+      "rotation": [0, 0.9, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_053_plant_7",
+      "assetId": "plant_7",
+      "category": "Plants",
+      "position": [-7.0, 0, -2.5],
+      "rotation": [0, 1.4, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_054_plant_7_big",
+      "assetId": "plant_7_big",
+      "category": "Plants",
+      "position": [6.5, 0, 1.5],
+      "rotation": [0, 0.3, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_055_plant_1",
+      "assetId": "plant_1",
+      "category": "Plants",
+      "position": [-1.0, 0, -4.5],
+      "rotation": [0, 2.0, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_056_plant_1_big",
+      "assetId": "plant_1_big",
+      "category": "Plants",
+      "position": [4.0, 0, -0.5],
+      "rotation": [0, 1.1, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_057_grass_wispy_tall_a",
+      "assetId": "grass_wispy_tall",
+      "category": "Plants",
+      "position": [-3.5, 0, -8.5],
+      "rotation": [0, 0.7, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_058_grass_wispy_tall_b",
+      "assetId": "grass_wispy_tall",
+      "category": "Plants",
+      "position": [-6.0, 0, -7.5],
+      "rotation": [0, 1.8, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_059_flower_4_group",
+      "assetId": "flower_4_group",
+      "category": "Flowers",
+      "position": [1.5, 0, -0.5],
+      "rotation": [0, 0.5, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_060_flower_3_group",
+      "assetId": "flower_3_group",
+      "category": "Flowers",
+      "position": [-0.5, 0, 0.5],
+      "rotation": [0, 1.2, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_061_petal_3",
+      "assetId": "petal_3",
+      "category": "Flowers",
+      "position": [2.5, 0, -2.0],
+      "rotation": [0, 2.4, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    {
+      "id": "fes_062_petal_5",
+      "assetId": "petal_5",
+      "category": "Flowers",
+      "position": [0.5, 0, -1.5],
+      "rotation": [0, 0.8, 0],
+      "scale": [1.0, 1.0, 1.0]
+    }
+  ]
+}

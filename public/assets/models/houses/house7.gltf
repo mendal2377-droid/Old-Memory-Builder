@@ -1,0 +1,175 @@
+{
+    "asset": {
+        "version": "1.0",
+        "generator": "Open Asset Import Library (assimp v4.1.0)"
+    },
+    "accessors": {
+        "Cube.035_accessor": {
+            "bufferView": "Cube.035_view",
+            "byteOffset": 0,
+            "byteStride": 0,
+            "componentType": 5126,
+            "count": 1548,
+            "type": "VEC3",
+            "max": [
+                0.6205567121505737,
+                0.7326246500015259,
+                1.3465057611465455
+            ],
+            "min": [
+                -0.6343535780906677,
+                -0.7101919054985046,
+                0.0037460566964000465
+            ]
+        },
+        "Cube.035_accessor_0": {
+            "bufferView": "Cube.035_view_0",
+            "byteOffset": 0,
+            "byteStride": 0,
+            "componentType": 5126,
+            "count": 1548,
+            "type": "VEC3",
+            "max": [
+                0.9993896484375,
+                1.0,
+                1.0
+            ],
+            "min": [
+                -0.9993896484375,
+                -1.0,
+                -1.0
+            ]
+        },
+        "Cube.035_accessor_1": {
+            "bufferView": "Cube.035_view_1",
+            "byteOffset": 0,
+            "byteStride": 0,
+            "componentType": 5126,
+            "count": 1548,
+            "type": "VEC2",
+            "max": [
+                0.7795408368110657,
+                0.658625602722168
+            ],
+            "min": [
+                0.16492365300655366,
+                0.08094149827957154
+            ]
+        },
+        "Cube.035_accessor_2": {
+            "bufferView": "Cube.035_view_2",
+            "byteOffset": 0,
+            "byteStride": 0,
+            "componentType": 5123,
+            "count": 5877,
+            "type": "SCALAR",
+            "max": [
+                1547.0
+            ],
+            "min": [
+                0.0
+            ]
+        }
+    },
+    "buffers": {
+        "../../download/tf7ndhedm4y0/tf7ndhedm4y0": {
+            "byteLength": 61290,
+            "type": "arraybuffer",
+            "uri": "../../download/tf7ndhedm4y0/tf7ndhedm4y0.bin"
+        }
+    },
+    "bufferViews": {
+        "Cube.035_view": {
+            "buffer": "../../download/tf7ndhedm4y0/tf7ndhedm4y0",
+            "byteOffset": 0,
+            "byteLength": 18576,
+            "target": 34962
+        },
+        "Cube.035_view_0": {
+            "buffer": "../../download/tf7ndhedm4y0/tf7ndhedm4y0",
+            "byteOffset": 18576,
+            "byteLength": 18576,
+            "target": 34962
+        },
+        "Cube.035_view_1": {
+            "buffer": "../../download/tf7ndhedm4y0/tf7ndhedm4y0",
+            "byteOffset": 37152,
+            "byteLength": 12384,
+            "target": 34962
+        },
+        "Cube.035_view_2": {
+            "buffer": "../../download/tf7ndhedm4y0/tf7ndhedm4y0",
+            "byteOffset": 49536,
+            "byteLength": 11754,
+            "target": 34963
+        }
+    },
+    "materials": {
+        "Texture": {
+            "values": {
+                "ambient": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "diffuse": [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929,
+                    1.0
+                ],
+                "specular": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "emission": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "shininess": 50.0
+            }
+        }
+    },
+    "meshes": {
+        "Cube.035": {
+            "name": "",
+            "primitives": [
+                {
+                    "mode": 4,
+                    "material": "Texture",
+                    "indices": "Cube.035_accessor_2",
+                    "attributes": {
+                        "POSITION": "Cube.035_accessor",
+                        "NORMAL": "Cube.035_accessor_0",
+                        "TEXCOORD_0": "Cube.035_accessor_1"
+                    }
+                }
+            ]
+        }
+    },
+    "nodes": {
+        "<BlenderRoot>": {
+            "children": [
+                "House2"
+            ]
+        },
+        "House2": {
+            "meshes": [
+                "Cube.035"
+            ]
+        }
+    },
+    "scenes": {
+        "defaultScene": {
+            "nodes": [
+                "<BlenderRoot>"
+            ]
+        }
+    },
+    "scene": "defaultScene"
+}

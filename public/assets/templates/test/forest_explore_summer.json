@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "savedAt": null,
+  "terrainMode": "EmptyField",
+  "atmospherePreset": "ClearMorning",
+  "isGridVisible": false,
+  "cameraMode": "bird",
+  "sceneObjects": [
+    { "id": "tree_01", "assetId": "commontree_3", "category": "trees", "position": [2,0,3], "rotation": [0,10,0], "scale": [1.2,1.2,1.2] },
+    { "id": "tree_02", "assetId": "pine_1", "category": "trees", "position": [5,0,4], "rotation": [0,-5,0], "scale": [1.3,1.3,1.3] },
+    { "id": "tree_03", "assetId": "twistedtree_2", "category": "trees", "position": [3,0,6], "rotation": [0,15,0], "scale": [1.2,1.2,1.2] },
+    { "id": "plant_01", "assetId": "plant_1_big", "category": "plants", "position": [1,0,1], "rotation": [0,0,0], "scale": [1,1,1] },
+    { "id": "flower_01", "assetId": "flower_3_single", "category": "flowers", "position": [4,0,2], "rotation": [0,5,0], "scale": [0.9,0.9,0.9] },
+    { "id": "rock_01", "assetId": "rock_medium_1", "category": "rocks", "position": [6,0,3], "rotation": [0,0,0], "scale": [1,1,1] },
+    { "id": "path_01", "assetId": "rockpath_round_small_1", "category": "paths", "position": [0,0,0], "rotation": [0,0,0], "scale": [1,1,1] },
+    { "id": "animal_01", "assetId": "Deer", "category": "animals", "position": [5,0,5], "rotation": [0,0,0], "scale": [1,1,1] }
+  ]
+}

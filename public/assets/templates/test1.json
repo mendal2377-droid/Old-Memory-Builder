@@ -1,0 +1,17 @@
+{
+  "id": "flower_garden_autumn",
+  "name": "Flower Garden in Autumn",
+  "terrainMode": "FieldPath",
+  "atmospherePreset": "Sunset",
+  "thumbnail": "autumn_garden",
+  "objects": [
+    { "assetId": "tree_red_01", "position": [2,0,1], "rotation": [0,0,0] },
+    { "assetId": "tree_red_02", "position": [6,0,2], "rotation": [0,15,0] },
+    { "assetId": "flower_cluster_01", "position": [3,0,3], "rotation": [0,0,0] },
+    { "assetId": "flower_cluster_02", "position": [5,0,5], "rotation": [0,0,0] },
+    { "assetId": "rock_01", "position": [1,0,2], "rotation": [0,0,0] },
+    { "assetId": "rock_02", "position": [4,0,1], "rotation": [0,0,0] },
+    { "assetId": "path_tile_01", "position": [0,0,0], "rotation": [0,0,0] },
+    { "assetId": "water_pond_small", "position": [6,0,4], "rotation": [0,0,0] }
+  ]
+}

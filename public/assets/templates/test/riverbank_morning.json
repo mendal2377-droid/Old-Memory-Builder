@@ -1,0 +1,610 @@
+{
+  "version": 1,
+  "savedAt": null,
+  "terrainMode": "Riverbank",
+  "atmospherePreset": "ClearMorning",
+  "isGridVisible": false,
+  "cameraMode": "bird",
+  "sceneObjects": [
+    {
+      "id": "a8f44d4c-51b5-46c4-af7f-9a5acdd01a4c",
+      "assetId": "water_river_straight",
+      "category": "Water",
+      "position": [
+        0.20000000000000018,
+        0,
+        3.5999999999999996
+      ],
+      "rotation": [
+        0,
+        -0.72,
+        0
+      ],
+      "scale": [
+        1.38,
+        1,
+        1.62
+      ]
+    },
+    {
+      "id": "152df998-9185-4481-803f-deeaebc8bb46",
+      "assetId": "water_river_straight",
+      "category": "Water",
+      "position": [
+        3.2,
+        0,
+        0.7999999999999998
+      ],
+      "rotation": [
+        0,
+        -0.7,
+        0
+      ],
+      "scale": [
+        1.38,
+        1,
+        1.62
+      ]
+    },
+    {
+      "id": "296491cd-494f-4f37-a7b5-a994aa226b5e",
+      "assetId": "water_river_curve",
+      "category": "Water",
+      "position": [
+        6.2,
+        0,
+        -2.3
+      ],
+      "rotation": [
+        0,
+        -0.48,
+        0
+      ],
+      "scale": [
+        1.12,
+        1,
+        1.05
+      ]
+    },
+    {
+      "id": "5d891309-22fb-46e6-8dde-56d3ebd6376c",
+      "assetId": "water_river_straight",
+      "category": "Water",
+      "position": [
+        8.7,
+        0,
+        -5.6
+      ],
+      "rotation": [
+        0,
+        -0.7,
+        0
+      ],
+      "scale": [
+        1.38,
+        1,
+        1.62
+      ]
+    },
+    {
+      "id": "bda66760-abd9-4cdb-a843-1b6d3286f77c",
+      "assetId": "water_river_straight",
+      "category": "Water",
+      "position": [
+        11.7,
+        0,
+        -8.8
+      ],
+      "rotation": [
+        0,
+        -0.72,
+        0
+      ],
+      "scale": [
+        1.38,
+        1,
+        1.62
+      ]
+    },
+    {
+      "id": "17ba3c99-1c4c-46f7-91f1-e42df5621238",
+      "assetId": "water_river_curve",
+      "category": "Water",
+      "position": [
+        13.5,
+        0,
+        -12
+      ],
+      "rotation": [
+        0,
+        -0.18,
+        0
+      ],
+      "scale": [
+        1.05,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "e4752d34-83cf-47a8-b3ab-0672ff6438de",
+      "assetId": "commontree_5",
+      "category": "Trees",
+      "position": [
+        -4.199999999999999,
+        0,
+        -2.5
+      ],
+      "rotation": [
+        0,
+        0.28,
+        0
+      ],
+      "scale": [
+        1.42,
+        1.42,
+        1.42
+      ]
+    },
+    {
+      "id": "0eaa6c40-889c-4823-909d-fb5b30e7c716",
+      "assetId": "commontree_2",
+      "category": "Trees",
+      "position": [
+        15,
+        0,
+        -2.1
+      ],
+      "rotation": [
+        0,
+        -0.28,
+        0
+      ],
+      "scale": [
+        1.26,
+        1.26,
+        1.26
+      ]
+    },
+    {
+      "id": "a8265024-bf23-4650-b3f9-8d7812d2020f",
+      "assetId": "pine_4",
+      "category": "Trees",
+      "position": [
+        3.8,
+        0,
+        -14.2
+      ],
+      "rotation": [
+        0,
+        0.15,
+        0
+      ],
+      "scale": [
+        1.28,
+        1.28,
+        1.28
+      ]
+    },
+    {
+      "id": "e648cafd-2c3c-4a6c-be42-9a567b8aef89",
+      "assetId": "commontree_3",
+      "category": "Trees",
+      "position": [
+        -1,
+        0,
+        -10.8
+      ],
+      "rotation": [
+        0,
+        -0.35,
+        0
+      ],
+      "scale": [
+        1.12,
+        1.12,
+        1.12
+      ]
+    },
+    {
+      "id": "854a25f1-dc9c-4b90-9ffe-b8f1b321f68c",
+      "assetId": "twistedtree_4",
+      "category": "Trees",
+      "position": [
+        10.7,
+        0,
+        2
+      ],
+      "rotation": [
+        0,
+        0.45,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "48a06522-ddaf-4d58-893b-e3fc1ddfb88d",
+      "assetId": "rock_medium_1",
+      "category": "Rocks",
+      "position": [
+        2.6,
+        0,
+        2.8
+      ],
+      "rotation": [
+        0,
+        0.15,
+        0
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ]
+    },
+    {
+      "id": "9608551f-175b-46f5-bd52-8f8030d9c911",
+      "assetId": "rock_medium_2",
+      "category": "Rocks",
+      "position": [
+        5.5,
+        0,
+        -0.7999999999999998
+      ],
+      "rotation": [
+        0,
+        -0.35,
+        0
+      ],
+      "scale": [
+        0.75,
+        0.75,
+        0.75
+      ]
+    },
+    {
+      "id": "509c708e-d8bf-435f-b8cd-1dff435055f6",
+      "assetId": "rock_medium_3",
+      "category": "Rocks",
+      "position": [
+        8.4,
+        0,
+        -3.5
+      ],
+      "rotation": [
+        0,
+        0.4,
+        0
+      ],
+      "scale": [
+        0.88,
+        0.88,
+        0.88
+      ]
+    },
+    {
+      "id": "22ece8b3-002a-4984-8781-1e0b78c7f2c8",
+      "assetId": "rock_medium_1",
+      "category": "Rocks",
+      "position": [
+        10.7,
+        0,
+        -7
+      ],
+      "rotation": [
+        0,
+        -0.28,
+        0
+      ],
+      "scale": [
+        0.78,
+        0.78,
+        0.78
+      ]
+    },
+    {
+      "id": "2bad1193-8ffc-4446-b3b4-fbd911299204",
+      "assetId": "pebble_round_1",
+      "category": "Rocks",
+      "position": [
+        -0.9000000000000004,
+        0,
+        0.7999999999999998
+      ],
+      "rotation": [
+        0,
+        0.18,
+        0
+      ],
+      "scale": [
+        0.72,
+        0.72,
+        0.72
+      ]
+    },
+    {
+      "id": "7181fe24-41c2-4387-8c43-79e82c3254c5",
+      "assetId": "pebble_square_3",
+      "category": "Rocks",
+      "position": [
+        12.6,
+        0,
+        -5.7
+      ],
+      "rotation": [
+        0,
+        -0.18,
+        0
+      ],
+      "scale": [
+        0.72,
+        0.72,
+        0.72
+      ]
+    },
+    {
+      "id": "b542f7f4-78f2-457d-b98f-312aca5ecdb4",
+      "assetId": "grass_common_tall",
+      "category": "Plants",
+      "position": [
+        1.5,
+        0,
+        1.2999999999999998
+      ],
+      "rotation": [
+        0,
+        0.22,
+        0
+      ],
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ]
+    },
+    {
+      "id": "d9cf3e5e-548d-49c9-9c31-1f14ab604755",
+      "assetId": "grass_wispy_tall",
+      "category": "Plants",
+      "position": [
+        7.5,
+        0,
+        -2
+      ],
+      "rotation": [
+        0,
+        -0.35,
+        0
+      ],
+      "scale": [
+        1.18,
+        1.18,
+        1.18
+      ]
+    },
+    {
+      "id": "19901d94-19fa-4f0a-a876-13a491bb2cb0",
+      "assetId": "grass_common_short",
+      "category": "Plants",
+      "position": [
+        9.7,
+        0,
+        -8.8
+      ],
+      "rotation": [
+        0,
+        0.28,
+        0
+      ],
+      "scale": [
+        1.15,
+        1.15,
+        1.15
+      ]
+    },
+    {
+      "id": "ccdbb65a-1dea-4155-9aa7-5ed4c163c338",
+      "assetId": "fern_1",
+      "category": "Plants",
+      "position": [
+        3.9,
+        0,
+        -1.9
+      ],
+      "rotation": [
+        0,
+        0.3,
+        0
+      ],
+      "scale": [
+        1.06,
+        1.06,
+        1.06
+      ]
+    },
+    {
+      "id": "6ade71a3-2923-4d6c-8fbe-744b12901f0f",
+      "assetId": "plant_1_big",
+      "category": "Plants",
+      "position": [
+        11.8,
+        0,
+        -10.3
+      ],
+      "rotation": [
+        0,
+        -0.24,
+        0
+      ],
+      "scale": [
+        1.05,
+        1.05,
+        1.05
+      ]
+    },
+    {
+      "id": "f911cf46-64f7-4160-b437-a644af481d82",
+      "assetId": "plant_7",
+      "category": "Plants",
+      "position": [
+        -0.09999999999999964,
+        0,
+        -3.8
+      ],
+      "rotation": [
+        0,
+        0.28,
+        0
+      ],
+      "scale": [
+        1.05,
+        1.05,
+        1.05
+      ]
+    },
+    {
+      "id": "434c6fd1-6fc7-47a3-bb82-c73d22e908c1",
+      "assetId": "bush_common",
+      "category": "Plants",
+      "position": [
+        13.6,
+        0,
+        -1.4
+      ],
+      "rotation": [
+        0,
+        -0.36,
+        0
+      ],
+      "scale": [
+        1.08,
+        1.08,
+        1.08
+      ]
+    },
+    {
+      "id": "aa4f584f-f1fc-4c0c-adc8-ef18e2800796",
+      "assetId": "bush_common_flowers",
+      "category": "Plants",
+      "position": [
+        -2.7,
+        0,
+        -6.2
+      ],
+      "rotation": [
+        0,
+        0.28,
+        0
+      ],
+      "scale": [
+        1.05,
+        1.05,
+        1.05
+      ]
+    },
+    {
+      "id": "e1c12d03-5386-43d6-bff0-1488914a15b4",
+      "assetId": "flower_3_single",
+      "category": "Flowers",
+      "position": [
+        13.4,
+        0,
+        -9.6
+      ],
+      "rotation": [
+        0,
+        -0.22,
+        0
+      ],
+      "scale": [
+        0.95,
+        0.95,
+        0.95
+      ]
+    },
+    {
+      "id": "08425c32-a869-4f79-bac7-31b277f1c884",
+      "assetId": "flower_4_group",
+      "category": "Flowers",
+      "position": [
+        0.40000000000000036,
+        0,
+        -7.8
+      ],
+      "rotation": [
+        0,
+        0.34,
+        0
+      ],
+      "scale": [
+        0.82,
+        0.82,
+        0.82
+      ]
+    },
+    {
+      "id": "00734ceb-c709-4632-9a7f-2da790bc43b5",
+      "assetId": "clover_1",
+      "category": "Plants",
+      "position": [
+        6.2,
+        0,
+        -10.8
+      ],
+      "rotation": [
+        0,
+        0.12,
+        0
+      ],
+      "scale": [
+        1.08,
+        1.08,
+        1.08
+      ]
+    },
+    {
+      "id": "c61dd60b-6464-4145-b7b1-8d52ea52a436",
+      "assetId": "rockpath_round_small_1",
+      "category": "Paths",
+      "position": [
+        -3.0999999999999996,
+        0,
+        -5
+      ],
+      "rotation": [
+        0,
+        -0.28,
+        0
+      ],
+      "scale": [
+        0.95,
+        1,
+        0.95
+      ]
+    },
+    {
+      "id": "9a0c0b14-c2a5-4111-97fb-56106b97780a",
+      "assetId": "rockpath_round_thin",
+      "category": "Paths",
+      "position": [
+        -1.2000000000000002,
+        0,
+        -6.4
+      ],
+      "rotation": [
+        0,
+        -0.42,
+        0
+      ],
+      "scale": [
+        0.95,
+        1,
+        0.95
+      ]
+    }
+  ]
+}

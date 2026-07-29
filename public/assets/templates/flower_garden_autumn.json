@@ -1,0 +1,458 @@
+{
+  "version": 1,
+  "savedAt": "2026-05-30T10:00:00.000Z",
+  "terrainMode": "Field Path",
+  "atmospherePreset": "Sunset",
+  "isGridVisible": false,
+  "cameraMode": "build",
+  "sceneObjects": [
+    {
+      "id": "flower_garden_autumn_001_rockpath_square_wide",
+      "assetId": "rockpath_square_wide",
+      "category": "Paths",
+      "position": [4.5, 0, 9.5],
+      "rotation": [0, -0.42, 0],
+      "scale": [1.12, 1, 1.12]
+    },
+    {
+      "id": "flower_garden_autumn_002_rockpath_round_wide",
+      "assetId": "rockpath_round_wide",
+      "category": "Paths",
+      "position": [3.0, 0, 7.8],
+      "rotation": [0, -0.38, 0],
+      "scale": [1.08, 1, 1.08]
+    },
+    {
+      "id": "flower_garden_autumn_003_rockpath_square_small_1",
+      "assetId": "rockpath_square_small_1",
+      "category": "Paths",
+      "position": [1.5, 0, 6.2],
+      "rotation": [0, -0.32, 0],
+      "scale": [1.06, 1, 1.06]
+    },
+    {
+      "id": "flower_garden_autumn_004_rockpath_round_small_3",
+      "assetId": "rockpath_round_small_3",
+      "category": "Paths",
+      "position": [-0.2, 0, 4.5],
+      "rotation": [0, -0.24, 0],
+      "scale": [1.05, 1, 1.05]
+    },
+    {
+      "id": "flower_garden_autumn_005_rockpath_square_thin",
+      "assetId": "rockpath_square_thin",
+      "category": "Paths",
+      "position": [-1.5, 0, 2.8],
+      "rotation": [0, -0.18, 0],
+      "scale": [1.04, 1, 1.04]
+    },
+    {
+      "id": "flower_garden_autumn_006_rockpath_round_thin",
+      "assetId": "rockpath_round_thin",
+      "category": "Paths",
+      "position": [-2.6, 0, 1.2],
+      "rotation": [0, -0.12, 0],
+      "scale": [1.02, 1, 1.02]
+    },
+    {
+      "id": "flower_garden_autumn_007_rockpath_square_small_2",
+      "assetId": "rockpath_square_small_2",
+      "category": "Paths",
+      "position": [-3.5, 0, -0.4],
+      "rotation": [0, -0.08, 0],
+      "scale": [1.0, 1, 1.0]
+    },
+    {
+      "id": "flower_garden_autumn_008_rockpath_round_small_2",
+      "assetId": "rockpath_round_small_2",
+      "category": "Paths",
+      "position": [-4.4, 0, -1.8],
+      "rotation": [0, 0.05, 0],
+      "scale": [0.98, 1, 0.98]
+    },
+    {
+      "id": "flower_garden_autumn_009_rockpath_round_small_1",
+      "assetId": "rockpath_round_small_1",
+      "category": "Paths",
+      "position": [-5.1, 0, -3.2],
+      "rotation": [0, 0.12, 0],
+      "scale": [0.95, 1, 0.95]
+    },
+    {
+      "id": "flower_garden_autumn_010_rockpath_square_small_3",
+      "assetId": "rockpath_square_small_3",
+      "category": "Paths",
+      "position": [-5.6, 0, -4.5],
+      "rotation": [0, 0.2, 0],
+      "scale": [0.92, 1, 0.92]
+    },
+    {
+      "id": "flower_garden_autumn_011_twistedtree_5",
+      "assetId": "twistedtree_5",
+      "category": "Trees",
+      "position": [-7.0, 0, -5.0],
+      "rotation": [0, -0.35, 0],
+      "scale": [2.1, 2.1, 2.1]
+    },
+    {
+      "id": "flower_garden_autumn_012_twistedtree_2",
+      "assetId": "twistedtree_2",
+      "category": "Trees",
+      "position": [-11.0, 0, -5.5],
+      "rotation": [0, 0.22, 0],
+      "scale": [1.45, 1.45, 1.45]
+    },
+    {
+      "id": "flower_garden_autumn_013_twistedtree_3",
+      "assetId": "twistedtree_3",
+      "category": "Trees",
+      "position": [-10.8, 0, 1.0],
+      "rotation": [0, -0.28, 0],
+      "scale": [1.35, 1.35, 1.35]
+    },
+    {
+      "id": "flower_garden_autumn_014_commontree_4",
+      "assetId": "commontree_4",
+      "category": "Trees",
+      "position": [-9.8, 0, 6.5],
+      "rotation": [0, 0.42, 0],
+      "scale": [1.25, 1.25, 1.25]
+    },
+    {
+      "id": "flower_garden_autumn_015_commontree_5",
+      "assetId": "commontree_5",
+      "category": "Trees",
+      "position": [-5.2, 0, 10.8],
+      "rotation": [0, -0.18, 0],
+      "scale": [1.22, 1.22, 1.22]
+    },
+    {
+      "id": "flower_garden_autumn_016_deadtree_4",
+      "assetId": "deadtree_4",
+      "category": "Trees",
+      "position": [1.8, 0, 11.2],
+      "rotation": [0, 0.28, 0],
+      "scale": [1.05, 1.05, 1.05]
+    },
+    {
+      "id": "flower_garden_autumn_017_twistedtree_4",
+      "assetId": "twistedtree_4",
+      "category": "Trees",
+      "position": [8.2, 0, 8.5],
+      "rotation": [0, -0.38, 0],
+      "scale": [1.15, 1.15, 1.15]
+    },
+    {
+      "id": "flower_garden_autumn_018_deadtree_2",
+      "assetId": "deadtree_2",
+      "category": "Trees",
+      "position": [9.8, 0, 1.0],
+      "rotation": [0, 0.18, 0],
+      "scale": [0.98, 0.98, 0.98]
+    },
+    {
+      "id": "flower_garden_autumn_019_commontree_2",
+      "assetId": "commontree_2",
+      "category": "Trees",
+      "position": [8.5, 0, -5.5],
+      "rotation": [0, -0.22, 0],
+      "scale": [1.08, 1.08, 1.08]
+    },
+    {
+      "id": "flower_garden_autumn_020_water_pond_medium",
+      "assetId": "water_pond_medium",
+      "category": "Water",
+      "position": [-5.2, 0, -2.2],
+      "rotation": [0, 0.18, 0],
+      "scale": [1.45, 1, 1.25]
+    },
+    {
+      "id": "flower_garden_autumn_021_rock_medium_1",
+      "assetId": "rock_medium_1",
+      "category": "Rocks",
+      "position": [-8.2, 0, -3.5],
+      "rotation": [0, 0.3, 0],
+      "scale": [0.9, 0.9, 0.9]
+    },
+    {
+      "id": "flower_garden_autumn_022_rock_medium_2",
+      "assetId": "rock_medium_2",
+      "category": "Rocks",
+      "position": [-8.8, 0, -0.5],
+      "rotation": [0, -0.2, 0],
+      "scale": [0.76, 0.76, 0.76]
+    },
+    {
+      "id": "flower_garden_autumn_023_rock_medium_3",
+      "assetId": "rock_medium_3",
+      "category": "Rocks",
+      "position": [-4.0, 0, -5.2],
+      "rotation": [0, 0.15, 0],
+      "scale": [0.84, 0.84, 0.84]
+    },
+    {
+      "id": "flower_garden_autumn_024_pebble_round_1",
+      "assetId": "pebble_round_1",
+      "category": "Rocks",
+      "position": [-3.5, 0, -3.5],
+      "rotation": [0, 0.52, 0],
+      "scale": [0.72, 0.72, 0.72]
+    },
+    {
+      "id": "flower_garden_autumn_025_pebble_round_2",
+      "assetId": "pebble_round_2",
+      "category": "Rocks",
+      "position": [-7.0, 0, -6.8],
+      "rotation": [0, -0.32, 0],
+      "scale": [0.68, 0.68, 0.68]
+    },
+    {
+      "id": "flower_garden_autumn_026_pebble_square_3",
+      "assetId": "pebble_square_3",
+      "category": "Rocks",
+      "position": [-9.8, 0, -7.8],
+      "rotation": [0, 0.22, 0],
+      "scale": [0.65, 0.65, 0.65]
+    },
+    {
+      "id": "flower_garden_autumn_027_pebble_round_4",
+      "assetId": "pebble_round_4",
+      "category": "Rocks",
+      "position": [5.8, 0, 3.5],
+      "rotation": [0, -0.4, 0],
+      "scale": [0.62, 0.62, 0.62]
+    },
+    {
+      "id": "flower_garden_autumn_028_pebble_square_5",
+      "assetId": "pebble_square_5",
+      "category": "Rocks",
+      "position": [7.2, 0, -2.5],
+      "rotation": [0, 0.18, 0],
+      "scale": [0.66, 0.66, 0.66]
+    },
+    {
+      "id": "flower_garden_autumn_029_petal_1",
+      "assetId": "petal_1",
+      "category": "Flowers",
+      "position": [-0.4, 0, 5.5],
+      "rotation": [0, 0.48, 0],
+      "scale": [1.45, 1.45, 1.45]
+    },
+    {
+      "id": "flower_garden_autumn_030_petal_2",
+      "assetId": "petal_2",
+      "category": "Flowers",
+      "position": [-3.2, 0, 2.0],
+      "rotation": [0, -0.22, 0],
+      "scale": [1.35, 1.35, 1.35]
+    },
+    {
+      "id": "flower_garden_autumn_031_petal_3",
+      "assetId": "petal_3",
+      "category": "Flowers",
+      "position": [1.6, 0, 7.0],
+      "rotation": [0, 0.32, 0],
+      "scale": [1.28, 1.28, 1.28]
+    },
+    {
+      "id": "flower_garden_autumn_032_petal_4",
+      "assetId": "petal_4",
+      "category": "Flowers",
+      "position": [-5.0, 0, -0.2],
+      "rotation": [0, -0.55, 0],
+      "scale": [1.32, 1.32, 1.32]
+    },
+    {
+      "id": "flower_garden_autumn_033_petal_5",
+      "assetId": "petal_5",
+      "category": "Flowers",
+      "position": [-8.2, 0, 2.5],
+      "rotation": [0, 0.38, 0],
+      "scale": [1.3, 1.3, 1.3]
+    },
+    {
+      "id": "flower_garden_autumn_034_flower_3_group",
+      "assetId": "flower_3_group",
+      "category": "Flowers",
+      "position": [-3.8, 0, 7.2],
+      "rotation": [0, -0.18, 0],
+      "scale": [1.35, 1.35, 1.35]
+    },
+    {
+      "id": "flower_garden_autumn_035_flower_4_group",
+      "assetId": "flower_4_group",
+      "category": "Flowers",
+      "position": [4.2, 0, 4.2],
+      "rotation": [0, 0.25, 0],
+      "scale": [1.28, 1.28, 1.28]
+    },
+    {
+      "id": "flower_garden_autumn_036_flower_3_group",
+      "assetId": "flower_3_group",
+      "category": "Flowers",
+      "position": [6.8, 0, -1.5],
+      "rotation": [0, -0.35, 0],
+      "scale": [1.12, 1.12, 1.12]
+    },
+    {
+      "id": "flower_garden_autumn_037_flower_4_single",
+      "assetId": "flower_4_single",
+      "category": "Flowers",
+      "position": [-6.2, 0, 1.8],
+      "rotation": [0, 0.42, 0],
+      "scale": [1.22, 1.22, 1.22]
+    },
+    {
+      "id": "flower_garden_autumn_038_flower_3_single",
+      "assetId": "flower_3_single",
+      "category": "Flowers",
+      "position": [2.5, 0, 2.5],
+      "rotation": [0, -0.28, 0],
+      "scale": [1.08, 1.08, 1.08]
+    },
+    {
+      "id": "flower_garden_autumn_039_petal_1",
+      "assetId": "petal_1",
+      "category": "Flowers",
+      "position": [7.5, 0, 5.2],
+      "rotation": [0, 0.15, 0],
+      "scale": [0.95, 0.95, 0.95]
+    },
+    {
+      "id": "flower_garden_autumn_040_petal_3",
+      "assetId": "petal_3",
+      "category": "Flowers",
+      "position": [-9.2, 0, 8.8],
+      "rotation": [0, -0.4, 0],
+      "scale": [1.1, 1.1, 1.1]
+    },
+    {
+      "id": "flower_garden_autumn_041_bush_common_flowers",
+      "assetId": "bush_common_flowers",
+      "category": "Plants",
+      "position": [-6.8, 0, 3.8],
+      "rotation": [0, 0.18, 0],
+      "scale": [1.22, 1.22, 1.22]
+    },
+    {
+      "id": "flower_garden_autumn_042_bush_common",
+      "assetId": "bush_common",
+      "category": "Plants",
+      "position": [6.2, 0, 6.8],
+      "rotation": [0, -0.3, 0],
+      "scale": [1.12, 1.12, 1.12]
+    },
+    {
+      "id": "flower_garden_autumn_043_bush_common_flowers",
+      "assetId": "bush_common_flowers",
+      "category": "Plants",
+      "position": [8.0, 0, -4.0],
+      "rotation": [0, 0.35, 0],
+      "scale": [1.06, 1.06, 1.06]
+    },
+    {
+      "id": "flower_garden_autumn_044_plant_7_big",
+      "assetId": "plant_7_big",
+      "category": "Plants",
+      "position": [-9.2, 0, 3.5],
+      "rotation": [0, -0.32, 0],
+      "scale": [0.98, 0.98, 0.98]
+    },
+    {
+      "id": "flower_garden_autumn_045_plant_1_big",
+      "assetId": "plant_1_big",
+      "category": "Plants",
+      "position": [3.2, 0, 9.2],
+      "rotation": [0, 0.28, 0],
+      "scale": [1.02, 1.02, 1.02]
+    },
+    {
+      "id": "flower_garden_autumn_046_plant_7",
+      "assetId": "plant_7",
+      "category": "Plants",
+      "position": [-1.5, 0, -0.8],
+      "rotation": [0, -0.15, 0],
+      "scale": [1.04, 1.04, 1.04]
+    },
+    {
+      "id": "flower_garden_autumn_047_fern_1",
+      "assetId": "fern_1",
+      "category": "Plants",
+      "position": [-8.0, 0, -7.5],
+      "rotation": [0, 0.2, 0],
+      "scale": [1.12, 1.12, 1.12]
+    },
+    {
+      "id": "flower_garden_autumn_048_fern_1",
+      "assetId": "fern_1",
+      "category": "Plants",
+      "position": [5.0, 0, -4.2],
+      "rotation": [0, -0.38, 0],
+      "scale": [1.05, 1.05, 1.05]
+    },
+    {
+      "id": "flower_garden_autumn_049_grass_common_tall",
+      "assetId": "grass_common_tall",
+      "category": "Plants",
+      "position": [-9.8, 0, -2.5],
+      "rotation": [0, 0.12, 0],
+      "scale": [1.25, 1.25, 1.25]
+    },
+    {
+      "id": "flower_garden_autumn_050_grass_wispy_tall",
+      "assetId": "grass_wispy_tall",
+      "category": "Plants",
+      "position": [5.2, 0, 1.5],
+      "rotation": [0, -0.24, 0],
+      "scale": [1.18, 1.18, 1.18]
+    },
+    {
+      "id": "flower_garden_autumn_051_grass_common_short",
+      "assetId": "grass_common_short",
+      "category": "Plants",
+      "position": [8.8, 0, -5.8],
+      "rotation": [0, 0.3, 0],
+      "scale": [1.12, 1.12, 1.12]
+    },
+    {
+      "id": "flower_garden_autumn_052_grass_wispy_short",
+      "assetId": "grass_wispy_short",
+      "category": "Plants",
+      "position": [-11.2, 0, 8.0],
+      "rotation": [0, -0.14, 0],
+      "scale": [1.15, 1.15, 1.15]
+    },
+    {
+      "id": "flower_garden_autumn_053_clover_1",
+      "assetId": "clover_1",
+      "category": "Plants",
+      "position": [-2.5, 0, 0.5],
+      "rotation": [0, 0.35, 0],
+      "scale": [1.08, 1.08, 1.08]
+    },
+    {
+      "id": "flower_garden_autumn_054_clover_2",
+      "assetId": "clover_2",
+      "category": "Plants",
+      "position": [2.2, 0, -1.0],
+      "rotation": [0, -0.26, 0],
+      "scale": [1.04, 1.04, 1.04]
+    },
+    {
+      "id": "flower_garden_autumn_055_fox_01",
+      "assetId": "fox_01",
+      "category": "Animals",
+      "position": [-7.8, 0, -3.2],
+      "rotation": [0, 1.85, 0],
+      "scale": [0.72, 0.72, 0.72]
+    },
+    {
+      "id": "flower_garden_autumn_056_deer_01",
+      "assetId": "deer_01",
+      "category": "Animals",
+      "position": [9.2, 0, -3.0],
+      "rotation": [0, 2.5, 0],
+      "scale": [0.82, 0.82, 0.82]
+    }
+  ]
+}
