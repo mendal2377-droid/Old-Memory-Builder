@@ -3,30 +3,8 @@ import { assets } from '../../data/assets'
 import { memoryKitCategories, memoryKits } from '../../data/memoryKits'
 import { sceneTemplates } from '../../data/sceneTemplates'
 import { useSceneStore } from '../../store/sceneStore'
-import type {
-  AssetCategory,
-  AtmospherePreset,
-  MemoryKitCategory,
-  TerrainMode,
-} from '../../types/scene'
+import type { AssetCategory, MemoryKitCategory } from '../../types/scene'
 import { AssetCard } from './AssetCard'
-
-const terrainModes: TerrainMode[] = [
-  'Riverbank',
-  'Village Road',
-  'Field Path',
-  'Empty Field',
-  'Courtyard',
-]
-
-const atmospherePresets: AtmospherePreset[] = [
-  'Clear Morning',
-  'Sunset',
-  'Rainy Day',
-  'Heavy Rain',
-  'Snowy Day',
-  'Summer Night',
-]
 
 const categoryOrder: AssetCategory[] = [
   'HOUSES',
@@ -61,14 +39,6 @@ export function AssetSidebar() {
   const loadSceneTemplate = useSceneStore((state) => state.loadSceneTemplate)
   const placementAssetId = useSceneStore((state) => state.placementAssetId)
   const placementKitId = useSceneStore((state) => state.placementKitId)
-  const terrainMode = useSceneStore((state) => state.terrainMode)
-  const atmospherePreset = useSceneStore((state) => state.atmospherePreset)
-  const isMuted = useSceneStore((state) => state.isMuted)
-  const setTerrainMode = useSceneStore((state) => state.setTerrainMode)
-  const setAtmospherePreset = useSceneStore(
-    (state) => state.setAtmospherePreset,
-  )
-  const toggleMute = useSceneStore((state) => state.toggleMute)
   const activeSceneTemplateId = useSceneStore(
     (state) => state.activeSceneTemplateId,
   )
@@ -209,60 +179,13 @@ export function AssetSidebar() {
   return (
     <aside className="asset-sidebar" aria-label="Asset library">
       <div className="sidebar-header asset-sidebar-sticky">
-        <section className="world-settings" aria-labelledby="world-settings-title">
-          <div className="world-settings-heading">
-            <span className="step-number">1</span>
-            <div>
-              <strong id="world-settings-title">Set your world</strong>
-              <small>Choose the place and mood.</small>
-            </div>
-          </div>
-          <label className="world-setting-control">
-            <span>Terrain</span>
-            <select
-              value={terrainMode}
-              onChange={(event) =>
-                setTerrainMode(event.target.value as TerrainMode)
-              }
-            >
-              {terrainModes.map((mode) => (
-                <option key={mode} value={mode}>
-                  {mode}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="world-setting-control">
-            <span>Weather</span>
-            <select
-              value={atmospherePreset}
-              onChange={(event) =>
-                setAtmospherePreset(event.target.value as AtmospherePreset)
-              }
-            >
-              {atmospherePresets.map((preset) => (
-                <option key={preset} value={preset}>
-                  {preset}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button
-            className="world-sound-toggle"
-            type="button"
-            onClick={toggleMute}
-          >
-            {isMuted ? 'Unmute sound' : 'Mute sound'}
-          </button>
-        </section>
-
-        <h2><span className="step-number">2</span> Place your memories</h2>
+        <h2>Asset Library</h2>
         <p>
           {placementAssetId
             ? 'Click the ground to place'
             : placementKitId
             ? 'Click the ground to place'
-            : 'Pick an asset, then click the ground to place it'}
+            : 'Choose an asset to place'}
         </p>
         <input
           className="asset-search"

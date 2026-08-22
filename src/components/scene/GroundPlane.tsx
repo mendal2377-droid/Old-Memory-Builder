@@ -7,12 +7,13 @@ import {
   Shape,
   type GridHelper,
 } from 'three'
-import type { AtmospherePreset, TerrainMode } from '../../types/scene'
+import type { TerrainMode } from '../../types/scene'
+import { useSceneStore } from '../../store/sceneStore'
+import { GrassField } from './GrassField'
 import { PondWater, RiverWater, type WaterBlob } from './StylizedWater'
 
 interface GroundPlaneProps {
   terrainMode: TerrainMode
-  atmospherePreset: AtmospherePreset
   cameraMode: 'build' | 'walk'
   isGridVisible: boolean
   onGroundClick?: (event: ThreeEvent<MouseEvent>) => void
@@ -351,12 +352,12 @@ const riverWaterBlobs: WaterBlob[] = riverBedBlobs.map(
   ],
 )
 
-function SharedRiver({ atmospherePreset }: { atmospherePreset: AtmospherePreset }) {
+function SharedRiver() {
   return (
     <group>
       {/* Opaque river bed shows through the water edges as depth */}
       <CurvedPath color="#2b6488" points={riverBedBlobs} />
-      <RiverWater blobs={riverWaterBlobs} atmospherePreset={atmospherePreset} />
+      <RiverWater blobs={riverWaterBlobs} />
     </group>
   )
 }
@@ -416,13 +417,7 @@ function DistantMountains({ terrainMode }: { terrainMode: TerrainMode }) {
   )
 }
 
-function EdgeWaterAndBeach({
-  terrainMode,
-  atmospherePreset,
-}: {
-  terrainMode: TerrainMode
-  atmospherePreset: AtmospherePreset
-}) {
+function EdgeWaterAndBeach({ terrainMode }: { terrainMode: TerrainMode }) {
   if (terrainMode !== 'Riverbank') {
     return null
   }
@@ -440,19 +435,13 @@ function EdgeWaterAndBeach({
       />
       {/* Sea edge behind the beach */}
       <group position={[24.4, 0.02, -2]} rotation={[0, 0.08, 0]} scale={[4.8, 1, 27]}>
-        <PondWater atmospherePreset={atmospherePreset} radius={1} opacity={0.8} />
+        <PondWater radius={1} opacity={0.8} />
       </group>
     </group>
   )
 }
 
-function SmallLake({
-  terrainMode,
-  atmospherePreset,
-}: {
-  terrainMode: TerrainMode
-  atmospherePreset: AtmospherePreset
-}) {
+function SmallLake({ terrainMode }: { terrainMode: TerrainMode }) {
   if (terrainMode !== 'Field Path' && terrainMode !== 'Empty Field') {
     return null
   }
@@ -470,7 +459,7 @@ function SmallLake({
       />
       {/* Animated lake surface */}
       <group position={[-17.4, 0.022, -17.4]} rotation={[0, 0.28, 0]} scale={[3.9, 1, 2.6]}>
-        <PondWater atmospherePreset={atmospherePreset} radius={1} opacity={0.82} />
+        <PondWater radius={1} opacity={0.82} />
       </group>
     </group>
   )
@@ -495,7 +484,7 @@ function WetGroundOverlay({ strength }: { strength: number }) {
   )
 }
 
-function SnowGroundOverlay() {
+function SnowGroundOverlay({ opacity }: { opacity: number }) {
   const snowTexture = useMemo(() => createSnowTexture(), [])
 
   return (
@@ -510,7 +499,7 @@ function SnowGroundOverlay() {
           color="#eef5f5"
           map={snowTexture}
           transparent
-          opacity={0.68}
+          opacity={opacity}
           roughness={0.98}
         />
       </mesh>
@@ -568,11 +557,7 @@ function TerrainGrid({
   )
 }
 
-function TerrainDetails({
-  terrainMode,
-}: {
-  terrainMode: TerrainMode
-}) {
+function TerrainDetails({ terrainMode }: { terrainMode: TerrainMode }) {
   if (terrainMode === 'Village Road') {
     return (
       <>
@@ -712,33 +697,25 @@ function TerrainEdgeShadows({ terrainMode }: { terrainMode: TerrainMode }) {
   )
 }
 
-function TerrainBackdrop({
-  terrainMode,
-  atmospherePreset,
-}: {
-  terrainMode: TerrainMode
-  atmospherePreset: AtmospherePreset
-}) {
+function TerrainBackdrop({ terrainMode }: { terrainMode: TerrainMode }) {
   return (
     <>
       <DistantMountains terrainMode={terrainMode} />
-      <EdgeWaterAndBeach
-        terrainMode={terrainMode}
-        atmospherePreset={atmospherePreset}
-      />
-      <SmallLake terrainMode={terrainMode} atmospherePreset={atmospherePreset} />
+      <EdgeWaterAndBeach terrainMode={terrainMode} />
+      <SmallLake terrainMode={terrainMode} />
     </>
   )
 }
 
 export function GroundPlane({
   terrainMode,
-  atmospherePreset,
   cameraMode,
   isGridVisible,
   onGroundClick,
   onGroundPointerMove,
 }: GroundPlaneProps) {
+  const weather = useSceneStore((state) => state.weather)
+  const weatherIntensity = useSceneStore((state) => state.weatherIntensity)
   const terrainTexture = useMemo(() => createTerrainTexture(terrainMode), [
     terrainMode,
   ])
@@ -770,22 +747,19 @@ export function GroundPlane({
       </mesh>
       <GrassTextureLayer />
       <TerrainEdgeShadows terrainMode={terrainMode} />
-      <TerrainDetails
-        terrainMode={terrainMode}
-      />
-      <SharedRiver atmospherePreset={atmospherePreset} />
-      <TerrainBackdrop
-        terrainMode={terrainMode}
-        atmospherePreset={atmospherePreset}
-      />
+      <TerrainDetails terrainMode={terrainMode} />
+      <SharedRiver />
+      <TerrainBackdrop terrainMode={terrainMode} />
       <TerrainScatter />
-      {atmospherePreset === 'Rainy Day' ? (
-        <WetGroundOverlay strength={0.08} />
+      <GrassField terrainMode={terrainMode} />
+      {weather === 'rain' || weather === 'storm' ? (
+        <WetGroundOverlay
+          strength={(weather === 'storm' ? 0.18 : 0.08) * weatherIntensity}
+        />
       ) : null}
-      {atmospherePreset === 'Heavy Rain' ? (
-        <WetGroundOverlay strength={0.18} />
+      {weather === 'snow' ? (
+        <SnowGroundOverlay opacity={0.68 * weatherIntensity} />
       ) : null}
-      {atmospherePreset === 'Snowy Day' ? <SnowGroundOverlay /> : null}
       <TerrainGrid
         cameraMode={cameraMode}
         isGridVisible={isGridVisible}

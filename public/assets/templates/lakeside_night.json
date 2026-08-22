@@ -1,0 +1,827 @@
+{
+  "version": 1,
+  "savedAt": "2026-08-11T10:00:00.000Z",
+  "terrainMode": "Riverbank",
+  "atmospherePreset": "Summer Night",
+  "isGridVisible": false,
+  "cameraMode": "build",
+  "sceneObjects": [
+    {
+      "id": "lakeside_night_001_lighthouse_01",
+      "assetId": "lighthouse_01",
+      "position": [
+        20,
+        0,
+        6
+      ],
+      "rotation": [
+        0,
+        -0.6,
+        0
+      ],
+      "scale": [
+        1.3,
+        1.3,
+        1.3
+      ]
+    },
+    {
+      "id": "lakeside_night_002_cabin_01",
+      "assetId": "cabin_01",
+      "position": [
+        -10,
+        0,
+        -4
+      ],
+      "rotation": [
+        0,
+        0.6,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "lakeside_night_003_cabin_05",
+      "assetId": "cabin_05",
+      "position": [
+        -14,
+        0,
+        6
+      ],
+      "rotation": [
+        0,
+        1.6,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "lakeside_night_004_cabin_04",
+      "assetId": "cabin_04",
+      "position": [
+        -6,
+        0,
+        10
+      ],
+      "rotation": [
+        0,
+        -0.4,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "lakeside_night_005_mill_01",
+      "assetId": "mill_01",
+      "position": [
+        10.5,
+        0,
+        -2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "lakeside_night_006_bridge_01",
+      "assetId": "bridge_01",
+      "position": [
+        16,
+        0,
+        2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "lakeside_night_007_woodpile_01",
+      "assetId": "woodpile_01",
+      "position": [
+        -2,
+        0,
+        4
+      ],
+      "rotation": [
+        0,
+        0.3,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "lakeside_night_008_twistedtree_4",
+      "assetId": "twistedtree_4",
+      "position": [
+        1.51,
+        0,
+        -1.32
+      ],
+      "rotation": [
+        0,
+        1.931,
+        0
+      ],
+      "scale": [
+        1.502,
+        1.502,
+        1.502
+      ]
+    },
+    {
+      "id": "lakeside_night_009_pine_3",
+      "assetId": "pine_3",
+      "position": [
+        1.5,
+        0,
+        3.94
+      ],
+      "rotation": [
+        0,
+        0.537,
+        0
+      ],
+      "scale": [
+        1.476,
+        1.476,
+        1.476
+      ]
+    },
+    {
+      "id": "lakeside_night_010_twistedtree_2",
+      "assetId": "twistedtree_2",
+      "position": [
+        5.31,
+        0,
+        9.81
+      ],
+      "rotation": [
+        0,
+        1.81,
+        0
+      ],
+      "scale": [
+        1.115,
+        1.115,
+        1.115
+      ]
+    },
+    {
+      "id": "lakeside_night_011_pine_3",
+      "assetId": "pine_3",
+      "position": [
+        2.67,
+        0,
+        9.18
+      ],
+      "rotation": [
+        0,
+        5.574,
+        0
+      ],
+      "scale": [
+        1.671,
+        1.671,
+        1.671
+      ]
+    },
+    {
+      "id": "lakeside_night_012_twistedtree_4",
+      "assetId": "twistedtree_4",
+      "position": [
+        -15.94,
+        0,
+        -15.07
+      ],
+      "rotation": [
+        0,
+        5.019,
+        0
+      ],
+      "scale": [
+        1.235,
+        1.235,
+        1.235
+      ]
+    },
+    {
+      "id": "lakeside_night_013_twistedtree_2",
+      "assetId": "twistedtree_2",
+      "position": [
+        -13.92,
+        0,
+        -7.07
+      ],
+      "rotation": [
+        0,
+        4.381,
+        0
+      ],
+      "scale": [
+        1.615,
+        1.615,
+        1.615
+      ]
+    },
+    {
+      "id": "lakeside_night_014_twistedtree_4",
+      "assetId": "twistedtree_4",
+      "position": [
+        -0.9,
+        0,
+        -12.05
+      ],
+      "rotation": [
+        0,
+        4.807,
+        0
+      ],
+      "scale": [
+        1.598,
+        1.598,
+        1.598
+      ]
+    },
+    {
+      "id": "lakeside_night_015_pine_2",
+      "assetId": "pine_2",
+      "position": [
+        -15.24,
+        0,
+        -13.83
+      ],
+      "rotation": [
+        0,
+        2.167,
+        0
+      ],
+      "scale": [
+        1.151,
+        1.151,
+        1.151
+      ]
+    },
+    {
+      "id": "lakeside_night_016_pine_2",
+      "assetId": "pine_2",
+      "position": [
+        -7.65,
+        0,
+        -0.22
+      ],
+      "rotation": [
+        0,
+        3.928,
+        0
+      ],
+      "scale": [
+        1.138,
+        1.138,
+        1.138
+      ]
+    },
+    {
+      "id": "lakeside_night_017_pine_2",
+      "assetId": "pine_2",
+      "position": [
+        5.17,
+        0,
+        -12.53
+      ],
+      "rotation": [
+        0,
+        4.908,
+        0
+      ],
+      "scale": [
+        1.125,
+        1.125,
+        1.125
+      ]
+    },
+    {
+      "id": "lakeside_night_018_pine_1",
+      "assetId": "pine_1",
+      "position": [
+        -7.04,
+        0,
+        5.47
+      ],
+      "rotation": [
+        0,
+        5.085,
+        0
+      ],
+      "scale": [
+        1.442,
+        1.442,
+        1.442
+      ]
+    },
+    {
+      "id": "lakeside_night_019_pine_4",
+      "assetId": "pine_4",
+      "position": [
+        20.59,
+        0,
+        4.46
+      ],
+      "rotation": [
+        0,
+        0.737,
+        0
+      ],
+      "scale": [
+        1.312,
+        1.312,
+        1.312
+      ]
+    },
+    {
+      "id": "lakeside_night_020_pine_4",
+      "assetId": "pine_4",
+      "position": [
+        20.97,
+        0,
+        1.67
+      ],
+      "rotation": [
+        0,
+        0.274,
+        0
+      ],
+      "scale": [
+        1.388,
+        1.388,
+        1.388
+      ]
+    },
+    {
+      "id": "lakeside_night_021_pine_5",
+      "assetId": "pine_5",
+      "position": [
+        21.5,
+        0,
+        -8.49
+      ],
+      "rotation": [
+        0,
+        5.836,
+        0
+      ],
+      "scale": [
+        1.098,
+        1.098,
+        1.098
+      ]
+    },
+    {
+      "id": "lakeside_night_022_fern_1",
+      "assetId": "fern_1",
+      "position": [
+        -6.61,
+        0,
+        -0.98
+      ],
+      "rotation": [
+        0,
+        2.996,
+        0
+      ],
+      "scale": [
+        1.289,
+        1.289,
+        1.289
+      ]
+    },
+    {
+      "id": "lakeside_night_023_fern_1",
+      "assetId": "fern_1",
+      "position": [
+        1.21,
+        0,
+        1.04
+      ],
+      "rotation": [
+        0,
+        4.509,
+        0
+      ],
+      "scale": [
+        1.102,
+        1.102,
+        1.102
+      ]
+    },
+    {
+      "id": "lakeside_night_024_grass_wispy_tall",
+      "assetId": "grass_wispy_tall",
+      "position": [
+        -9.95,
+        0,
+        -8.6
+      ],
+      "rotation": [
+        0,
+        5.362,
+        0
+      ],
+      "scale": [
+        0.92,
+        0.92,
+        0.92
+      ]
+    },
+    {
+      "id": "lakeside_night_025_grass_wispy_tall",
+      "assetId": "grass_wispy_tall",
+      "position": [
+        -4.15,
+        0,
+        -6.26
+      ],
+      "rotation": [
+        0,
+        6.162,
+        0
+      ],
+      "scale": [
+        0.902,
+        0.902,
+        0.902
+      ]
+    },
+    {
+      "id": "lakeside_night_026_fern_1",
+      "assetId": "fern_1",
+      "position": [
+        4.5,
+        0,
+        3.11
+      ],
+      "rotation": [
+        0,
+        4.532,
+        0
+      ],
+      "scale": [
+        1.291,
+        1.291,
+        1.291
+      ]
+    },
+    {
+      "id": "lakeside_night_027_fern_1",
+      "assetId": "fern_1",
+      "position": [
+        5.33,
+        0,
+        17.38
+      ],
+      "rotation": [
+        0,
+        0.839,
+        0
+      ],
+      "scale": [
+        1.159,
+        1.159,
+        1.159
+      ]
+    },
+    {
+      "id": "lakeside_night_028_grass_wispy_short",
+      "assetId": "grass_wispy_short",
+      "position": [
+        4.23,
+        0,
+        -5.19
+      ],
+      "rotation": [
+        0,
+        5.695,
+        0
+      ],
+      "scale": [
+        1.167,
+        1.167,
+        1.167
+      ]
+    },
+    {
+      "id": "lakeside_night_029_grass_wispy_tall",
+      "assetId": "grass_wispy_tall",
+      "position": [
+        -5,
+        0,
+        -16.83
+      ],
+      "rotation": [
+        0,
+        0.964,
+        0
+      ],
+      "scale": [
+        1.169,
+        1.169,
+        1.169
+      ]
+    },
+    {
+      "id": "lakeside_night_030_rock_medium_1",
+      "assetId": "rock_medium_1",
+      "position": [
+        9.82,
+        0,
+        -3.09
+      ],
+      "rotation": [
+        0,
+        5.811,
+        0
+      ],
+      "scale": [
+        0.778,
+        0.778,
+        0.778
+      ]
+    },
+    {
+      "id": "lakeside_night_031_pebble_square_3",
+      "assetId": "pebble_square_3",
+      "position": [
+        -4.59,
+        0,
+        4.15
+      ],
+      "rotation": [
+        0,
+        4.881,
+        0
+      ],
+      "scale": [
+        0.993,
+        0.993,
+        0.993
+      ]
+    },
+    {
+      "id": "lakeside_night_032_rock_medium_1",
+      "assetId": "rock_medium_1",
+      "position": [
+        -6.12,
+        0,
+        -8.95
+      ],
+      "rotation": [
+        0,
+        0.162,
+        0
+      ],
+      "scale": [
+        0.89,
+        0.89,
+        0.89
+      ]
+    },
+    {
+      "id": "lakeside_night_033_pebble_round_2",
+      "assetId": "pebble_round_2",
+      "position": [
+        5.93,
+        0,
+        -2.76
+      ],
+      "rotation": [
+        0,
+        1.653,
+        0
+      ],
+      "scale": [
+        0.945,
+        0.945,
+        0.945
+      ]
+    },
+    {
+      "id": "lakeside_night_034_pebble_round_2",
+      "assetId": "pebble_round_2",
+      "position": [
+        -12.06,
+        0,
+        -13.28
+      ],
+      "rotation": [
+        0,
+        4.15,
+        0
+      ],
+      "scale": [
+        0.836,
+        0.836,
+        0.836
+      ]
+    },
+    {
+      "id": "lakeside_night_035_rock_medium_1",
+      "assetId": "rock_medium_1",
+      "position": [
+        -13.94,
+        0,
+        -7.13
+      ],
+      "rotation": [
+        0,
+        1.141,
+        0
+      ],
+      "scale": [
+        0.704,
+        0.704,
+        0.704
+      ]
+    },
+    {
+      "id": "lakeside_night_036_rock_medium_1",
+      "assetId": "rock_medium_1",
+      "position": [
+        -13.25,
+        0,
+        -6.93
+      ],
+      "rotation": [
+        0,
+        3.041,
+        0
+      ],
+      "scale": [
+        0.938,
+        0.938,
+        0.938
+      ]
+    },
+    {
+      "id": "lakeside_night_037_plant_7",
+      "assetId": "plant_7",
+      "position": [
+        4.16,
+        0,
+        -12.5
+      ],
+      "rotation": [
+        0,
+        2.585,
+        0
+      ],
+      "scale": [
+        1.111,
+        1.111,
+        1.111
+      ]
+    },
+    {
+      "id": "lakeside_night_038_plant_7",
+      "assetId": "plant_7",
+      "position": [
+        -15.71,
+        0,
+        -10.2
+      ],
+      "rotation": [
+        0,
+        5.152,
+        0
+      ],
+      "scale": [
+        0.96,
+        0.96,
+        0.96
+      ]
+    },
+    {
+      "id": "lakeside_night_039_mushroom_common",
+      "assetId": "mushroom_common",
+      "position": [
+        -1.61,
+        0,
+        -7.93
+      ],
+      "rotation": [
+        0,
+        4.863,
+        0
+      ],
+      "scale": [
+        1.044,
+        1.044,
+        1.044
+      ]
+    },
+    {
+      "id": "lakeside_night_040_mushroom_laetiporus",
+      "assetId": "mushroom_laetiporus",
+      "position": [
+        -15.63,
+        0,
+        -6.45
+      ],
+      "rotation": [
+        0,
+        2.657,
+        0
+      ],
+      "scale": [
+        0.994,
+        0.994,
+        0.994
+      ]
+    },
+    {
+      "id": "lakeside_night_041_plant_7",
+      "assetId": "plant_7",
+      "position": [
+        -6.61,
+        0,
+        -11.84
+      ],
+      "rotation": [
+        0,
+        0.514,
+        0
+      ],
+      "scale": [
+        0.913,
+        0.913,
+        0.913
+      ]
+    },
+    {
+      "id": "lakeside_night_042_fox_01",
+      "assetId": "fox_01",
+      "position": [
+        -7,
+        0,
+        -2
+      ],
+      "rotation": [
+        0,
+        1.9,
+        0
+      ],
+      "scale": [
+        0.72,
+        0.72,
+        0.72
+      ]
+    },
+    {
+      "id": "lakeside_night_043_deer_01",
+      "assetId": "deer_01",
+      "position": [
+        4,
+        0,
+        8
+      ],
+      "rotation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ]
+    }
+  ]
+}

@@ -301,11 +301,7 @@ function chooseSafeSpawnPoint(
   const safeCandidates = candidates
     .filter(
       (candidate) =>
-        !isBlockedPosition(
-          candidate,
-          colliders,
-          minimumSpawnClearance,
-        ),
+        !isBlockedPosition(candidate, colliders, minimumSpawnClearance),
     )
     .map((candidate) => {
       const clearance = getNearestClearance(candidate, colliders)
@@ -718,9 +714,6 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
     sceneObjects,
     setCameraTransitioning,
     terrainMode,
-    lookTarget,
-    transitionEnd,
-    transitionStart,
   ])
 
   // During the storm game the bridge is impassable until repaired.
@@ -729,12 +722,7 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
 
   const canMoveTo = (nextPosition: Vector3) => {
     if (
-      isBlockedPosition(
-        nextPosition,
-        colliders,
-        playerRadius,
-        activeBridges,
-      )
+      isBlockedPosition(nextPosition, colliders, playerRadius, activeBridges)
     ) {
       return false
     }

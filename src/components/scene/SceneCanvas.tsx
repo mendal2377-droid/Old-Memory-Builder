@@ -148,8 +148,6 @@ export function SceneCanvas() {
 
   useEffect(() => {
     if (!placementAssetId && !placementKitId) {
-      // The preview is local UI state and must clear when placement is canceled externally.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPreviewPosition(null)
       return
     }
@@ -224,7 +222,6 @@ export function SceneCanvas() {
       <MemoryCompanions />
       <GroundPlane
         terrainMode={terrainMode}
-        atmospherePreset={atmospherePreset}
         cameraMode={cameraMode}
         isGridVisible={isGridVisible}
         onGroundClick={handleGroundClick}

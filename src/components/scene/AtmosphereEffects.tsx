@@ -1,23 +1,33 @@
 import { useFrame, useThree } from '@react-three/fiber'
-/* eslint-disable react-hooks/immutability, react-hooks/purity */
-
 import { useEffect, useMemo, useRef } from 'react'
 import {
   AdditiveBlending,
   BackSide,
   BufferAttribute,
+  CanvasTexture,
   Color,
-  DoubleSide,
   Fog,
+  ShaderMaterial,
+  Vector2,
+  type AmbientLight,
+  type DirectionalLight,
   type Group,
+  type HemisphereLight,
   type Material,
   type Mesh,
   type MeshBasicMaterial,
   type LineSegments,
   type Points,
   type PointLight,
+  type Texture,
   type Vector3Tuple,
 } from 'three'
+import {
+  createAtmosphereSample,
+  representativePreset,
+  sampleAtmosphere,
+} from '../../data/atmosphere'
+import { getWindVector, updateWind } from '../../data/wind'
 import { useSceneStore } from '../../store/sceneStore'
 import type { AtmospherePreset } from '../../types/scene'
 
@@ -278,48 +288,62 @@ function useAtmosphereSound(preset: AtmospherePreset, isMuted: boolean) {
   }, [isMuted, preset])
 }
 
-function SkyGradient({ config }: { config: AtmosphereConfig }) {
-  const topColor = useMemo(() => new Color(config.skyTop), [config.skyTop])
-  const bottomColor = useMemo(
-    () => new Color(config.skyBottom),
-    [config.skyBottom],
-  )
-
-  return (
-    <mesh scale={[1, 1, 1]} renderOrder={-1000}>
-      <sphereGeometry args={[140, 32, 16]} />
-      <shaderMaterial
-        side={BackSide}
-        depthWrite={false}
-        depthTest={false}
-        uniforms={{
-          topColor: { value: topColor },
-          bottomColor: { value: bottomColor },
-        }}
-        vertexShader={`
-          varying vec3 worldPosition;
-
-          void main() {
-            vec4 world = modelMatrix * vec4(position, 1.0);
-            worldPosition = world.xyz;
-            gl_Position = projectionMatrix * viewMatrix * world;
-          }
-        `}
-        fragmentShader={`
-          uniform vec3 topColor;
-          uniform vec3 bottomColor;
-          varying vec3 worldPosition;
-
-          void main() {
-            float h = normalize(worldPosition).y * 0.5 + 0.5;
-            vec3 color = mix(bottomColor, topColor, smoothstep(0.1, 0.92, h));
-            gl_FragColor = vec4(color, 1.0);
-          }
-        `}
-      />
-    </mesh>
-  )
+// A soft round sprite so points render as gentle circles, not squares.
+let softSpriteCache: CanvasTexture | null = null
+function getSoftSprite(): Texture | null {
+  if (typeof document === 'undefined') return null
+  if (softSpriteCache) return softSpriteCache
+  const canvas = document.createElement('canvas')
+  canvas.width = 64
+  canvas.height = 64
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
+  gradient.addColorStop(0, 'rgba(255,255,255,1)')
+  gradient.addColorStop(0.35, 'rgba(255,255,255,0.9)')
+  gradient.addColorStop(0.7, 'rgba(255,255,255,0.28)')
+  gradient.addColorStop(1, 'rgba(255,255,255,0)')
+  ctx.fillStyle = gradient
+  ctx.fillRect(0, 0, 64, 64)
+  softSpriteCache = new CanvasTexture(canvas)
+  softSpriteCache.needsUpdate = true
+  return softSpriteCache
 }
+
+// A soft snowflake with faint six-point structure.
+let snowflakeCache: CanvasTexture | null = null
+function getSnowflakeSprite(): Texture | null {
+  if (typeof document === 'undefined') return null
+  if (snowflakeCache) return snowflakeCache
+  const canvas = document.createElement('canvas')
+  canvas.width = 64
+  canvas.height = 64
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  // Soft glow core
+  const glow = ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
+  glow.addColorStop(0, 'rgba(255,255,255,0.95)')
+  glow.addColorStop(0.4, 'rgba(255,255,255,0.45)')
+  glow.addColorStop(1, 'rgba(255,255,255,0)')
+  ctx.fillStyle = glow
+  ctx.fillRect(0, 0, 64, 64)
+  // Six faint arms for crystalline hint
+  ctx.strokeStyle = 'rgba(255,255,255,0.55)'
+  ctx.lineWidth = 2.4
+  ctx.lineCap = 'round'
+  for (let i = 0; i < 6; i += 1) {
+    const angle = (i / 6) * Math.PI * 2
+    ctx.beginPath()
+    ctx.moveTo(32, 32)
+    ctx.lineTo(32 + Math.cos(angle) * 22, 32 + Math.sin(angle) * 22)
+    ctx.stroke()
+  }
+  snowflakeCache = new CanvasTexture(canvas)
+  snowflakeCache.needsUpdate = true
+  return snowflakeCache
+}
+
+const windScratch = new Vector2()
 
 function WeatherParticles({
   kind,
@@ -367,20 +391,23 @@ function WeatherParticles({
       return
     }
 
+    // Precipitation leans with the shared wind, so gusts slant the whole sky
+    const wind = getWindVector(windScratch)
+    const lean = kind === 'snow' ? 0.055 : 0.09
+
     for (let index = 0; index < velocities.length; index += 1) {
       const xIndex = index * 3
       const yIndex = index * 3 + 1
       const zIndex = index * 3 + 2
-      const drift =
+      // Snow also flutters on its own; rain falls straight but for the wind
+      const flutter =
         kind === 'snow'
           ? Math.sin(clock.elapsedTime * 0.75 + index * 1.71) * 0.008
-          : windDrift
+          : 0
 
       positionAttribute.array[yIndex] -= velocities[index]
-      positionAttribute.array[xIndex] += drift
-      if (kind === 'rain') {
-        positionAttribute.array[zIndex] += windDrift * 0.24
-      }
+      positionAttribute.array[xIndex] += wind.x * lean + flutter + windDrift * 0.25
+      positionAttribute.array[zIndex] += wind.y * lean
 
       if (positionAttribute.array[yIndex] < 0.05) {
         positionAttribute.array[yIndex] = Math.random() * height * 0.55 + height * 0.55
@@ -399,190 +426,15 @@ function WeatherParticles({
       </bufferGeometry>
       <pointsMaterial
         color={kind === 'snow' ? '#ffffff' : '#dbe7f1'}
+        map={kind === 'snow' ? getSnowflakeSprite() : undefined}
         size={size ?? (kind === 'snow' ? 0.16 : 0.075)}
         transparent
-        opacity={kind === 'snow' ? 0.78 : windDrift > 0.02 ? 0.74 : 0.62}
+        opacity={kind === 'snow' ? 0.9 : windDrift > 0.02 ? 0.74 : 0.62}
         depthWrite={false}
+        sizeAttenuation={kind === 'snow'}
         blending={kind === 'snow' ? undefined : AdditiveBlending}
       />
     </points>
-  )
-}
-
-function SunDisc({
-  position,
-  coreRadius,
-  haloRadius,
-  glowRadius,
-  rayLength,
-  rayCount,
-  coreColor,
-  haloColor,
-  rayColor,
-  rotationSpeed = 0.02,
-}: {
-  position: [number, number, number]
-  coreRadius: number
-  haloRadius: number
-  glowRadius: number
-  rayLength: number
-  rayCount: number
-  coreColor: string
-  haloColor: string
-  rayColor: string
-  rotationSpeed?: number
-}) {
-  const groupRef = useRef<Group>(null)
-  const raysRef = useRef<Group>(null)
-  const coreRef = useRef<Mesh>(null)
-
-  useFrame(({ camera, clock }) => {
-    if (groupRef.current) {
-      groupRef.current.lookAt(camera.position)
-    }
-    if (raysRef.current) {
-      raysRef.current.rotation.z = clock.elapsedTime * rotationSpeed
-    }
-    if (coreRef.current) {
-      const mat = coreRef.current.material as MeshBasicMaterial
-      mat.opacity = 0.94 + Math.sin(clock.elapsedTime * 1.4) * 0.05
-    }
-  })
-
-  const rays = useMemo(() => {
-    const arr: Array<{ angle: number; length: number }> = []
-    for (let i = 0; i < rayCount; i += 1) {
-      const angle = (i / rayCount) * Math.PI * 2
-      const lengthJitter = 0.55 + Math.random() * 0.85
-      arr.push({ angle, length: rayLength * lengthJitter })
-    }
-    return arr
-  }, [rayCount, rayLength])
-
-  return (
-    <group ref={groupRef} position={position}>
-      {/* Outer atmospheric glow */}
-      <mesh position={[0, 0, -0.06]} renderOrder={100}>
-        <circleGeometry args={[glowRadius, 48]} />
-        <meshBasicMaterial
-          color={haloColor}
-          transparent
-          opacity={0.14}
-          depthWrite={false}
-          depthTest={false}
-          blending={AdditiveBlending}
-        />
-      </mesh>
-      {/* Thin tapered flare rays — rotating */}
-      <group ref={raysRef} position={[0, 0, -0.04]}>
-        {rays.map((ray, index) => (
-          <group key={`ray-${index}`} rotation={[0, 0, ray.angle]}>
-            <mesh position={[0, ray.length * 0.5 + coreRadius * 0.7, 0]} renderOrder={101}>
-              <coneGeometry args={[coreRadius * 0.28, ray.length, 3]} />
-              <meshBasicMaterial
-                color={rayColor}
-                transparent
-          opacity={0.11}
-                depthWrite={false}
-                depthTest={false}
-                blending={AdditiveBlending}
-              />
-            </mesh>
-          </group>
-        ))}
-      </group>
-      {/* Inner halo */}
-      <mesh position={[0, 0, -0.02]} renderOrder={102}>
-        <circleGeometry args={[haloRadius, 48]} />
-        <meshBasicMaterial
-          color={haloColor}
-          transparent
-          opacity={0.32}
-          depthWrite={false}
-          depthTest={false}
-          blending={AdditiveBlending}
-        />
-      </mesh>
-      {/* Bright core disc */}
-      <mesh ref={coreRef} renderOrder={103}>
-        <circleGeometry args={[coreRadius, 48]} />
-        <meshBasicMaterial
-          color={coreColor}
-          transparent
-          opacity={0.96}
-          depthWrite={false}
-          depthTest={false}
-        />
-      </mesh>
-    </group>
-  )
-}
-
-function MorningSun() {
-  return (
-    <SunDisc
-      position={[14, 14, -32]}
-      coreRadius={1.8}
-      haloRadius={3.4}
-      glowRadius={9}
-      rayLength={10}
-      rayCount={8}
-      coreColor="#fffbeb"
-      haloColor="#ffe9a8"
-      rayColor="#fff0c0"
-      rotationSpeed={0.015}
-    />
-  )
-}
-
-function SunsetSun() {
-  return (
-    <SunDisc
-      position={[-22, 5.5, -28]}
-      coreRadius={2.6}
-      haloRadius={5.0}
-      glowRadius={13}
-      rayLength={14}
-      rayCount={9}
-      coreColor="#fff1c0"
-      haloColor="#ff9d52"
-      rayColor="#ffb068"
-      rotationSpeed={0.018}
-    />
-  )
-}
-
-function SunsetCrescentMoon() {
-  const groupRef = useRef<Group>(null)
-
-  useFrame(({ camera }) => {
-    groupRef.current?.lookAt(camera.position)
-  })
-
-  return (
-    <group ref={groupRef} position={[26, 22, 18]}>
-      {/* Soft halo */}
-      <mesh position={[0, 0, -0.04]}>
-        <circleGeometry args={[2.2, 32]} />
-        <meshBasicMaterial
-          color="#e8d8ff"
-          transparent
-          opacity={0.18}
-          depthWrite={false}
-          blending={AdditiveBlending}
-        />
-      </mesh>
-      {/* Bright moon disc */}
-      <mesh>
-        <circleGeometry args={[0.9, 32]} />
-        <meshBasicMaterial
-          color="#fff6e0"
-          transparent
-          opacity={0.92}
-          depthWrite={false}
-        />
-      </mesh>
-    </group>
   )
 }
 
@@ -648,118 +500,221 @@ function SunAirParticles({ preset }: { preset: 'Clear Morning' | 'Sunset' }) {
   )
 }
 
-function Sunbeams({ preset }: { preset: 'Clear Morning' | 'Sunset' }) {
-  const groupRef = useRef<Group>(null)
-  const isSunset = preset === 'Sunset'
+const starVertexShader = /* glsl */ `
+  attribute float aSize;
+  attribute float aPhase;
+  attribute float aSpeed;
+  attribute vec3 aColor;
+  uniform float uTime;
+  varying vec3 vColor;
+  varying float vTwinkle;
+  void main() {
+    vColor = aColor;
+    // Each star breathes at its own rate; never fully dark
+    float pulse = 0.5 + 0.5 * sin(uTime * aSpeed + aPhase);
+    vTwinkle = 0.32 + 0.68 * pulse * pulse;
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+    gl_PointSize = aSize;
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`
 
-  useFrame(({ camera, clock }) => {
-    groupRef.current?.lookAt(camera.position)
+const starFragmentShader = /* glsl */ `
+  precision mediump float;
+  varying vec3 vColor;
+  varying float vTwinkle;
+  uniform float uOpacity;
+  void main() {
+    vec2 d = gl_PointCoord - vec2(0.5);
+    float dist = length(d);
+    // Soft round core with a faint bloom
+    float core = smoothstep(0.5, 0.08, dist);
+    float bloom = smoothstep(0.5, 0.28, dist) * 0.4;
+    float alpha = (core + bloom) * vTwinkle * uOpacity;
+    if (alpha < 0.01) discard;
+    gl_FragColor = vec4(vColor, alpha);
+  }
+`
 
-    if (groupRef.current) {
-      groupRef.current.position.y =
-        (isSunset ? 7.2 : 9.2) + Math.sin(clock.elapsedTime * 0.18) * 0.12
+function StarField({ masterOpacity }: { masterOpacity?: () => number }) {
+  const materialRef = useRef<ShaderMaterial>(null)
+
+  const geometry = useMemo(() => {
+    const count = 620
+    const positions = new Float32Array(count * 3)
+    const sizes = new Float32Array(count)
+    const phases = new Float32Array(count)
+    const speeds = new Float32Array(count)
+    const colors = new Float32Array(count * 3)
+
+    const palette = [
+      [1.0, 1.0, 1.0], // white
+      [0.86, 0.92, 1.0], // cool blue
+      [1.0, 0.94, 0.82], // warm
+      [0.78, 0.88, 1.0], // deeper blue
+    ]
+
+    for (let i = 0; i < count; i += 1) {
+      // Distribute across a dome so stars ring the horizon and fill overhead
+      const azimuth = Math.random() * Math.PI * 2
+      const elevation = Math.pow(Math.random(), 0.7) * (Math.PI * 0.5)
+      const radius = 120 + Math.random() * 40
+      const horizontal = Math.cos(elevation) * radius
+      positions[i * 3] = Math.cos(azimuth) * horizontal
+      positions[i * 3 + 1] = Math.sin(elevation) * radius + 6
+      positions[i * 3 + 2] = Math.sin(azimuth) * horizontal
+
+      // Most stars small and faint; a few are big and bright (near)
+      const near = Math.random()
+      sizes[i] = near > 0.94 ? 4.5 + Math.random() * 3.5 : 1.2 + Math.random() * 2.4
+      phases[i] = Math.random() * Math.PI * 2
+      speeds[i] = 0.6 + Math.random() * 2.6
+
+      const [r, g, b] = palette[Math.floor(Math.random() * palette.length)]
+      colors[i * 3] = r
+      colors[i * 3 + 1] = g
+      colors[i * 3 + 2] = b
     }
-  })
 
-  return (
-    <group
-      ref={groupRef}
-      position={isSunset ? [-12, 7.2, -15] : [-8, 9.2, -10]}
-      rotation={[0, 0, isSunset ? -0.32 : -0.18]}
-    >
-      <mesh>
-        <planeGeometry args={isSunset ? [13, 24] : [10, 18]} />
-        <meshBasicMaterial
-          color={isSunset ? '#ffcc80' : '#fff2b8'}
-          transparent
-          opacity={isSunset ? 0.045 : 0.035}
-          depthWrite={false}
-          depthTest={false}
-          side={DoubleSide}
-          blending={AdditiveBlending}
-        />
-      </mesh>
-    </group>
-  )
-}
-
-function StarField() {
-  const pointsRef = useRef<Points>(null)
-  const positions = useMemo(() => {
-    const count = 280
-    const nextPositions = new Float32Array(count * 3)
-
-    for (let index = 0; index < count; index += 1) {
-      nextPositions[index * 3] = Math.random() * 120 - 60
-      nextPositions[index * 3 + 1] = Math.random() * 32 + 18
-      nextPositions[index * 3 + 2] = Math.random() * 120 - 60
-    }
-
-    return nextPositions
+    return { positions, sizes, phases, speeds, colors }
   }, [])
 
-  useFrame(({ clock }) => {
-    const material = pointsRef.current?.material as Material & {
-      opacity?: number
-    }
+  const material = useMemo(
+    () =>
+      new ShaderMaterial({
+        uniforms: { uTime: { value: 0 }, uOpacity: { value: 1 } },
+        vertexShader: starVertexShader,
+        fragmentShader: starFragmentShader,
+        transparent: true,
+        depthWrite: false,
+        blending: AdditiveBlending,
+      }),
+    [],
+  )
 
-    if (material) {
-      material.opacity = 0.58 + Math.sin(clock.elapsedTime * 1.3) * 0.18
+  useFrame(({ clock }) => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value = clock.elapsedTime
+      if (masterOpacity) {
+        materialRef.current.uniforms.uOpacity.value = masterOpacity()
+      }
     }
   })
 
   return (
-    <points ref={pointsRef}>
+    <points>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        <bufferAttribute attach="attributes-position" args={[geometry.positions, 3]} />
+        <bufferAttribute attach="attributes-aSize" args={[geometry.sizes, 1]} />
+        <bufferAttribute attach="attributes-aPhase" args={[geometry.phases, 1]} />
+        <bufferAttribute attach="attributes-aSpeed" args={[geometry.speeds, 1]} />
+        <bufferAttribute attach="attributes-aColor" args={[geometry.colors, 3]} />
       </bufferGeometry>
-      <pointsMaterial
-        color="#f7fbff"
-        size={0.16}
-        transparent
-        opacity={0.68}
-        depthWrite={false}
-        blending={AdditiveBlending}
-      />
+      <primitive ref={materialRef} object={material} attach="material" />
     </points>
   )
 }
 
-function Moon() {
+// A handful of slow shooting stars streaking across the night sky.
+function ShootingStars() {
   const groupRef = useRef<Group>(null)
+  const streaks = useMemo(
+    () =>
+      Array.from({ length: 3 }).map((_, i) => ({
+        delay: i * 6 + Math.random() * 5,
+        period: 14 + Math.random() * 10,
+        startX: -50 + Math.random() * 30,
+        y: 30 + Math.random() * 20,
+        z: -60 - Math.random() * 30,
+        length: 8 + Math.random() * 6,
+      })),
+    [],
+  )
+  const meshRefs = useRef<Array<Mesh | null>>([])
 
-  useFrame(({ camera }) => {
-    groupRef.current?.lookAt(camera.position)
+  useFrame(({ clock }) => {
+    streaks.forEach((streak, i) => {
+      const mesh = meshRefs.current[i]
+      if (!mesh) return
+      const local = (clock.elapsedTime - streak.delay) % streak.period
+      const progress = local / 2.4 // streak crosses over ~2.4s
+      const material = mesh.material as MeshBasicMaterial
+      if (local < 0 || progress > 1) {
+        material.opacity = 0
+        return
+      }
+      mesh.position.set(
+        streak.startX + progress * 70,
+        streak.y - progress * 14,
+        streak.z,
+      )
+      material.opacity = Math.sin(progress * Math.PI) * 0.85
+    })
   })
 
   return (
-    <group ref={groupRef} position={[24, 18, -34]}>
-      <mesh>
-        <circleGeometry args={[3.6, 48]} />
-        <meshBasicMaterial color="#e8f1ff" transparent opacity={0.95} side={DoubleSide} />
-      </mesh>
-      <mesh position={[0, 0, -0.015]}>
-        <circleGeometry args={[5.4, 48]} />
-        <meshBasicMaterial
-          color="#9ebdff"
-          transparent
-          opacity={0.16}
-          depthWrite={false}
-          side={DoubleSide}
-        />
-      </mesh>
-      <mesh position={[0, 0, -0.04]}>
-        <circleGeometry args={[10, 48]} />
-        <meshBasicMaterial
-          color="#6e9fff"
-          transparent
-          opacity={0.06}
-          depthWrite={false}
-          side={DoubleSide}
-        />
-      </mesh>
+    <group ref={groupRef}>
+      {streaks.map((streak, i) => (
+        <mesh
+          key={`shooting-${i}`}
+          ref={(m) => {
+            meshRefs.current[i] = m
+          }}
+          rotation={[0, 0, -0.32]}
+        >
+          <planeGeometry args={[streak.length, 0.09]} />
+          <meshBasicMaterial
+            color="#eaf3ff"
+            transparent
+            opacity={0}
+            depthWrite={false}
+            blending={AdditiveBlending}
+          />
+        </mesh>
+      ))}
     </group>
   )
+}
+
+let moonFaceCache: CanvasTexture | null = null
+function getMoonFace(): Texture | null {
+  if (typeof document === 'undefined') return null
+  if (moonFaceCache) return moonFaceCache
+  const canvas = document.createElement('canvas')
+  canvas.width = 128
+  canvas.height = 128
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  // Pale lit disc with a soft terminator on the lower-left
+  const base = ctx.createRadialGradient(52, 48, 8, 64, 64, 66)
+  base.addColorStop(0, '#ffffff')
+  base.addColorStop(0.55, '#f2f6ff')
+  base.addColorStop(1, '#c9d6ef')
+  ctx.fillStyle = base
+  ctx.beginPath()
+  ctx.arc(64, 64, 62, 0, Math.PI * 2)
+  ctx.fill()
+  // Craters / maria as soft grey blots
+  const craters: Array<[number, number, number, number]> = [
+    [48, 44, 12, 0.18],
+    [82, 58, 9, 0.14],
+    [60, 82, 14, 0.16],
+    [40, 74, 7, 0.12],
+    [90, 86, 6, 0.1],
+    [70, 40, 5, 0.1],
+  ]
+  for (const [cx, cy, r, alpha] of craters) {
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r)
+    g.addColorStop(0, `rgba(150,164,196,${alpha})`)
+    g.addColorStop(1, 'rgba(150,164,196,0)')
+    ctx.fillStyle = g
+    ctx.beginPath()
+    ctx.arc(cx, cy, r, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  moonFaceCache = new CanvasTexture(canvas)
+  moonFaceCache.needsUpdate = true
+  return moonFaceCache
 }
 
 function Fireflies() {
@@ -811,10 +766,12 @@ function Fireflies() {
       </bufferGeometry>
       <pointsMaterial
         color="#fff2a8"
-        size={0.12}
+        map={getSoftSprite()}
+        size={0.16}
         transparent
-        opacity={0.65}
+        opacity={0.72}
         depthWrite={false}
+        sizeAttenuation
         blending={AdditiveBlending}
       />
     </points>
@@ -1189,10 +1146,11 @@ function WalkSnowDrift() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        color="#e8f4ff"
-        size={0.09}
+        color="#f2f8ff"
+        map={getSnowflakeSprite()}
+        size={0.16}
         transparent
-        opacity={0.78}
+        opacity={0.9}
         depthWrite={false}
         sizeAttenuation
       />
@@ -1341,56 +1299,155 @@ function FireflyGlow() {
       </bufferGeometry>
       <pointsMaterial
         color="#ffe878"
-        size={0.58}
+        map={getSoftSprite()}
+        size={0.62}
         transparent
-        opacity={0.12}
+        opacity={0.14}
         depthWrite={false}
+        sizeAttenuation
         blending={AdditiveBlending}
       />
     </points>
   )
 }
 
-function AnimatedHeavyRainFog() {
-  const { scene } = useThree()
+// -- Unified atmosphere stage ------------------------------------------------
+// One render path for every atmosphere. Time drives sky/sun/light; weather
+// modulates it and adds particles. Both axes are always live.
 
-  useFrame(({ clock }) => {
-    if (!scene.fog) return
-    const fog = scene.fog as Fog
-    fog.near = 4 + Math.sin(clock.elapsedTime * 0.38) * 2.2
-    fog.far = 36 + Math.sin(clock.elapsedTime * 0.26 + 1.4) * 7
+const skyVertex = /* glsl */ `
+  varying vec3 vWorldPos;
+  void main() {
+    vec4 world = modelMatrix * vec4(position, 1.0);
+    vWorldPos = world.xyz;
+    gl_Position = projectionMatrix * viewMatrix * world;
+  }
+`
+
+const skyFragment = /* glsl */ `
+  uniform vec3 topColor;
+  uniform vec3 bottomColor;
+  varying vec3 vWorldPos;
+  void main() {
+    float h = normalize(vWorldPos).y;
+    float t = clamp(h * 0.5 + 0.5, 0.0, 1.0);
+    gl_FragColor = vec4(mix(bottomColor, topColor, pow(t, 0.8)), 1.0);
+  }
+`
+
+function AtmosphereStage() {
+  const { scene, camera } = useThree()
+  const sample = useMemo(() => createAtmosphereSample(), [])
+  const skyMat = useMemo(
+    () =>
+      new ShaderMaterial({
+        side: BackSide,
+        depthWrite: false,
+        depthTest: false,
+        uniforms: {
+          topColor: { value: new Color('#7db6e8') },
+          bottomColor: { value: new Color('#fdf3d6') },
+        },
+        vertexShader: skyVertex,
+        fragmentShader: skyFragment,
+      }),
+    [],
+  )
+  const bgColor = useMemo(() => new Color('#eaf2f7'), [])
+  const fog = useMemo(() => new Fog('#dfeef7', 34, 120), [])
+  const ambientRef = useRef<AmbientLight>(null)
+  const hemiRef = useRef<HemisphereLight>(null)
+  const dirRef = useRef<DirectionalLight>(null)
+  const sunRef = useRef<Group>(null)
+  const moonRef = useRef<Group>(null)
+  const starOpacityRef = useRef(0)
+
+  useEffect(() => {
+    const prevBg = scene.background
+    const prevFog = scene.fog
+    scene.background = bgColor
+    scene.fog = fog
+    return () => {
+      scene.background = prevBg
+      scene.fog = prevFog
+    }
+  }, [scene, bgColor, fog])
+
+  useFrame(() => {
+    const state = useSceneStore.getState()
+    sampleAtmosphere(
+      state.timeOfDay,
+      state.weather,
+      state.weatherIntensity,
+      sample,
+    )
+
+    bgColor.copy(sample.background)
+    ;(skyMat.uniforms.topColor.value as Color).copy(sample.skyTop)
+    ;(skyMat.uniforms.bottomColor.value as Color).copy(sample.skyBottom)
+    fog.color.copy(sample.fogColor)
+    fog.near = sample.fogNear
+    fog.far = sample.fogFar
+
+    if (ambientRef.current) {
+      ambientRef.current.intensity = sample.ambientIntensity
+    }
+    if (hemiRef.current) {
+      hemiRef.current.color.copy(sample.hemiSky)
+      hemiRef.current.groundColor.copy(sample.hemiGround)
+      hemiRef.current.intensity = sample.hemiIntensity
+    }
+
+    // Sun arcs east-to-west 06:00-18:00; the moon takes the opposite arc
+    const hour = Math.max(0, Math.min(24, state.timeOfDay))
+    const sunAngle = ((hour - 6) / 12) * Math.PI
+    const sunPos: [number, number, number] = [
+      Math.cos(sunAngle) * 34,
+      Math.sin(sunAngle) * 24 + 1,
+      -30,
+    ]
+    const moonHour = hour >= 18 ? (hour - 18) / 12 : (hour + 6) / 12
+    const moonAngle = moonHour * Math.PI
+    const moonPos: [number, number, number] = [
+      Math.cos(moonAngle) * 34,
+      Math.sin(moonAngle) * 24 + 1,
+      -30,
+    ]
+
+    // Heavy cloud hides the disc entirely
+    const discVisible = sample.cloudiness < 0.55
+    if (sunRef.current) {
+      sunRef.current.position.set(...sunPos)
+      sunRef.current.visible = sample.isDay && discVisible
+      sunRef.current.lookAt(camera.position)
+    }
+    if (moonRef.current) {
+      moonRef.current.position.set(...moonPos)
+      moonRef.current.visible = !sample.isDay && discVisible
+      moonRef.current.lookAt(camera.position)
+    }
+    if (dirRef.current) {
+      const p = sample.isDay ? sunPos : moonPos
+      dirRef.current.position.set(p[0], Math.max(p[1], 3), p[2])
+      dirRef.current.color.copy(sample.sunColor)
+      dirRef.current.intensity = sample.sunIntensity
+    }
+
+    starOpacityRef.current = sample.starOpacity
   })
-
-  return null
-}
-
-export function AtmosphereEffects() {
-  const preset = useSceneStore((state) => state.atmospherePreset)
-  const isMuted = useSceneStore((state) => state.isMuted)
-  const config = atmosphereConfigs[preset]
-
-  useAtmosphereSound(preset, isMuted)
 
   return (
     <>
-      <color attach="background" args={[config.background]} />
-      <SkyGradient config={config} />
-      {config.fog ? (
-        <fog
-          attach="fog"
-          args={[config.fog.color, config.fog.near, config.fog.far]}
-        />
-      ) : null}
-      <ambientLight intensity={config.ambientIntensity} />
-      <hemisphereLight
-        color={config.skyFillColor}
-        groundColor={config.groundFillColor}
-        intensity={config.skyFillIntensity}
-      />
+      <mesh renderOrder={-1000}>
+        <sphereGeometry args={[140, 32, 16]} />
+        <primitive object={skyMat} attach="material" />
+      </mesh>
+      <ambientLight ref={ambientRef} intensity={0.6} />
+      <hemisphereLight ref={hemiRef} intensity={0.7} />
       <directionalLight
-        position={config.directionalPosition}
-        color={config.directionalColor}
-        intensity={config.directionalIntensity}
+        ref={dirRef}
+        position={[10, 20, -20]}
+        intensity={2}
         castShadow
         shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.00018}
@@ -1402,79 +1459,147 @@ export function AtmosphereEffects() {
         shadow-camera-near={0.5}
         shadow-camera-far={90}
       />
-      {preset === 'Clear Morning' ? (
+      <group ref={sunRef}>
+        <mesh renderOrder={100}>
+          <circleGeometry args={[3.6, 48]} />
+          <meshBasicMaterial color="#fff3c8" transparent opacity={0.96} depthWrite={false} depthTest={false} />
+        </mesh>
+        <mesh position={[0, 0, -0.02]} renderOrder={99}>
+          <circleGeometry args={[7, 48]} />
+          <meshBasicMaterial color="#ffdf9a" transparent opacity={0.3} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
+        </mesh>
+        <mesh position={[0, 0, -0.04]} renderOrder={98}>
+          <circleGeometry args={[13, 48]} />
+          <meshBasicMaterial color="#ffcf7a" transparent opacity={0.12} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
+        </mesh>
+      </group>
+      <group ref={moonRef}>
+        <mesh position={[0, 0, -0.06]}>
+          <circleGeometry args={[13, 64]} />
+          <meshBasicMaterial color="#7fa8ff" transparent opacity={0.08} depthWrite={false} blending={AdditiveBlending} />
+        </mesh>
+        <mesh position={[0, 0, -0.03]}>
+          <circleGeometry args={[6.5, 64]} />
+          <meshBasicMaterial color="#aecbff" transparent opacity={0.16} depthWrite={false} blending={AdditiveBlending} />
+        </mesh>
+        <mesh renderOrder={100}>
+          <circleGeometry args={[3.6, 64]} />
+          <meshBasicMaterial map={getMoonFace()} color="#ffffff" transparent opacity={0.97} depthWrite={false} depthTest={false} />
+        </mesh>
+      </group>
+      <StarField masterOpacity={() => starOpacityRef.current} />
+    </>
+  )
+}
+
+/** Particles and local effects for the current weather, scaled by intensity. */
+function WeatherLayer() {
+  const weather = useSceneStore((state) => state.weather)
+  const intensity = useSceneStore((state) => state.weatherIntensity)
+  const timeOfDay = useSceneStore((state) => state.timeOfDay)
+  const isMuted = useSceneStore((state) => state.isMuted)
+
+  const k = Math.max(0.15, Math.min(1, intensity))
+  const isDay = timeOfDay >= 6 && timeOfDay <= 18
+  const scaled = (base: number) => Math.max(12, Math.round(base * k))
+
+  if (weather === 'rain' || weather === 'storm') {
+    const isHeavy = weather === 'storm'
+    return (
+      <>
+        <WeatherParticles
+          kind="rain"
+          density={scaled(isHeavy ? 820 : 340)}
+          fallSpeed={isHeavy ? 0.125 : 0.043}
+          windDrift={isHeavy ? 0.05 : 0.012}
+          area={isHeavy ? 78 : 68}
+          height={isHeavy ? 20 : 18}
+          size={isHeavy ? 0.095 : undefined}
+        />
+        <LightningStorm
+          preset={isHeavy ? 'Heavy Rain' : 'Rainy Day'}
+          isMuted={isMuted}
+        />
+        <GroundMist baseOpacity={(isHeavy ? 0.18 : 0.11) * k} />
+        <RainSplashes density={scaled(isHeavy ? 200 : 90)} />
+        <WalkRainStreaks isHeavy={isHeavy} />
+      </>
+    )
+  }
+
+  if (weather === 'snow') {
+    return (
+      <>
+        <WeatherParticles
+          kind="snow"
+          density={scaled(340)}
+          fallSpeed={0.011}
+          area={78}
+          height={20}
+          size={0.12}
+        />
+        <WeatherParticles
+          kind="snow"
+          density={scaled(260)}
+          fallSpeed={0.02}
+          area={64}
+          height={16}
+          size={0.34}
+        />
+        <GroundMist baseOpacity={0.13 * k} />
+        <WalkSnowDrift />
+      </>
+    )
+  }
+
+  if (weather === 'overcast') {
+    return <GroundMist baseOpacity={0.1 * k} />
+  }
+
+  // Clear: sunlit motes and drifting leaves by day, fireflies and meteors at night
+  return (
+    <>
+      {isDay ? (
         <>
-          <MorningSun />
-          <Sunbeams preset="Clear Morning" />
-          <SunAirParticles preset="Clear Morning" />
-          <FallingLeaves color="#b4d46a" count={60} />
-        </>
-      ) : null}
-      {preset === 'Sunset' ? (
-        <>
-          <SunsetSun />
-          <Sunbeams preset="Sunset" />
-          <SunsetCrescentMoon />
-          <SunAirParticles preset="Sunset" />
-          <FallingLeaves />
-        </>
-      ) : null}
-      {preset === 'Rainy Day' ? (
-        <>
-          <WeatherParticles
-            kind="rain"
-            density={340}
-            fallSpeed={0.043}
-            windDrift={0.012}
-            area={68}
-            height={18}
+          <SunAirParticles preset={timeOfDay >= 16 ? 'Sunset' : 'Clear Morning'} />
+          <FallingLeaves
+            color={timeOfDay >= 16 ? '#d9793d' : '#b4d46a'}
+            count={60}
           />
-          <LightningStorm preset="Rainy Day" isMuted={isMuted} />
-          <GroundMist baseOpacity={0.11} />
-          <RainSplashes density={90} />
-          <WalkRainStreaks isHeavy={false} />
         </>
-      ) : null}
-      {preset === 'Heavy Rain' ? (
+      ) : (
         <>
-          <WeatherParticles
-            kind="rain"
-            density={820}
-            fallSpeed={0.125}
-            windDrift={0.05}
-            area={78}
-            height={20}
-            size={0.095}
-          />
-          <LightningStorm preset="Heavy Rain" isMuted={isMuted} />
-          <GroundMist baseOpacity={0.18} />
-          <RainSplashes density={200} />
-          <AnimatedHeavyRainFog />
-          <WalkRainStreaks isHeavy={true} />
-        </>
-      ) : null}
-      {preset === 'Snowy Day' ? (
-        <>
-          <WeatherParticles
-            kind="snow"
-            density={430}
-            fallSpeed={0.015}
-            area={70}
-            height={17}
-            size={0.19}
-          />
-          <GroundMist baseOpacity={0.13} />
-          <WalkSnowDrift />
-        </>
-      ) : null}
-      {preset === 'Summer Night' ? (
-        <>
-          <StarField />
-          <Moon />
+          <ShootingStars />
           <Fireflies />
           <FireflyGlow />
         </>
-      ) : null}
+      )}
+    </>
+  )
+}
+
+/** Advances the one shared wind that foliage and precipitation both read. */
+function WindDriver() {
+  useFrame(({ clock }) => {
+    const state = useSceneStore.getState()
+    updateWind(clock.elapsedTime, state.weather, state.weatherIntensity)
+  })
+  return null
+}
+
+export function AtmosphereEffects() {
+  const isMuted = useSceneStore((state) => state.isMuted)
+  const weather = useSceneStore((state) => state.weather)
+  const timeOfDay = useSceneStore((state) => state.timeOfDay)
+  const isDay = timeOfDay >= 6 && timeOfDay <= 18
+
+  useAtmosphereSound(representativePreset(weather, isDay), isMuted)
+
+  return (
+    <>
+      <WindDriver />
+      <AtmosphereStage />
+      <WeatherLayer />
     </>
   )
 }

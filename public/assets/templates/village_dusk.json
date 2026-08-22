@@ -1,0 +1,1207 @@
+{
+  "version": 1,
+  "savedAt": "2026-08-11T10:00:00.000Z",
+  "terrainMode": "Village Road",
+  "atmospherePreset": "Sunset",
+  "isGridVisible": false,
+  "cameraMode": "build",
+  "sceneObjects": [
+    {
+      "id": "village_dusk_001_cabin_05",
+      "assetId": "cabin_05",
+      "position": [
+        -14,
+        0,
+        4
+      ],
+      "rotation": [
+        0,
+        1.9,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "village_dusk_002_cabin_01",
+      "assetId": "cabin_01",
+      "position": [
+        -15,
+        0,
+        -6
+      ],
+      "rotation": [
+        0,
+        0.4,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "village_dusk_003_cabin_03",
+      "assetId": "cabin_03",
+      "position": [
+        -8,
+        0,
+        -11
+      ],
+      "rotation": [
+        0,
+        -0.9,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "village_dusk_004_cabin_02",
+      "assetId": "cabin_02",
+      "position": [
+        -6,
+        0,
+        7
+      ],
+      "rotation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "village_dusk_005_cabin_04",
+      "assetId": "cabin_04",
+      "position": [
+        -11,
+        0,
+        13
+      ],
+      "rotation": [
+        0,
+        0.7,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "village_dusk_006_cabin_01",
+      "assetId": "cabin_01",
+      "position": [
+        2,
+        0,
+        -9
+      ],
+      "rotation": [
+        0,
+        -0.3,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "village_dusk_007_barn_01",
+      "assetId": "barn_01",
+      "position": [
+        -19,
+        0,
+        -1
+      ],
+      "rotation": [
+        0,
+        0.6,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "village_dusk_008_mill_01",
+      "assetId": "mill_01",
+      "position": [
+        10.5,
+        0,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "village_dusk_009_bridge_01",
+      "assetId": "bridge_01",
+      "position": [
+        16,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "village_dusk_010_lighthouse_01",
+      "assetId": "lighthouse_01",
+      "position": [
+        21,
+        0,
+        8
+      ],
+      "rotation": [
+        0,
+        -0.4,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "village_dusk_011_woodpile_01",
+      "assetId": "woodpile_01",
+      "position": [
+        3,
+        0,
+        7
+      ],
+      "rotation": [
+        0,
+        0.5,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "village_dusk_012_rockpath_square_wide",
+      "assetId": "rockpath_square_wide",
+      "position": [
+        -16,
+        0,
+        -8
+      ],
+      "rotation": [
+        0,
+        -0.156,
+        0
+      ],
+      "scale": [
+        1.05,
+        1,
+        1.05
+      ]
+    },
+    {
+      "id": "village_dusk_013_rockpath_square_wide",
+      "assetId": "rockpath_square_wide",
+      "position": [
+        -12,
+        0,
+        -4
+      ],
+      "rotation": [
+        0,
+        0.397,
+        0
+      ],
+      "scale": [
+        1.03,
+        1,
+        1.03
+      ]
+    },
+    {
+      "id": "village_dusk_014_rockpath_round_thin",
+      "assetId": "rockpath_round_thin",
+      "position": [
+        -8,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0.138,
+        0
+      ],
+      "scale": [
+        1.01,
+        1,
+        1.01
+      ]
+    },
+    {
+      "id": "village_dusk_015_rockpath_round_wide",
+      "assetId": "rockpath_round_wide",
+      "position": [
+        -4,
+        0,
+        3
+      ],
+      "rotation": [
+        0,
+        0.307,
+        0
+      ],
+      "scale": [
+        0.99,
+        1,
+        0.99
+      ]
+    },
+    {
+      "id": "village_dusk_016_rockpath_round_thin",
+      "assetId": "rockpath_round_thin",
+      "position": [
+        0,
+        0,
+        5
+      ],
+      "rotation": [
+        0,
+        0.262,
+        0
+      ],
+      "scale": [
+        0.97,
+        1,
+        0.97
+      ]
+    },
+    {
+      "id": "village_dusk_017_rockpath_round_thin",
+      "assetId": "rockpath_round_thin",
+      "position": [
+        4,
+        0,
+        4
+      ],
+      "rotation": [
+        0,
+        -0.13,
+        0
+      ],
+      "scale": [
+        0.95,
+        1,
+        0.95
+      ]
+    },
+    {
+      "id": "village_dusk_018_rockpath_round_thin",
+      "assetId": "rockpath_round_thin",
+      "position": [
+        8,
+        0,
+        2
+      ],
+      "rotation": [
+        0,
+        -0.246,
+        0
+      ],
+      "scale": [
+        0.93,
+        1,
+        0.93
+      ]
+    },
+    {
+      "id": "village_dusk_019_commontree_2",
+      "assetId": "commontree_2",
+      "position": [
+        -5.76,
+        0,
+        -10.65
+      ],
+      "rotation": [
+        0,
+        5.475,
+        0
+      ],
+      "scale": [
+        1.125,
+        1.125,
+        1.125
+      ]
+    },
+    {
+      "id": "village_dusk_020_commontree_2",
+      "assetId": "commontree_2",
+      "position": [
+        1.63,
+        0,
+        -15.55
+      ],
+      "rotation": [
+        0,
+        2.3,
+        0
+      ],
+      "scale": [
+        1.282,
+        1.282,
+        1.282
+      ]
+    },
+    {
+      "id": "village_dusk_021_commontree_3",
+      "assetId": "commontree_3",
+      "position": [
+        -14.18,
+        0,
+        -5.27
+      ],
+      "rotation": [
+        0,
+        2.634,
+        0
+      ],
+      "scale": [
+        1.551,
+        1.551,
+        1.551
+      ]
+    },
+    {
+      "id": "village_dusk_022_pine_1",
+      "assetId": "pine_1",
+      "position": [
+        -10,
+        0,
+        12.79
+      ],
+      "rotation": [
+        0,
+        1.997,
+        0
+      ],
+      "scale": [
+        1.104,
+        1.104,
+        1.104
+      ]
+    },
+    {
+      "id": "village_dusk_023_pine_3",
+      "assetId": "pine_3",
+      "position": [
+        -11.44,
+        0,
+        0.18
+      ],
+      "rotation": [
+        0,
+        4.734,
+        0
+      ],
+      "scale": [
+        1.584,
+        1.584,
+        1.584
+      ]
+    },
+    {
+      "id": "village_dusk_024_commontree_2",
+      "assetId": "commontree_2",
+      "position": [
+        -15.69,
+        0,
+        -2.56
+      ],
+      "rotation": [
+        0,
+        1.934,
+        0
+      ],
+      "scale": [
+        1.524,
+        1.524,
+        1.524
+      ]
+    },
+    {
+      "id": "village_dusk_025_pine_1",
+      "assetId": "pine_1",
+      "position": [
+        -7,
+        0,
+        13.86
+      ],
+      "rotation": [
+        0,
+        3.702,
+        0
+      ],
+      "scale": [
+        1.42,
+        1.42,
+        1.42
+      ]
+    },
+    {
+      "id": "village_dusk_026_commontree_2",
+      "assetId": "commontree_2",
+      "position": [
+        -19.42,
+        0,
+        7.64
+      ],
+      "rotation": [
+        0,
+        1.597,
+        0
+      ],
+      "scale": [
+        1.24,
+        1.24,
+        1.24
+      ]
+    },
+    {
+      "id": "village_dusk_027_commontree_3",
+      "assetId": "commontree_3",
+      "position": [
+        -11.3,
+        0,
+        -3.98
+      ],
+      "rotation": [
+        0,
+        2.705,
+        0
+      ],
+      "scale": [
+        1.251,
+        1.251,
+        1.251
+      ]
+    },
+    {
+      "id": "village_dusk_028_commontree_2",
+      "assetId": "commontree_2",
+      "position": [
+        -21.36,
+        0,
+        -9.93
+      ],
+      "rotation": [
+        0,
+        0.035,
+        0
+      ],
+      "scale": [
+        1.08,
+        1.08,
+        1.08
+      ]
+    },
+    {
+      "id": "village_dusk_029_pine_4",
+      "assetId": "pine_4",
+      "position": [
+        20.22,
+        0,
+        -7.9
+      ],
+      "rotation": [
+        0,
+        5.047,
+        0
+      ],
+      "scale": [
+        1.167,
+        1.167,
+        1.167
+      ]
+    },
+    {
+      "id": "village_dusk_030_pine_5",
+      "assetId": "pine_5",
+      "position": [
+        20.7,
+        0,
+        1.38
+      ],
+      "rotation": [
+        0,
+        4.394,
+        0
+      ],
+      "scale": [
+        1.339,
+        1.339,
+        1.339
+      ]
+    },
+    {
+      "id": "village_dusk_031_pine_5",
+      "assetId": "pine_5",
+      "position": [
+        19.55,
+        0,
+        1.95
+      ],
+      "rotation": [
+        0,
+        4.17,
+        0
+      ],
+      "scale": [
+        1.179,
+        1.179,
+        1.179
+      ]
+    },
+    {
+      "id": "village_dusk_032_pine_4",
+      "assetId": "pine_4",
+      "position": [
+        20.23,
+        0,
+        -0.43
+      ],
+      "rotation": [
+        0,
+        3.262,
+        0
+      ],
+      "scale": [
+        1.382,
+        1.382,
+        1.382
+      ]
+    },
+    {
+      "id": "village_dusk_033_pine_5",
+      "assetId": "pine_5",
+      "position": [
+        19.54,
+        0,
+        5.03
+      ],
+      "rotation": [
+        0,
+        5.056,
+        0
+      ],
+      "scale": [
+        1.26,
+        1.26,
+        1.26
+      ]
+    },
+    {
+      "id": "village_dusk_034_bush_common_flowers",
+      "assetId": "bush_common_flowers",
+      "position": [
+        -0.12,
+        0,
+        -7.82
+      ],
+      "rotation": [
+        0,
+        3.097,
+        0
+      ],
+      "scale": [
+        1.217,
+        1.217,
+        1.217
+      ]
+    },
+    {
+      "id": "village_dusk_035_bush_common_flowers",
+      "assetId": "bush_common_flowers",
+      "position": [
+        -14.48,
+        0,
+        2.48
+      ],
+      "rotation": [
+        0,
+        3.595,
+        0
+      ],
+      "scale": [
+        1.169,
+        1.169,
+        1.169
+      ]
+    },
+    {
+      "id": "village_dusk_036_bush_common",
+      "assetId": "bush_common",
+      "position": [
+        0.1,
+        0,
+        -14.9
+      ],
+      "rotation": [
+        0,
+        1.528,
+        0
+      ],
+      "scale": [
+        1.274,
+        1.274,
+        1.274
+      ]
+    },
+    {
+      "id": "village_dusk_037_bush_common_flowers",
+      "assetId": "bush_common_flowers",
+      "position": [
+        -6.86,
+        0,
+        10.96
+      ],
+      "rotation": [
+        0,
+        1.475,
+        0
+      ],
+      "scale": [
+        1.024,
+        1.024,
+        1.024
+      ]
+    },
+    {
+      "id": "village_dusk_038_bush_common",
+      "assetId": "bush_common",
+      "position": [
+        3.33,
+        0,
+        -3.28
+      ],
+      "rotation": [
+        0,
+        2.026,
+        0
+      ],
+      "scale": [
+        1.072,
+        1.072,
+        1.072
+      ]
+    },
+    {
+      "id": "village_dusk_039_bush_common_flowers",
+      "assetId": "bush_common_flowers",
+      "position": [
+        0.54,
+        0,
+        11.75
+      ],
+      "rotation": [
+        0,
+        3.717,
+        0
+      ],
+      "scale": [
+        1.218,
+        1.218,
+        1.218
+      ]
+    },
+    {
+      "id": "village_dusk_040_bush_common",
+      "assetId": "bush_common",
+      "position": [
+        4.94,
+        0,
+        -6.94
+      ],
+      "rotation": [
+        0,
+        3.32,
+        0
+      ],
+      "scale": [
+        0.902,
+        0.902,
+        0.902
+      ]
+    },
+    {
+      "id": "village_dusk_041_grass_wispy_tall",
+      "assetId": "grass_wispy_tall",
+      "position": [
+        -0.59,
+        0,
+        6.68
+      ],
+      "rotation": [
+        0,
+        4.12,
+        0
+      ],
+      "scale": [
+        1.169,
+        1.169,
+        1.169
+      ]
+    },
+    {
+      "id": "village_dusk_042_grass_wispy_tall",
+      "assetId": "grass_wispy_tall",
+      "position": [
+        7.55,
+        0,
+        6.56
+      ],
+      "rotation": [
+        0,
+        1.338,
+        0
+      ],
+      "scale": [
+        0.952,
+        0.952,
+        0.952
+      ]
+    },
+    {
+      "id": "village_dusk_043_fern_1",
+      "assetId": "fern_1",
+      "position": [
+        0.29,
+        0,
+        -2.07
+      ],
+      "rotation": [
+        0,
+        2.234,
+        0
+      ],
+      "scale": [
+        1.028,
+        1.028,
+        1.028
+      ]
+    },
+    {
+      "id": "village_dusk_044_grass_common_tall",
+      "assetId": "grass_common_tall",
+      "position": [
+        -8.71,
+        0,
+        -9.16
+      ],
+      "rotation": [
+        0,
+        3.413,
+        0
+      ],
+      "scale": [
+        1.032,
+        1.032,
+        1.032
+      ]
+    },
+    {
+      "id": "village_dusk_045_fern_1",
+      "assetId": "fern_1",
+      "position": [
+        9.09,
+        0,
+        7.22
+      ],
+      "rotation": [
+        0,
+        5.027,
+        0
+      ],
+      "scale": [
+        1.107,
+        1.107,
+        1.107
+      ]
+    },
+    {
+      "id": "village_dusk_046_grass_common_tall",
+      "assetId": "grass_common_tall",
+      "position": [
+        -10.41,
+        0,
+        -0.8
+      ],
+      "rotation": [
+        0,
+        5.574,
+        0
+      ],
+      "scale": [
+        1.091,
+        1.091,
+        1.091
+      ]
+    },
+    {
+      "id": "village_dusk_047_grass_wispy_tall",
+      "assetId": "grass_wispy_tall",
+      "position": [
+        -9.65,
+        0,
+        -17.71
+      ],
+      "rotation": [
+        0,
+        0.608,
+        0
+      ],
+      "scale": [
+        1.143,
+        1.143,
+        1.143
+      ]
+    },
+    {
+      "id": "village_dusk_048_fern_1",
+      "assetId": "fern_1",
+      "position": [
+        -16.07,
+        0,
+        -13.62
+      ],
+      "rotation": [
+        0,
+        4.464,
+        0
+      ],
+      "scale": [
+        0.949,
+        0.949,
+        0.949
+      ]
+    },
+    {
+      "id": "village_dusk_049_flower_4_group",
+      "assetId": "flower_4_group",
+      "position": [
+        0.86,
+        0,
+        -4.08
+      ],
+      "rotation": [
+        0,
+        5.811,
+        0
+      ],
+      "scale": [
+        1.087,
+        1.087,
+        1.087
+      ]
+    },
+    {
+      "id": "village_dusk_050_flower_4_group",
+      "assetId": "flower_4_group",
+      "position": [
+        -8.48,
+        0,
+        -11.33
+      ],
+      "rotation": [
+        0,
+        6.179,
+        0
+      ],
+      "scale": [
+        1.354,
+        1.354,
+        1.354
+      ]
+    },
+    {
+      "id": "village_dusk_051_petal_4",
+      "assetId": "petal_4",
+      "position": [
+        -10.6,
+        0,
+        -7.01
+      ],
+      "rotation": [
+        0,
+        1.593,
+        0
+      ],
+      "scale": [
+        1.233,
+        1.233,
+        1.233
+      ]
+    },
+    {
+      "id": "village_dusk_052_flower_4_group",
+      "assetId": "flower_4_group",
+      "position": [
+        1.57,
+        0,
+        -5.46
+      ],
+      "rotation": [
+        0,
+        3.295,
+        0
+      ],
+      "scale": [
+        1.328,
+        1.328,
+        1.328
+      ]
+    },
+    {
+      "id": "village_dusk_053_petal_2",
+      "assetId": "petal_2",
+      "position": [
+        1.46,
+        0,
+        0.72
+      ],
+      "rotation": [
+        0,
+        1.707,
+        0
+      ],
+      "scale": [
+        1.278,
+        1.278,
+        1.278
+      ]
+    },
+    {
+      "id": "village_dusk_054_flower_3_group",
+      "assetId": "flower_3_group",
+      "position": [
+        -12.73,
+        0,
+        7.54
+      ],
+      "rotation": [
+        0,
+        3.102,
+        0
+      ],
+      "scale": [
+        1.012,
+        1.012,
+        1.012
+      ]
+    },
+    {
+      "id": "village_dusk_055_rock_medium_1",
+      "assetId": "rock_medium_1",
+      "position": [
+        -5.04,
+        0,
+        -4.31
+      ],
+      "rotation": [
+        0,
+        3.625,
+        0
+      ],
+      "scale": [
+        0.879,
+        0.879,
+        0.879
+      ]
+    },
+    {
+      "id": "village_dusk_056_rock_medium_1",
+      "assetId": "rock_medium_1",
+      "position": [
+        -8.32,
+        0,
+        -2.12
+      ],
+      "rotation": [
+        0,
+        1.966,
+        0
+      ],
+      "scale": [
+        0.773,
+        0.773,
+        0.773
+      ]
+    },
+    {
+      "id": "village_dusk_057_pebble_round_3",
+      "assetId": "pebble_round_3",
+      "position": [
+        8.12,
+        0,
+        13.8
+      ],
+      "rotation": [
+        0,
+        5.563,
+        0
+      ],
+      "scale": [
+        0.846,
+        0.846,
+        0.846
+      ]
+    },
+    {
+      "id": "village_dusk_058_pebble_round_3",
+      "assetId": "pebble_round_3",
+      "position": [
+        -10.44,
+        0,
+        -14.64
+      ],
+      "rotation": [
+        0,
+        5.89,
+        0
+      ],
+      "scale": [
+        0.761,
+        0.761,
+        0.761
+      ]
+    },
+    {
+      "id": "village_dusk_059_pebble_round_3",
+      "assetId": "pebble_round_3",
+      "position": [
+        9.32,
+        0,
+        -14.97
+      ],
+      "rotation": [
+        0,
+        1.078,
+        0
+      ],
+      "scale": [
+        0.766,
+        0.766,
+        0.766
+      ]
+    },
+    {
+      "id": "village_dusk_060_rock_medium_1",
+      "assetId": "rock_medium_1",
+      "position": [
+        7.15,
+        0,
+        -6.57
+      ],
+      "rotation": [
+        0,
+        6.226,
+        0
+      ],
+      "scale": [
+        0.982,
+        0.982,
+        0.982
+      ]
+    },
+    {
+      "id": "village_dusk_061_cow",
+      "assetId": "cow",
+      "position": [
+        -3,
+        0,
+        10
+      ],
+      "rotation": [
+        0,
+        1.2,
+        0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    {
+      "id": "village_dusk_062_deer_01",
+      "assetId": "deer_01",
+      "position": [
+        6,
+        0,
+        -4
+      ],
+      "rotation": [
+        0,
+        -1.5,
+        0
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ]
+    },
+    {
+      "id": "village_dusk_063_stag",
+      "assetId": "stag",
+      "position": [
+        -17,
+        0,
+        9
+      ],
+      "rotation": [
+        0,
+        0.8,
+        0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    }
+  ]
+}

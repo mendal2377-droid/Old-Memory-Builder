@@ -1,4 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
+import {
+  weatherKinds,
+  weatherLabels,
+  type WeatherKind,
+} from '../../data/atmosphere'
 import { useSceneStore } from '../../store/sceneStore'
 import type { AtmospherePreset, TerrainMode } from '../../types/scene'
 
@@ -19,6 +24,12 @@ const atmospherePresets: AtmospherePreset[] = [
   'Summer Night',
 ]
 
+function formatClock(hour: number) {
+  const h = Math.floor(hour) % 24
+  const m = Math.floor((hour - Math.floor(hour)) * 60)
+  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`
+}
+
 export function Toolbar() {
   const [message, setMessage] = useState('')
   const [scatterCount, setScatterCount] = useState(15)
@@ -33,6 +44,7 @@ export function Toolbar() {
   const atmospherePreset = useSceneStore((state) => state.atmospherePreset)
   const isMuted = useSceneStore((state) => state.isMuted)
   const isGridVisible = useSceneStore((state) => state.isGridVisible)
+  const areAnimalsWalking = useSceneStore((state) => state.areAnimalsWalking)
   const selectedObjectId = useSceneStore((state) => state.selectedObjectId)
   const screenshotMessage = useSceneStore((state) => state.screenshotMessage)
   const modelLoadWarning = useSceneStore((state) => state.modelLoadWarning)
@@ -50,6 +62,12 @@ export function Toolbar() {
   const undo = useSceneStore((state) => state.undo)
   const undoStack = useSceneStore((state) => state.undoStack)
   const beginBriefing = useSceneStore((state) => state.beginBriefing)
+  const timeOfDay = useSceneStore((state) => state.timeOfDay)
+  const setTimeOfDay = useSceneStore((state) => state.setTimeOfDay)
+  const weather = useSceneStore((state) => state.weather)
+  const weatherIntensity = useSceneStore((state) => state.weatherIntensity)
+  const setWeather = useSceneStore((state) => state.setWeather)
+  const setWeatherIntensity = useSceneStore((state) => state.setWeatherIntensity)
   const saveScene = useSceneStore((state) => state.saveScene)
   const loadScene = useSceneStore((state) => state.loadScene)
   const autoSaveScene = useSceneStore((state) => state.autoSaveScene)
@@ -63,6 +81,9 @@ export function Toolbar() {
   )
   const toggleMute = useSceneStore((state) => state.toggleMute)
   const toggleGrid = useSceneStore((state) => state.toggleGrid)
+  const toggleAnimalsWalking = useSceneStore(
+    (state) => state.toggleAnimalsWalking,
+  )
   const setCameraMode = useSceneStore((state) => state.setCameraMode)
   const setScreenshotMessage = useSceneStore(
     (state) => state.setScreenshotMessage,
@@ -164,138 +185,162 @@ export function Toolbar() {
   return (
     <header className="toolbar">
       <div className="toolbar-title">
-        <img
-          className="toolbar-brand-icon"
-          src="/old-memory-builder-icon.png"
-          alt=""
-          aria-hidden="true"
-        />
-        <div>
-          <h1>Old Memory Builder</h1>
-          <p>{status}</p>
-        </div>
+        <h1>Old Memory Builder</h1>
+        <p>{status}</p>
       </div>
 
-      <nav className="toolbar-center" aria-label="Build and experience controls">
-        <div className="experience-actions" aria-label="Key experiences">
-          <span className="experience-label">
-            <b>3</b>
-            <span>Explore your story</span>
-          </span>
-          <button
-            type="button"
-            className={`experience-button experience-button-walk${isWalkActive ? ' is-active' : ''}`}
-            aria-pressed={isWalkActive}
-            onClick={() => {
-              setCameraMode(isWalkActive ? 'build' : 'walk')
-              setMessage(
-                isWalkActive
-                  ? 'Returning to build mode.'
-                  : 'Entering Memory Walk.',
-              )
+      <nav className="toolbar-center" aria-label="World controls">
+        <label className="toolbar-select">
+          <span>Terrain</span>
+          <select
+            value={terrainMode}
+            onChange={(event) => {
+              setScreenshotMessage('')
+              setTerrainMode(event.target.value as TerrainMode)
+              setMessage(`${event.target.value} selected.`)
             }}
           >
-            <strong>{isWalkActive ? 'Exit Walk' : 'Memory Walk'}</strong>
-            <span>{isWalkActive ? 'Return to build' : 'Walk through your scene'}</span>
-          </button>
-          <button
-            type="button"
-            className="experience-button experience-button-storm"
-            disabled={isWalkActive || !hasLighthouse}
-            title={
-              hasLighthouse
-                ? 'Race back to the lighthouse before the storm hits.'
-                : 'Place a Lighthouse in the scene to play.'
-            }
-            onClick={() => {
-              beginBriefing()
-              setMessage('Storm Game briefing.')
+            {terrainModes.map((mode) => (
+              <option key={mode} value={mode}>
+                {mode}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="toolbar-select">
+          <span>Preset</span>
+          <select
+            value={atmospherePreset}
+            title="Jump to a named time-and-weather combination."
+            onChange={(event) => {
+              setScreenshotMessage('')
+              setAtmospherePreset(event.target.value as AtmospherePreset)
+              setMessage(`${event.target.value} selected.`)
             }}
           >
-            <strong>Storm Game</strong>
-            <span>{hasLighthouse ? 'Race the weather' : 'Place a lighthouse first'}</span>
-          </button>
-        </div>
+            {atmospherePresets.map((preset) => (
+              <option key={preset} value={preset}>
+                {preset}
+              </option>
+            ))}
+          </select>
+        </label>
 
-        <details className="world-menu">
-          <summary title="Step 1: choose the terrain and weather for your scene.">
-            <span>1. Choose world</span>
-            <small>{terrainMode} · {atmospherePreset}</small>
-          </summary>
-          <div className="world-menu-content">
-            <div className="world-menu-intro">
-              <strong>Set the place and mood</strong>
-              <span>Choose terrain and weather before adding memories.</span>
-            </div>
-            <label className="toolbar-select">
-              <span>Terrain</span>
-              <select
-                value={terrainMode}
-                onChange={(event) => {
-                  setScreenshotMessage('')
-                  setTerrainMode(event.target.value as TerrainMode)
-                  setMessage(`${event.target.value} selected.`)
-                }}
-              >
-                {terrainModes.map((mode) => (
-                  <option key={mode} value={mode}>
-                    {mode}
-                  </option>
-                ))}
-              </select>
-            </label>
+        <label className="toolbar-time">
+          <span>Time {formatClock(timeOfDay)}</span>
+          <input
+            type="range"
+            min="0"
+            max="24"
+            step="0.1"
+            value={timeOfDay}
+            onChange={(event) => setTimeOfDay(Number(event.target.value))}
+          />
+        </label>
 
-            <label className="toolbar-select">
-              <span>Weather</span>
-              <select
-                value={atmospherePreset}
-                onChange={(event) => {
-                  setScreenshotMessage('')
-                  setAtmospherePreset(event.target.value as AtmospherePreset)
-                  setMessage(`${event.target.value} atmosphere selected.`)
-                }}
-              >
-                {atmospherePresets.map((preset) => (
-                  <option key={preset} value={preset}>
-                    {preset}
-                  </option>
-                ))}
-              </select>
-            </label>
+        <label className="toolbar-select">
+          <span>Weather</span>
+          <select
+            value={weather}
+            onChange={(event) => {
+              setWeather(event.target.value as WeatherKind)
+              setMessage(`${weatherLabels[event.target.value as WeatherKind]} weather.`)
+            }}
+          >
+            {weatherKinds.map((kind) => (
+              <option key={kind} value={kind}>
+                {weatherLabels[kind]}
+              </option>
+            ))}
+          </select>
+        </label>
 
-            <button
-              type="button"
-              onClick={() => {
-                toggleMute()
-                setMessage(isMuted ? 'Atmosphere sound on.' : 'Atmosphere muted.')
-              }}
-            >
-              {isMuted ? 'Unmute sound' : 'Mute sound'}
-            </button>
-          </div>
-        </details>
+        {weather !== 'clear' ? (
+          <label className="toolbar-time">
+            <span>Intensity {Math.round(weatherIntensity * 100)}%</span>
+            <input
+              type="range"
+              min="0.1"
+              max="1"
+              step="0.05"
+              value={weatherIntensity}
+              onChange={(event) =>
+                setWeatherIntensity(Number(event.target.value))
+              }
+            />
+          </label>
+        ) : null}
+
+        <button
+          type="button"
+          onClick={() => {
+            toggleMute()
+            setMessage(isMuted ? 'Atmosphere sound on.' : 'Atmosphere muted.')
+          }}
+        >
+          {isMuted ? 'Unmute' : 'Mute'}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            toggleAnimalsWalking()
+            setMessage(
+              areAnimalsWalking
+                ? 'Animals stopped.'
+                : 'Animals wandering calmly.',
+            )
+          }}
+        >
+          {areAnimalsWalking ? 'Stop Animals' : 'Animals Walk'}
+        </button>
+        <button
+          type="button"
+          className={isWalkActive ? undefined : 'btn-primary'}
+          onClick={() => {
+            setCameraMode(isWalkActive ? 'build' : 'walk')
+            setMessage(
+              isWalkActive
+                ? 'Returning to build mode.'
+                : 'Entering Memory Walk.',
+            )
+          }}
+        >
+          {isWalkActive ? 'Exit Walk' : 'Memory Walk'}
+        </button>
+        <button
+          type="button"
+          disabled={isWalkActive || !hasLighthouse}
+          title={
+            hasLighthouse
+              ? 'Race back to the lighthouse before the storm hits.'
+              : 'Place a Lighthouse in the scene to play.'
+          }
+          onClick={() => {
+            beginBriefing()
+            setMessage('Storm Game briefing.')
+          }}
+        >
+          Storm Game
+        </button>
       </nav>
 
       <nav className="toolbar-right" aria-label="Scene actions">
+        <button
+          type="button"
+          title="Download a PNG image of the current 3D canvas."
+          onClick={() => {
+            setMessage('Preparing photo...')
+            requestScreenshot()
+          }}
+        >
+          Take Photo
+        </button>
         <details className="scene-menu">
-          <summary
-            aria-label="More options"
-            title="Less frequently used scene and build actions."
-          >
+          <summary title="Scene save, load, and other options.">
             Scene ▾
           </summary>
           <div className="scene-menu-content">
-            <button
-              type="button"
-              className="scene-menu-photo"
-              title="Download a PNG image of the current 3D canvas."
-              onClick={() => {
-                setMessage('Preparing photo...')
-                requestScreenshot()
-              }}
-            >
-              Take Photo
-            </button>
             <button
               type="button"
               onClick={() => {
@@ -361,9 +406,7 @@ export function Toolbar() {
         />
       </nav>
 
-      <details className="toolbar-panels toolbar-tools-menu">
-        <summary>Build tools</summary>
-        <div className="toolbar-tools-content">
+      <div className="toolbar-panels">
         <details className="toolbar-panel">
           <summary>Edit Selected</summary>
           <div className="toolbar-panel-content">
@@ -511,8 +554,7 @@ export function Toolbar() {
             </button>
           </div>
         </details>
-        </div>
-      </details>
+      </div>
     </header>
   )
 }

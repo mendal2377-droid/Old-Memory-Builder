@@ -12,6 +12,7 @@ import {
 import {
   AdditiveBlending,
   AnimationMixer,
+  Box3,
   DoubleSide,
   ExtrudeGeometry,
   Shape,
@@ -23,9 +24,10 @@ import {
 } from 'three'
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import { assets } from '../../data/assets'
+import { applyWindSway, swayCategories } from '../../data/wind'
 import { useSceneStore } from '../../store/sceneStore'
 import type { AssetDefinition, SceneObject } from '../../types/scene'
-import { useWaterMaterial } from './useWaterMaterial'
+import { useWaterMaterial } from './StylizedWater'
 
 interface MemoryObjectProps {
   object: SceneObject
@@ -114,12 +116,26 @@ function GltfModel({
   const model = useMemo<Object3D>(() => {
     const clonedScene = clone(gltf.scene)
 
+    const shouldSway = swayCategories.has(asset.category) && opacity >= 1
+    let swayHeight = 1
+    if (shouldSway) {
+      const bounds = new Box3().setFromObject(clonedScene)
+      swayHeight = Math.max(bounds.max.y, 0.2)
+    }
+
     clonedScene.traverse((child) => {
       const mesh = child as Mesh
 
       if (mesh.isMesh) {
         mesh.castShadow = asset.category !== 'Flowers' && asset.category !== 'Paths' && asset.category !== 'Plants'
         mesh.receiveShadow = true
+
+        if (shouldSway) {
+          const materials = Array.isArray(mesh.material)
+            ? mesh.material
+            : [mesh.material]
+          materials.forEach((material) => applyWindSway(material, swayHeight))
+        }
 
         if (opacity < 1) {
           const materials = Array.isArray(mesh.material)
@@ -140,7 +156,7 @@ function GltfModel({
     })
 
     return clonedScene
-  }, [asset.category, gltf.scene, opacity])
+  }, [gltf.scene, opacity, asset.category])
 
   useEffect(() => {
     if (!playAnimations || gltf.animations.length === 0) {
@@ -702,10 +718,9 @@ function Bridge() {
 }
 
 function WaterAssetMesh({ asset }: { asset: AssetDefinition }) {
-  const atmospherePreset = useSceneStore((state) => state.atmospherePreset)
   const isStraight = asset.id.includes('straight')
   const isCurve = asset.id.includes('curve')
-  const material = useWaterMaterial(atmospherePreset, 0.82)
+  const material = useWaterMaterial(0.82)
 
   if (isCurve) {
     return (

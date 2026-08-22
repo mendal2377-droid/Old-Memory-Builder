@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react'
-import {
-  gameDurationSeconds,
-  useSceneStore,
-  type GameMode,
-} from '../../store/sceneStore'
-import type { AtmospherePreset } from '../../types/scene'
+import type { WeatherKind } from '../../data/atmosphere'
+import { gameDurationSeconds, useSceneStore } from '../../store/sceneStore'
 import { playDefeatRumble, playVictoryFanfare } from './gameAudio'
 
-// Weather worsens as the countdown runs: calm morning -> golden dusk -> rain -> storm
-const weatherSchedule: Array<[number, AtmospherePreset]> = [
-  [0, 'Clear Morning'],
-  [90, 'Sunset'],
-  [180, 'Rainy Day'],
-  [240, 'Heavy Rain'],
+// Two independent ramps over the 5 minutes: the clock runs from mid-afternoon
+// into dusk, while the weather builds from clear through rain into a storm.
+const gameStartHour = 15
+const gameEndHour = 19.5
+
+const weatherRamp: Array<[number, WeatherKind, number]> = [
+  [0, 'clear', 0],
+  [60, 'overcast', 0.5],
+  [130, 'rain', 0.6],
+  [210, 'storm', 0.85],
+  [260, 'storm', 1],
 ]
 
 function formatTime(totalSeconds: number) {
@@ -31,17 +32,17 @@ export function GameHud() {
   const setGameTimeRemaining = useSceneStore(
     (state) => state.setGameTimeRemaining,
   )
-  const setAtmospherePreset = useSceneStore(
-    (state) => state.setAtmospherePreset,
-  )
+  const setTimeOfDay = useSceneStore((state) => state.setTimeOfDay)
+  const setWeather = useSceneStore((state) => state.setWeather)
   const loseGame = useSceneStore((state) => state.loseGame)
   const startGame = useSceneStore((state) => state.startGame)
   const exitGame = useSceneStore((state) => state.exitGame)
   const isMuted = useSceneStore((state) => state.isMuted)
-  const [dismissedGameMode, setDismissedGameMode] = useState<GameMode | null>(
-    null,
-  )
-  const isOverlayDismissed = dismissedGameMode === gameMode
+  const [isOverlayDismissed, setOverlayDismissed] = useState(false)
+
+  useEffect(() => {
+    setOverlayDismissed(false)
+  }, [gameMode])
 
   useEffect(() => {
     if (gameMode === 'won') {
@@ -64,15 +65,23 @@ export function GameHud() {
 
       setGameTimeRemaining(Math.ceil(remaining))
 
-      let targetPreset: AtmospherePreset = weatherSchedule[0][1]
-      for (const [threshold, preset] of weatherSchedule) {
+      // Clock ramps smoothly toward dusk
+      const dayProgress = Math.min(1, elapsed / gameDurationSeconds)
+      setTimeOfDay(gameStartHour + (gameEndHour - gameStartHour) * dayProgress)
+
+      // Weather builds on its own schedule
+      let kind: WeatherKind = weatherRamp[0][1]
+      let strength = weatherRamp[0][2]
+      for (const [threshold, rampKind, rampStrength] of weatherRamp) {
         if (elapsed >= threshold) {
-          targetPreset = preset
+          kind = rampKind
+          strength = rampStrength
         }
       }
 
-      if (useSceneStore.getState().atmospherePreset !== targetPreset) {
-        setAtmospherePreset(targetPreset)
+      const current = useSceneStore.getState()
+      if (current.weather !== kind || current.weatherIntensity !== strength) {
+        setWeather(kind, strength)
       }
 
       if (remaining <= 0) {
@@ -81,7 +90,7 @@ export function GameHud() {
     }, 250)
 
     return () => window.clearInterval(intervalId)
-  }, [gameMode, gameStartedAt, loseGame, setAtmospherePreset, setGameTimeRemaining])
+  }, [gameMode, gameStartedAt, loseGame, setTimeOfDay, setWeather, setGameTimeRemaining])
 
   if (gameMode === 'sandbox') {
     return null
@@ -198,7 +207,7 @@ export function GameHud() {
             <button
               type="button"
               className="btn-primary"
-              onClick={() => setDismissedGameMode(gameMode)}
+              onClick={() => setOverlayDismissed(true)}
             >
               Watch the Light
             </button>

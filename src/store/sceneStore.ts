@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { assets } from '../data/assets'
+import { presetCoords, type WeatherKind } from '../data/atmosphere'
 import { memoryKits } from '../data/memoryKits'
 import { sceneTemplates } from '../data/sceneTemplates'
 import type {
@@ -30,6 +31,9 @@ interface SavedSceneState {
   savedAt: string
   terrainMode: TerrainMode
   atmospherePreset: AtmospherePreset
+  timeOfDay: number
+  weather: WeatherKind
+  weatherIntensity: number
   isGridVisible: boolean
   cameraMode: 'build' | 'walk'
   sceneObjects: SavedSceneObject[]
@@ -315,6 +319,9 @@ interface SceneState {
   gamePrompt: string | null
   gamePromptProgress: number
   walkPose: { x: number; z: number; yaw: number } | null
+  timeOfDay: number
+  weather: WeatherKind
+  weatherIntensity: number
   terrainMode: TerrainMode
   atmospherePreset: AtmospherePreset
   isMuted: boolean
@@ -340,6 +347,9 @@ interface SceneState {
   completeTask: (task: keyof GameTasks) => void
   setGamePrompt: (label: string | null, progress: number) => void
   setWalkPose: (pose: { x: number; z: number; yaw: number } | null) => void
+  setTimeOfDay: (hour: number) => void
+  setWeather: (weather: WeatherKind, intensity?: number) => void
+  setWeatherIntensity: (intensity: number) => void
   undo: () => void
   addObject: (assetId: string) => void
   setPlacementAsset: (assetId: string) => void
@@ -402,6 +412,16 @@ function isAtmospherePreset(value: unknown): value is AtmospherePreset {
   )
 }
 
+function isWeatherKind(value: unknown): value is WeatherKind {
+  return (
+    value === 'clear' ||
+    value === 'overcast' ||
+    value === 'rain' ||
+    value === 'storm' ||
+    value === 'snow'
+  )
+}
+
 function isNumberTuple(value: unknown): value is [number, number, number] {
   return (
     Array.isArray(value) &&
@@ -432,6 +452,9 @@ function createSceneSnapshot(state: SceneState): SavedSceneState {
     savedAt: new Date().toISOString(),
     terrainMode: state.terrainMode,
     atmospherePreset: state.atmospherePreset,
+    timeOfDay: state.timeOfDay,
+    weather: state.weather,
+    weatherIntensity: state.weatherIntensity,
     isGridVisible: state.isGridVisible,
     cameraMode: state.cameraMode,
     sceneObjects: state.sceneObjects.map((object) => ({
@@ -451,6 +474,9 @@ function parseSceneSnapshot(json: string): SavedSceneState | null {
       sceneObjects?: unknown
       terrainMode?: unknown
       atmospherePreset?: unknown
+      timeOfDay?: unknown
+      weather?: unknown
+      weatherIntensity?: unknown
       isGridVisible?: unknown
       cameraMode?: unknown
     }
@@ -467,6 +493,13 @@ function parseSceneSnapshot(json: string): SavedSceneState | null {
         }))
       : []
 
+    const preset = isAtmospherePreset(parsedScene.atmospherePreset)
+      ? parsedScene.atmospherePreset
+      : defaultAtmospherePreset
+    // Files written before the time/weather split only carry a preset, so fall
+    // back to that preset's coordinate.
+    const fallback = presetCoords[preset]
+
     return {
       version: sceneFileVersion,
       savedAt: new Date().toISOString(),
@@ -474,9 +507,18 @@ function parseSceneSnapshot(json: string): SavedSceneState | null {
       terrainMode: isTerrainMode(parsedScene.terrainMode)
         ? parsedScene.terrainMode
         : defaultTerrainMode,
-      atmospherePreset: isAtmospherePreset(parsedScene.atmospherePreset)
-        ? parsedScene.atmospherePreset
-        : defaultAtmospherePreset,
+      atmospherePreset: preset,
+      timeOfDay:
+        typeof parsedScene.timeOfDay === 'number'
+          ? Math.max(0, Math.min(24, parsedScene.timeOfDay))
+          : fallback.timeOfDay,
+      weather: isWeatherKind(parsedScene.weather)
+        ? parsedScene.weather
+        : fallback.weather,
+      weatherIntensity:
+        typeof parsedScene.weatherIntensity === 'number'
+          ? Math.max(0, Math.min(1, parsedScene.weatherIntensity))
+          : fallback.weatherIntensity,
       isGridVisible:
         typeof parsedScene.isGridVisible === 'boolean'
           ? parsedScene.isGridVisible
@@ -506,6 +548,18 @@ export const useSceneStore = create<SceneState>((set, get) => {
   gamePrompt: null,
   gamePromptProgress: 0,
   walkPose: null,
+  timeOfDay: presetCoords[defaultAtmospherePreset].timeOfDay,
+  weather: presetCoords[defaultAtmospherePreset].weather,
+  weatherIntensity: presetCoords[defaultAtmospherePreset].weatherIntensity,
+  setTimeOfDay: (hour) => set({ timeOfDay: Math.max(0, Math.min(24, hour)) }),
+  setWeather: (weather, intensity) =>
+    set((state) => ({
+      weather,
+      weatherIntensity:
+        intensity ?? (weather === 'clear' ? 0 : Math.max(state.weatherIntensity, 0.6)),
+    })),
+  setWeatherIntensity: (intensity) =>
+    set({ weatherIntensity: Math.max(0, Math.min(1, intensity)) }),
   beginBriefing: () => {
     set({
       gameMode: 'briefing',
@@ -909,6 +963,9 @@ export const useSceneStore = create<SceneState>((set, get) => {
       undoStack: [],
       terrainMode: snapshot.terrainMode,
       atmospherePreset: snapshot.atmospherePreset,
+      timeOfDay: snapshot.timeOfDay,
+      weather: snapshot.weather,
+      weatherIntensity: snapshot.weatherIntensity,
       isGridVisible: snapshot.isGridVisible,
       cameraMode: 'build',
       isCameraTransitioning: false,
@@ -941,6 +998,9 @@ export const useSceneStore = create<SceneState>((set, get) => {
       undoStack: [],
       terrainMode: snapshot.terrainMode,
       atmospherePreset: snapshot.atmospherePreset,
+      timeOfDay: snapshot.timeOfDay,
+      weather: snapshot.weather,
+      weatherIntensity: snapshot.weatherIntensity,
       isGridVisible: snapshot.isGridVisible,
       cameraMode: 'build',
       isCameraTransitioning: false,
@@ -978,6 +1038,9 @@ export const useSceneStore = create<SceneState>((set, get) => {
       sceneObjects: objects,
       terrainMode: template.terrainMode,
       atmospherePreset: template.atmospherePreset,
+      timeOfDay: presetCoords[template.atmospherePreset].timeOfDay,
+      weather: presetCoords[template.atmospherePreset].weather,
+      weatherIntensity: presetCoords[template.atmospherePreset].weatherIntensity,
       cameraMode: 'build',
       isCameraTransitioning: false,
       selectedObjectId: null,
@@ -994,7 +1057,16 @@ export const useSceneStore = create<SceneState>((set, get) => {
   openMemoryPoint: (activeMemoryPoint) => set({ activeMemoryPoint }),
   closeMemoryPoint: () => set({ activeMemoryPoint: null }),
   setTerrainMode: (terrainMode) => set({ terrainMode }),
-  setAtmospherePreset: (atmospherePreset) => set({ atmospherePreset }),
+  // A preset is just a named coordinate: applying one sets both axes.
+  setAtmospherePreset: (atmospherePreset) => {
+    const coord = presetCoords[atmospherePreset]
+    set({
+      atmospherePreset,
+      timeOfDay: coord.timeOfDay,
+      weather: coord.weather,
+      weatherIntensity: coord.weatherIntensity,
+    })
+  },
   toggleMute: () => set((state) => ({ isMuted: !state.isMuted })),
   toggleGrid: () =>
     set((state) => ({ isGridVisible: !state.isGridVisible })),

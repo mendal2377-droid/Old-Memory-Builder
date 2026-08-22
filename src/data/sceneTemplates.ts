@@ -20,9 +20,12 @@ type TemplateJson = {
 }
 
 const trustedTemplateIds = [
-  'flower_garden_autumn',
+  'village_dusk',
+  'lakeside_night',
+  'snowbound_hamlet',
   'forest_explore_summer',
   'riverbank_morning',
+  'flower_garden_autumn',
 ] as const
 
 const templateDisplayOrder = new Map(
@@ -30,6 +33,9 @@ const templateDisplayOrder = new Map(
 )
 
 const templateNames: Record<(typeof trustedTemplateIds)[number], string> = {
+  village_dusk: 'Village at Dusk',
+  lakeside_night: 'Lakeside Summer Night',
+  snowbound_hamlet: 'Snowbound Hamlet',
   flower_garden_autumn: 'Flower Garden in Autumn',
   forest_explore_summer: 'Forest Explore in Summer',
   riverbank_morning: 'Quiet Riverbank Morning',
@@ -101,6 +107,36 @@ function inferTemplateMeta(id: string): Pick<
   SceneTemplateDefinition,
   'type' | 'season' | 'thumbnail' | 'description'
 > {
+  if (id.includes('village')) {
+    return {
+      type: 'Custom',
+      season: 'Any',
+      thumbnail: 'river',
+      description:
+        'A riverside village at dusk — cabins, a barn, a watermill, a bridge, and a lighthouse across the water.',
+    }
+  }
+
+  if (id.includes('night')) {
+    return {
+      type: 'Riverbank',
+      season: 'Summer',
+      thumbnail: 'river',
+      description:
+        'A calm summer night by the water. The lighthouse lamp glows beneath a sky full of drifting stars.',
+    }
+  }
+
+  if (id.includes('snow') || id.includes('hamlet')) {
+    return {
+      type: 'Custom',
+      season: 'Winter',
+      thumbnail: 'forest',
+      description:
+        'A quiet snowbound hamlet ringed by pines, with a frozen river crossing and falling snow.',
+    }
+  }
+
   if (id.includes('forest')) {
     return {
       type: 'Forest',

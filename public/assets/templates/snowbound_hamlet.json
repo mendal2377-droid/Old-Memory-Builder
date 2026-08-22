@@ -1,0 +1,922 @@
+{
+  "version": 1,
+  "savedAt": "2026-08-11T10:00:00.000Z",
+  "terrainMode": "Field Path",
+  "atmospherePreset": "Snowy Day",
+  "isGridVisible": false,
+  "cameraMode": "build",
+  "sceneObjects": [
+    {
+      "id": "snowbound_hamlet_001_cabin_01",
+      "assetId": "cabin_01",
+      "position": [
+        -12,
+        0,
+        -5
+      ],
+      "rotation": [
+        0,
+        0.4,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_002_cabin_03",
+      "assetId": "cabin_03",
+      "position": [
+        -6,
+        0,
+        -10
+      ],
+      "rotation": [
+        0,
+        -0.9,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_003_cabin_02",
+      "assetId": "cabin_02",
+      "position": [
+        -14,
+        0,
+        5
+      ],
+      "rotation": [
+        0,
+        1.7,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_004_cabin_04",
+      "assetId": "cabin_04",
+      "position": [
+        -7,
+        0,
+        9
+      ],
+      "rotation": [
+        0,
+        2.6,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_005_cabin_05",
+      "assetId": "cabin_05",
+      "position": [
+        3,
+        0,
+        -8
+      ],
+      "rotation": [
+        0,
+        -0.3,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_006_barn_01",
+      "assetId": "barn_01",
+      "position": [
+        -18,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0.6,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_007_mill_01",
+      "assetId": "mill_01",
+      "position": [
+        10.5,
+        0,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_008_bridge_01",
+      "assetId": "bridge_01",
+      "position": [
+        16,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_009_lighthouse_01",
+      "assetId": "lighthouse_01",
+      "position": [
+        21,
+        0,
+        7
+      ],
+      "rotation": [
+        0,
+        -0.4,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_010_woodpile_01",
+      "assetId": "woodpile_01",
+      "position": [
+        1,
+        0,
+        6
+      ],
+      "rotation": [
+        0,
+        0.5,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_011_pine_1",
+      "assetId": "pine_1",
+      "position": [
+        -5.83,
+        0,
+        17.48
+      ],
+      "rotation": [
+        0,
+        0.395,
+        0
+      ],
+      "scale": [
+        1.663,
+        1.663,
+        1.663
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_012_pine_2",
+      "assetId": "pine_2",
+      "position": [
+        -15,
+        0,
+        16.85
+      ],
+      "rotation": [
+        0,
+        6.041,
+        0
+      ],
+      "scale": [
+        1.648,
+        1.648,
+        1.648
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_013_pine_4",
+      "assetId": "pine_4",
+      "position": [
+        -12.68,
+        0,
+        -16.35
+      ],
+      "rotation": [
+        0,
+        3.074,
+        0
+      ],
+      "scale": [
+        1.351,
+        1.351,
+        1.351
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_014_pine_3",
+      "assetId": "pine_3",
+      "position": [
+        -8,
+        0,
+        -1.06
+      ],
+      "rotation": [
+        0,
+        0.199,
+        0
+      ],
+      "scale": [
+        1.553,
+        1.553,
+        1.553
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_015_pine_5",
+      "assetId": "pine_5",
+      "position": [
+        -4.56,
+        0,
+        15.16
+      ],
+      "rotation": [
+        0,
+        2.277,
+        0
+      ],
+      "scale": [
+        1.63,
+        1.63,
+        1.63
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_016_pine_2",
+      "assetId": "pine_2",
+      "position": [
+        -7.15,
+        0,
+        -14.28
+      ],
+      "rotation": [
+        0,
+        2.962,
+        0
+      ],
+      "scale": [
+        1.48,
+        1.48,
+        1.48
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_017_pine_5",
+      "assetId": "pine_5",
+      "position": [
+        2.97,
+        0,
+        -0.63
+      ],
+      "rotation": [
+        0,
+        6.05,
+        0
+      ],
+      "scale": [
+        1.383,
+        1.383,
+        1.383
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_018_pine_5",
+      "assetId": "pine_5",
+      "position": [
+        -6.91,
+        0,
+        -4.46
+      ],
+      "rotation": [
+        0,
+        3.509,
+        0
+      ],
+      "scale": [
+        1.401,
+        1.401,
+        1.401
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_019_pine_1",
+      "assetId": "pine_1",
+      "position": [
+        6.42,
+        0,
+        18.53
+      ],
+      "rotation": [
+        0,
+        3.741,
+        0
+      ],
+      "scale": [
+        1.774,
+        1.774,
+        1.774
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_020_pine_1",
+      "assetId": "pine_1",
+      "position": [
+        0.09,
+        0,
+        -8.32
+      ],
+      "rotation": [
+        0,
+        5.286,
+        0
+      ],
+      "scale": [
+        1.427,
+        1.427,
+        1.427
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_021_pine_5",
+      "assetId": "pine_5",
+      "position": [
+        -13.47,
+        0,
+        -17.28
+      ],
+      "rotation": [
+        0,
+        1.055,
+        0
+      ],
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_022_pine_5",
+      "assetId": "pine_5",
+      "position": [
+        -12.75,
+        0,
+        15.92
+      ],
+      "rotation": [
+        0,
+        2.379,
+        0
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_023_pine_2",
+      "assetId": "pine_2",
+      "position": [
+        -15.1,
+        0,
+        -2.82
+      ],
+      "rotation": [
+        0,
+        4.513,
+        0
+      ],
+      "scale": [
+        1.244,
+        1.244,
+        1.244
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_024_pine_4",
+      "assetId": "pine_4",
+      "position": [
+        -7.24,
+        0,
+        9.65
+      ],
+      "rotation": [
+        0,
+        5.828,
+        0
+      ],
+      "scale": [
+        1.567,
+        1.567,
+        1.567
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_025_deadtree_1",
+      "assetId": "deadtree_1",
+      "position": [
+        2.1,
+        0,
+        -6.58
+      ],
+      "rotation": [
+        0,
+        3.768,
+        0
+      ],
+      "scale": [
+        1.37,
+        1.37,
+        1.37
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_026_deadtree_4",
+      "assetId": "deadtree_4",
+      "position": [
+        -12.48,
+        0,
+        -2.05
+      ],
+      "rotation": [
+        0,
+        3.214,
+        0
+      ],
+      "scale": [
+        1.016,
+        1.016,
+        1.016
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_027_deadtree_3",
+      "assetId": "deadtree_3",
+      "position": [
+        3.19,
+        0,
+        11.42
+      ],
+      "rotation": [
+        0,
+        3.649,
+        0
+      ],
+      "scale": [
+        1.229,
+        1.229,
+        1.229
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_028_deadtree_1",
+      "assetId": "deadtree_1",
+      "position": [
+        -18.82,
+        0,
+        15.87
+      ],
+      "rotation": [
+        0,
+        2.367,
+        0
+      ],
+      "scale": [
+        1.079,
+        1.079,
+        1.079
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_029_deadtree_2",
+      "assetId": "deadtree_2",
+      "position": [
+        -8.85,
+        0,
+        -14.07
+      ],
+      "rotation": [
+        0,
+        3.593,
+        0
+      ],
+      "scale": [
+        1.185,
+        1.185,
+        1.185
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_030_deadtree_4",
+      "assetId": "deadtree_4",
+      "position": [
+        2.89,
+        0,
+        1.22
+      ],
+      "rotation": [
+        0,
+        0.115,
+        0
+      ],
+      "scale": [
+        1.003,
+        1.003,
+        1.003
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_031_pine_2",
+      "assetId": "pine_2",
+      "position": [
+        21,
+        0,
+        -15.18
+      ],
+      "rotation": [
+        0,
+        0.442,
+        0
+      ],
+      "scale": [
+        1.144,
+        1.144,
+        1.144
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_032_pine_5",
+      "assetId": "pine_5",
+      "position": [
+        19.84,
+        0,
+        -5.54
+      ],
+      "rotation": [
+        0,
+        5.564,
+        0
+      ],
+      "scale": [
+        1.391,
+        1.391,
+        1.391
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_033_pine_5",
+      "assetId": "pine_5",
+      "position": [
+        20.55,
+        0,
+        12.06
+      ],
+      "rotation": [
+        0,
+        2.81,
+        0
+      ],
+      "scale": [
+        1.029,
+        1.029,
+        1.029
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_034_grass_wispy_short",
+      "assetId": "grass_wispy_short",
+      "position": [
+        -6.13,
+        0,
+        -6.19
+      ],
+      "rotation": [
+        0,
+        1.968,
+        0
+      ],
+      "scale": [
+        1.038,
+        1.038,
+        1.038
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_035_grass_common_short",
+      "assetId": "grass_common_short",
+      "position": [
+        -1.79,
+        0,
+        -10.07
+      ],
+      "rotation": [
+        0,
+        3.477,
+        0
+      ],
+      "scale": [
+        0.989,
+        0.989,
+        0.989
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_036_grass_wispy_short",
+      "assetId": "grass_wispy_short",
+      "position": [
+        -17.3,
+        0,
+        -5.75
+      ],
+      "rotation": [
+        0,
+        1.425,
+        0
+      ],
+      "scale": [
+        0.894,
+        0.894,
+        0.894
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_037_grass_wispy_short",
+      "assetId": "grass_wispy_short",
+      "position": [
+        -13.1,
+        0,
+        2.14
+      ],
+      "rotation": [
+        0,
+        3.977,
+        0
+      ],
+      "scale": [
+        1.041,
+        1.041,
+        1.041
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_038_grass_common_short",
+      "assetId": "grass_common_short",
+      "position": [
+        4.66,
+        0,
+        -11.25
+      ],
+      "rotation": [
+        0,
+        4.176,
+        0
+      ],
+      "scale": [
+        1.044,
+        1.044,
+        1.044
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_039_rock_medium_2",
+      "assetId": "rock_medium_2",
+      "position": [
+        4.11,
+        0,
+        -11.75
+      ],
+      "rotation": [
+        0,
+        5.585,
+        0
+      ],
+      "scale": [
+        0.828,
+        0.828,
+        0.828
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_040_rock_medium_2",
+      "assetId": "rock_medium_2",
+      "position": [
+        -0.87,
+        0,
+        -9.01
+      ],
+      "rotation": [
+        0,
+        5.673,
+        0
+      ],
+      "scale": [
+        0.944,
+        0.944,
+        0.944
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_041_rock_medium_1",
+      "assetId": "rock_medium_1",
+      "position": [
+        0.62,
+        0,
+        11.32
+      ],
+      "rotation": [
+        0,
+        5.596,
+        0
+      ],
+      "scale": [
+        0.897,
+        0.897,
+        0.897
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_042_rock_medium_1",
+      "assetId": "rock_medium_1",
+      "position": [
+        9.94,
+        0,
+        8.44
+      ],
+      "rotation": [
+        0,
+        0.99,
+        0
+      ],
+      "scale": [
+        0.718,
+        0.718,
+        0.718
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_043_rock_medium_2",
+      "assetId": "rock_medium_2",
+      "position": [
+        -12.5,
+        0,
+        -4.82
+      ],
+      "rotation": [
+        0,
+        4.45,
+        0
+      ],
+      "scale": [
+        0.959,
+        0.959,
+        0.959
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_044_pebble_round_4",
+      "assetId": "pebble_round_4",
+      "position": [
+        -11.67,
+        0,
+        -7.06
+      ],
+      "rotation": [
+        0,
+        2.624,
+        0
+      ],
+      "scale": [
+        0.852,
+        0.852,
+        0.852
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_045_rock_medium_2",
+      "assetId": "rock_medium_2",
+      "position": [
+        -5.7,
+        0,
+        -2.8
+      ],
+      "rotation": [
+        0,
+        5.883,
+        0
+      ],
+      "scale": [
+        0.709,
+        0.709,
+        0.709
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_046_husky",
+      "assetId": "husky",
+      "position": [
+        -4,
+        0,
+        4
+      ],
+      "rotation": [
+        0,
+        1.2,
+        0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_047_wolf_01",
+      "assetId": "wolf_01",
+      "position": [
+        7,
+        0,
+        -3
+      ],
+      "rotation": [
+        0,
+        -1.4,
+        0
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ]
+    },
+    {
+      "id": "snowbound_hamlet_048_deer_01",
+      "assetId": "deer_01",
+      "position": [
+        -15,
+        0,
+        10
+      ],
+      "rotation": [
+        0,
+        0.7,
+        0
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ]
+    }
+  ]
+}
