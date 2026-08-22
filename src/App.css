@@ -168,24 +168,63 @@
   font-size: 14px;
 }
 
-.toolbar-time {
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 3px;
-  min-height: 38px;
-  color: #73695c;
-  font-size: 13px;
+/* Sky menu — time, weather and presets folded into one control */
+.sky-menu summary {
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
 }
 
-.toolbar-time span {
+.sky-summary-clock {
+  font-weight: 600;
+}
+
+.sky-summary-sep {
+  width: 1px;
+  height: 14px;
+  background: #d9d0c1;
+}
+
+.sky-summary-caret {
+  margin-left: 2px;
+  color: #9e8e78;
+}
+
+.sky-menu-content {
+  left: 0;
+  right: auto;
+  width: 250px;
+  padding: 12px;
+}
+
+.sky-field {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 10px;
+  font-size: 13px;
+  color: #73695c;
+}
+
+.sky-field > strong {
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   color: #5c5346;
 }
 
-.toolbar-time input[type='range'] {
-  width: 150px;
+.sky-field select {
+  grid-column: 1 / -1;
+  min-height: 34px;
+  padding: 0 8px;
+  border: 1px solid #cfc4b2;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #25221d;
+  font-size: 14px;
+}
+
+.sky-field.is-slider input[type='range'] {
+  grid-column: 1 / -1;
+  width: 100%;
   accent-color: #7b6748;
   cursor: pointer;
 }

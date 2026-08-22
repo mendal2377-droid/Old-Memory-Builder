@@ -208,92 +208,84 @@ export function Toolbar() {
           </select>
         </label>
 
-        <label className="toolbar-select">
-          <span>Preset</span>
-          <select
-            value={atmospherePreset}
-            title="Jump to a named time-and-weather combination."
-            onChange={(event) => {
-              setScreenshotMessage('')
-              setAtmospherePreset(event.target.value as AtmospherePreset)
-              setMessage(`${event.target.value} selected.`)
-            }}
-          >
-            {atmospherePresets.map((preset) => (
-              <option key={preset} value={preset}>
-                {preset}
-              </option>
-            ))}
-          </select>
-        </label>
+        <details className="scene-menu sky-menu">
+          <summary title="Time of day, weather, and named presets.">
+            <span className="sky-summary-clock">{formatClock(timeOfDay)}</span>
+            <span className="sky-summary-sep" aria-hidden="true" />
+            <span>{weatherLabels[weather]}</span>
+            <span className="sky-summary-caret" aria-hidden="true">▾</span>
+          </summary>
+          <div className="scene-menu-content sky-menu-content">
+            <label className="sky-field">
+              <span>Preset</span>
+              <select
+                value={atmospherePreset}
+                onChange={(event) => {
+                  setScreenshotMessage('')
+                  setAtmospherePreset(event.target.value as AtmospherePreset)
+                  setMessage(`${event.target.value} selected.`)
+                }}
+              >
+                {atmospherePresets.map((preset) => (
+                  <option key={preset} value={preset}>
+                    {preset}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        <label className="toolbar-time">
-          <span>Time {formatClock(timeOfDay)}</span>
-          <input
-            type="range"
-            min="0"
-            max="24"
-            step="0.1"
-            value={timeOfDay}
-            onChange={(event) => setTimeOfDay(Number(event.target.value))}
-          />
-        </label>
+            <div className="scene-menu-divider" role="separator" />
 
-        <label className="toolbar-select">
-          <span>Weather</span>
-          <select
-            value={weather}
-            onChange={(event) => {
-              setWeather(event.target.value as WeatherKind)
-              setMessage(`${weatherLabels[event.target.value as WeatherKind]} weather.`)
-            }}
-          >
-            {weatherKinds.map((kind) => (
-              <option key={kind} value={kind}>
-                {weatherLabels[kind]}
-              </option>
-            ))}
-          </select>
-        </label>
+            <label className="sky-field is-slider">
+              <span>Time of day</span>
+              <strong>{formatClock(timeOfDay)}</strong>
+              <input
+                type="range"
+                min="0"
+                max="24"
+                step="0.1"
+                value={timeOfDay}
+                onChange={(event) => setTimeOfDay(Number(event.target.value))}
+              />
+            </label>
 
-        {weather !== 'clear' ? (
-          <label className="toolbar-time">
-            <span>Intensity {Math.round(weatherIntensity * 100)}%</span>
-            <input
-              type="range"
-              min="0.1"
-              max="1"
-              step="0.05"
-              value={weatherIntensity}
-              onChange={(event) =>
-                setWeatherIntensity(Number(event.target.value))
-              }
-            />
-          </label>
-        ) : null}
+            <label className="sky-field">
+              <span>Weather</span>
+              <select
+                value={weather}
+                onChange={(event) => {
+                  setWeather(event.target.value as WeatherKind)
+                  setMessage(
+                    `${weatherLabels[event.target.value as WeatherKind]} weather.`,
+                  )
+                }}
+              >
+                {weatherKinds.map((kind) => (
+                  <option key={kind} value={kind}>
+                    {weatherLabels[kind]}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        <button
-          type="button"
-          onClick={() => {
-            toggleMute()
-            setMessage(isMuted ? 'Atmosphere sound on.' : 'Atmosphere muted.')
-          }}
-        >
-          {isMuted ? 'Unmute' : 'Mute'}
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            toggleAnimalsWalking()
-            setMessage(
-              areAnimalsWalking
-                ? 'Animals stopped.'
-                : 'Animals wandering calmly.',
-            )
-          }}
-        >
-          {areAnimalsWalking ? 'Stop Animals' : 'Animals Walk'}
-        </button>
+            {weather !== 'clear' ? (
+              <label className="sky-field is-slider">
+                <span>Intensity</span>
+                <strong>{Math.round(weatherIntensity * 100)}%</strong>
+                <input
+                  type="range"
+                  min="0.1"
+                  max="1"
+                  step="0.05"
+                  value={weatherIntensity}
+                  onChange={(event) =>
+                    setWeatherIntensity(Number(event.target.value))
+                  }
+                />
+              </label>
+            ) : null}
+          </div>
+        </details>
         <button
           type="button"
           className={isWalkActive ? undefined : 'btn-primary'}
@@ -369,6 +361,28 @@ export function Toolbar() {
               }}
             >
               {isGridVisible ? 'Hide Grid' : 'Show Grid'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                toggleMute()
+                setMessage(isMuted ? 'Atmosphere sound on.' : 'Atmosphere muted.')
+              }}
+            >
+              {isMuted ? 'Sound On' : 'Mute Sound'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                toggleAnimalsWalking()
+                setMessage(
+                  areAnimalsWalking
+                    ? 'Animals stopped.'
+                    : 'Animals wandering calmly.',
+                )
+              }}
+            >
+              {areAnimalsWalking ? 'Stop Animals' : 'Animals Walk'}
             </button>
             <div className="scene-menu-divider" role="separator" />
             <button
