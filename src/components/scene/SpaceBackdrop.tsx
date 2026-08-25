@@ -52,10 +52,10 @@ function jitter(geometry: BufferGeometry, amount: number, seedScale = 1) {
 // -- Nebula ------------------------------------------------------------------
 
 /** Wispy gas rather than soft bokeh blobs: long feathered streaks. */
-let nebulaCache: CanvasTexture | null = null
-function getNebulaTexture(): CanvasTexture | null {
+const nebulaCache: Array<CanvasTexture | null> = []
+function getNebulaTexture(variant: number): CanvasTexture | null {
   if (typeof document === 'undefined') return null
-  if (nebulaCache) return nebulaCache
+  if (nebulaCache[variant]) return nebulaCache[variant]
 
   const size = 256
   const canvas = document.createElement('canvas')
@@ -67,59 +67,86 @@ function getNebulaTexture(): CanvasTexture | null {
 
   // Blue-dominant, with a single restrained magenta accent
   const inks = [
-    'rgba(90,190,255,0.95)',
-    'rgba(40,220,255,0.85)',
-    'rgba(120,160,255,0.8)',
-    'rgba(60,120,255,0.7)',
-    'rgba(180,110,255,0.35)',
+    'rgba(70,150,220,0.8)',
+    'rgba(40,180,215,0.7)',
+    'rgba(100,130,215,0.66)',
+    'rgba(50,95,190,0.58)',
+    'rgba(150,95,215,0.34)',
   ]
 
+  // Strokes fan out from one point rather than running in parallel bands: a
+  // cloud with a source reads as gas, a set of horizontal ribbons reads as
+  // a smear across the lens.
+  const cx = 60 + Math.random() * 136
+  const cy = 60 + Math.random() * 136
   ctx.lineCap = 'round'
-  for (let i = 0; i < 46; i += 1) {
+  for (let i = 0; i < 34; i += 1) {
     ctx.strokeStyle = inks[Math.floor(Math.random() * inks.length)]
-    ctx.lineWidth = 6 + Math.random() * 30
-    ctx.globalAlpha = 0.45 + Math.random() * 0.5
-    const y = 40 + Math.random() * 176
-    const amp = 10 + Math.random() * 34
+    ctx.lineWidth = 4 + Math.random() * 17
+    ctx.globalAlpha = 0.3 + Math.random() * 0.4
+    const dir = Math.random() * Math.PI * 2
+    const reach = 40 + Math.random() * 105
+    const drift = 26 + Math.random() * 44
+    let x = cx + Math.cos(dir) * (Math.random() * 34)
+    let y = cy + Math.sin(dir) * (Math.random() * 34)
     ctx.beginPath()
-    ctx.moveTo(-30, y)
-    for (let x = -30; x < size + 30; x += 46) {
-      ctx.quadraticCurveTo(x + 23, y + Math.sin(x * 0.03 + i) * amp, x + 46, y)
+    ctx.moveTo(x, y)
+    const steps = 5
+    for (let s = 0; s < steps; s += 1) {
+      const wobble = dir + (Math.random() - 0.5) * 0.9
+      const nx = x + Math.cos(wobble) * (reach / steps)
+      const ny = y + Math.sin(wobble) * (reach / steps)
+      ctx.quadraticCurveTo(
+        x + Math.cos(wobble + 1.2) * drift * 0.2,
+        y + Math.sin(wobble + 1.2) * drift * 0.2,
+        nx,
+        ny,
+      )
+      x = nx
+      y = ny
     }
     ctx.stroke()
   }
   ctx.globalAlpha = 1
 
   // Stars caught in the gas
-  for (let i = 0; i < 220; i += 1) {
-    ctx.fillStyle = `rgba(220,240,255,${0.2 + Math.random() * 0.6})`
+  for (let i = 0; i < 260; i += 1) {
+    ctx.fillStyle = `rgba(220,240,255,${0.25 + Math.random() * 0.65})`
     ctx.fillRect(Math.random() * size, Math.random() * size, 1, 1)
   }
 
-  // Feather the rim so the plane never shows an edge
-  const vignette = ctx.createRadialGradient(128, 128, 46, 128, 128, 128)
+  // Feather the rim hard so each cloud ends in space, not at a plane edge
+  const vignette = ctx.createRadialGradient(128, 128, 18, 128, 128, 122)
   vignette.addColorStop(0, 'rgba(0,0,0,0)')
+  vignette.addColorStop(0.55, 'rgba(0,0,0,0.25)')
   vignette.addColorStop(1, 'rgba(0,0,0,1)')
   ctx.globalCompositeOperation = 'destination-out'
   ctx.fillStyle = vignette
   ctx.fillRect(0, 0, size, size)
   ctx.globalCompositeOperation = 'source-over'
 
-  nebulaCache = new CanvasTexture(canvas)
-  nebulaCache.needsUpdate = true
-  return nebulaCache
+  const tex = new CanvasTexture(canvas)
+  tex.needsUpdate = true
+  nebulaCache[variant] = tex
+  return tex
 }
 
+/**
+ * Distant gas. Deliberately sparse and dim: a nebula that fills the sky stops
+ * reading as depth and starts reading as fog on the lens, and it drowns the
+ * stars that give space its scale.
+ */
 function Nebula() {
   const groupRef = useRef<Group>(null)
   const clouds = useMemo(
     () =>
-      Array.from({ length: 7 }).map((_, i) => ({
-        angle: (i / 7) * Math.PI * 2 + Math.random() * 0.5,
-        height: 14 + Math.random() * 48,
-        scale: 88 + Math.random() * 70,
-        spin: (Math.random() - 0.5) * 1.1,
-        opacity: 0.5 + Math.random() * 0.34,
+      Array.from({ length: 4 }).map((_, i) => ({
+        angle: (i / 4) * Math.PI * 2 + Math.random() * 0.6,
+        height: 30 + Math.random() * 56,
+        scale: 96 + Math.random() * 72,
+        spin: Math.random() * Math.PI * 2,
+        opacity: 0.3 + Math.random() * 0.2,
+        variant: i % 3,
       })),
     [],
   )
@@ -133,13 +160,13 @@ function Nebula() {
       {clouds.map((c, i) => (
         <mesh
           key={`nebula-${i}`}
-          position={[Math.cos(c.angle) * 118, c.height, Math.sin(c.angle) * 118]}
+          position={[Math.cos(c.angle) * 165, c.height, Math.sin(c.angle) * 165]}
           rotation={[0, -c.angle + Math.PI / 2, c.spin]}
           renderOrder={-940}
         >
           <planeGeometry args={[c.scale, c.scale]} />
           <meshBasicMaterial
-            map={getNebulaTexture()}
+            map={getNebulaTexture(c.variant)}
             transparent
             opacity={c.opacity}
             depthWrite={false}
@@ -252,15 +279,20 @@ function FloatingIslands() {
 
   const islands = useMemo(
     () =>
-      Array.from({ length: 9 }).map((_, i) => {
-        const angle = (i / 9) * Math.PI * 2 + Math.random() * 0.7
-        const radius = 42 + Math.random() * 54
+      Array.from({ length: 7 }).map((_, i) => {
+        const angle = (i / 7) * Math.PI * 2 + Math.random() * 0.7
+        const radius = 56 + Math.random() * 62
+        // Keep them out of the eye-level band. An island sitting on the
+        // horizon is seen edge-on and reads as a grey blade, not a rock.
+        const above = i % 2 === 0
+        const y = above ? 20 + Math.random() * 34 : -34 - Math.random() * 22
         return {
           x: Math.cos(angle) * radius,
-          y: -14 + Math.random() * 38,
+          y,
           z: Math.sin(angle) * radius,
-          scale: 2.6 + Math.random() * 9,
-          tilt: (Math.random() - 0.5) * 0.5,
+          scale: 6 + Math.random() * 13,
+          // Tip the face toward the viewer so the cap is visible, not the rim
+          tilt: (above ? 0.34 : -0.34) + (Math.random() - 0.5) * 0.3,
           spin: Math.random() * Math.PI * 2,
           phase: Math.random() * Math.PI * 2,
           bob: 0.5 + Math.random() * 1.5,
@@ -296,10 +328,10 @@ function FloatingIslands() {
           {/* Thin band of soil; most of the mass is rock */}
           <mesh geometry={geometries.cap} position={[0, 0.12, 0]}>
             <meshStandardMaterial
-              color="#2f4436"
+              color="#43614a"
               roughness={1}
-              emissive="#070d0a"
-              emissiveIntensity={0.5}
+              emissive="#101d16"
+              emissiveIntensity={0.9}
             />
           </mesh>
           {/* Dark broken keel */}
@@ -344,9 +376,14 @@ function FloatingIslands() {
 
 // -- Asteroid debris ---------------------------------------------------------
 
+/**
+ * Debris. Kept few and large on purpose — a rock that covers three pixels has
+ * no silhouette left, so a hundred of them just stipple the sky with grey
+ * squares. Better to have forty you can actually read as stone.
+ */
 function AsteroidField() {
   const meshRef = useRef<InstancedMesh>(null)
-  const count = 110
+  const count = 44
   const geometry = useMemo(
     () => jitter(new DodecahedronGeometry(1, 0), 0.42, 4.1),
     [],
@@ -356,14 +393,16 @@ function AsteroidField() {
     const matrices = new Float32Array(count * 16)
     for (let i = 0; i < count; i += 1) {
       const a = Math.random() * Math.PI * 2
-      const r = 34 + Math.random() * 76
+      const r = 40 + Math.random() * 62
+      // Size with distance so everything subtends roughly the same angle
+      const spread = (r - 40) / 62
       dummy.position.set(
         Math.cos(a) * r,
-        -20 + Math.random() * 56,
+        -24 + Math.random() * 62,
         Math.sin(a) * r,
       )
       dummy.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3)
-      dummy.scale.setScalar(0.25 + Math.pow(Math.random(), 2.2) * 2.2)
+      dummy.scale.setScalar((1.1 + Math.random() * 2.6) * (0.8 + spread * 0.9))
       dummy.updateMatrix()
       dummy.matrix.toArray(matrices, i * 16)
     }
@@ -456,45 +495,58 @@ function PassingShips() {
           <mesh>
             <boxGeometry args={ship.heavy ? [5.2, 0.7, 1.3] : [2.2, 0.26, 0.5]} />
             <meshStandardMaterial
-              color="#1b2133"
-              roughness={1}
-              emissive="#080c16"
-              emissiveIntensity={0.6}
+              color="#39435f"
+              roughness={0.85}
+              emissive="#161d2e"
+              emissiveIntensity={1}
               fog={false}
             />
           </mesh>
           <mesh position={ship.heavy ? [-1.3, 0.45, 0] : [-0.3, 0, 0]}>
             <boxGeometry args={ship.heavy ? [1.8, 0.45, 0.8] : [0.9, 0.09, 1.6]} />
-            <meshStandardMaterial color="#252c42" roughness={1} fog={false} />
+            <meshStandardMaterial
+              color="#4b5674"
+              roughness={0.8}
+              emissive="#1b2337"
+              emissiveIntensity={1}
+              fog={false}
+            />
           </mesh>
           {/* Running light */}
           <mesh position={[ship.heavy ? 2.4 : 1.0, 0, 0]}>
             <sphereGeometry args={[ship.heavy ? 0.14 : 0.07, 8, 8]} />
             <meshBasicMaterial color="#ff5a6e" toneMapped={false} fog={false} />
           </mesh>
-          {/* Engine bloom — the only bright thing aboard */}
-          <mesh position={[ship.heavy ? -2.9 : -1.25, 0, 0]}>
-            <sphereGeometry args={[ship.heavy ? 0.42 : 0.18, 12, 12]} />
+          {/* Engine glow. Short and small: a long bright plume turns the ship
+              into a comet, and the hull stops being what you notice. */}
+          <mesh position={[ship.heavy ? -2.8 : -1.18, 0, 0]}>
+            <sphereGeometry args={[ship.heavy ? 0.24 : 0.11, 10, 10]} />
             <meshBasicMaterial
               color={GLOW}
               transparent
-              opacity={0.95}
+              opacity={0.85}
               depthWrite={false}
               blending={AdditiveBlending}
               fog={false}
             />
           </mesh>
           <mesh
-            position={[ship.heavy ? -4.8 : -2.2, 0, 0]}
+            position={[ship.heavy ? -3.5 : -1.55, 0, 0]}
             rotation={[0, 0, Math.PI / 2]}
           >
             <coneGeometry
-              args={[ship.heavy ? 0.32 : 0.15, ship.heavy ? 4 : 2, 10, 1, true]}
+              args={[
+                ship.heavy ? 0.2 : 0.09,
+                ship.heavy ? 1.5 : 0.75,
+                10,
+                1,
+                true,
+              ]}
             />
             <meshBasicMaterial
               color={GLOW_DIM}
               transparent
-              opacity={0.3}
+              opacity={0.16}
               depthWrite={false}
               blending={AdditiveBlending}
               fog={false}
@@ -623,7 +675,7 @@ function RimInstallations() {
         z: p.z + p.nz * out,
         yaw: p.yaw,
         towerH: 3 + Math.pow(Math.random(), 1.6) * 12,
-        towerW: 0.5 + Math.random() * 1.1,
+        towerW: 0.85 + Math.random() * 1.3,
         deckW: 1.6 + Math.random() * 3.4,
         deckD: 1.2 + Math.random() * 2.2,
         drop: 1 + Math.random() * 4,
@@ -692,11 +744,11 @@ function RimInstallations() {
           </mesh>
           {/* Vertical light seam up the tower */}
           <mesh position={[0, rig.towerH / 2, rig.towerW * 0.52]}>
-            <planeGeometry args={[rig.towerW * 0.26, rig.towerH * 0.82]} />
+            <planeGeometry args={[rig.towerW * 0.34, rig.towerH * 0.82]} />
             <meshBasicMaterial
               color={GLOW}
               transparent
-              opacity={0.6}
+              opacity={0.85}
               depthWrite={false}
               blending={AdditiveBlending}
             />

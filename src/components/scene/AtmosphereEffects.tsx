@@ -1361,6 +1361,10 @@ function AtmosphereStage() {
   const sunRef = useRef<Group>(null)
   const sunRaysRef = useRef<Group>(null)
   const moonRef = useRef<Group>(null)
+  // Scattering haloes belong to an atmosphere. In vacuum they read as a flat
+  // grey disc pasted over the stars, so they fade out in the space world.
+  const scatterRefs = useRef<Array<Mesh | null>>([])
+  const scatterBase = useRef<number[]>([])
   // Tapered flare rays, jittered so the star never looks mechanical
   const sunRays = useMemo(
     () =>
@@ -1451,8 +1455,22 @@ function AtmosphereStage() {
       sunRaysRef.current.rotation.z = state.timeOfDay * 0.35
     }
 
+    // No air, no scattering: fade the soft haloes right out in deep space
+    const airless = state.worldStyle === 'space' ? 0.12 : 1
+    scatterRefs.current.forEach((mesh, i) => {
+      if (!mesh) return
+      const mat = mesh.material as { opacity: number }
+      mat.opacity = (scatterBase.current[i] ?? mat.opacity) * airless
+    })
+
     starOpacityRef.current = sample.starOpacity
   })
+
+  /** Track a halo mesh and remember the opacity it was authored with. */
+  const registerScatter = (index: number, base: number) => (el: Mesh | null) => {
+    scatterRefs.current[index] = el
+    scatterBase.current[index] = base
+  }
 
   return (
     <>
@@ -1479,7 +1497,7 @@ function AtmosphereStage() {
       />
       <group ref={sunRef}>
         {/* Outer atmospheric bloom */}
-        <mesh position={[0, 0, -0.06]} renderOrder={97}>
+        <mesh ref={registerScatter(0, 0.07)} position={[0, 0, -0.06]} renderOrder={97}>
           <circleGeometry args={[7.4, 48]} />
           <meshBasicMaterial color="#ffcf7a" transparent opacity={0.07} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
         </mesh>
@@ -1495,7 +1513,7 @@ function AtmosphereStage() {
           ))}
         </group>
         {/* Inner halo */}
-        <mesh position={[0, 0, -0.02]} renderOrder={99}>
+        <mesh ref={registerScatter(1, 0.26)} position={[0, 0, -0.02]} renderOrder={99}>
           <circleGeometry args={[3.2, 48]} />
           <meshBasicMaterial color="#ffdf9a" transparent opacity={0.26} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
         </mesh>
@@ -1506,11 +1524,11 @@ function AtmosphereStage() {
         </mesh>
       </group>
       <group ref={moonRef}>
-        <mesh position={[0, 0, -0.06]}>
+        <mesh ref={registerScatter(2, 0.07)} position={[0, 0, -0.06]}>
           <circleGeometry args={[7.5, 64]} />
           <meshBasicMaterial color="#7fa8ff" transparent opacity={0.07} depthWrite={false} blending={AdditiveBlending} />
         </mesh>
-        <mesh position={[0, 0, -0.03]}>
+        <mesh ref={registerScatter(3, 0.15)} position={[0, 0, -0.03]}>
           <circleGeometry args={[4.2, 64]} />
           <meshBasicMaterial color="#aecbff" transparent opacity={0.15} depthWrite={false} blending={AdditiveBlending} />
         </mesh>
