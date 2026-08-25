@@ -57,7 +57,7 @@ export function GrassField({ terrainMode }: { terrainMode: TerrainMode }) {
 
   // A narrow blade, segmented vertically so it can curve rather than shear
   const geometry = useMemo(() => {
-    const geo = new PlaneGeometry(0.075, 1, 1, 4)
+    const geo = new PlaneGeometry(0.105, 1, 1, 5)
     geo.translate(0, 0.5, 0) // root at the origin so scale.y grows upward
     return geo
   }, [])
@@ -86,16 +86,23 @@ export function GrassField({ terrainMode }: { terrainMode: TerrainMode }) {
           uniform float uWindStrength;
           attribute vec3 aTint;
           attribute float aPhase;
-          varying vec3 vTint;`,
+          varying vec3 vTint;
+          varying float vBladeH;`,
         )
         .replace(
           '#include <begin_vertex>',
           `#include <begin_vertex>
           vTint = aTint;
+          vBladeH = uv.y;
           {
             // 0 at the root, 1 at the tip
             float bladeH = clamp(transformed.y, 0.0, 1.0);
             float bend = bladeH * bladeH;
+            // Every blade carries a resting arc, so the field looks alive even
+            // in dead calm instead of standing up like paper strips
+            float restLean = (fract(aPhase * 0.6180339) - 0.5) * 0.55;
+            transformed.x += bend * restLean;
+            transformed.z += bend * (fract(aPhase * 0.3141592) - 0.5) * 0.35;
             vec3 rootWorld = (modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
             float phase = uTime * 2.1
               + aPhase
@@ -123,12 +130,15 @@ export function GrassField({ terrainMode }: { terrainMode: TerrainMode }) {
           '#include <common>',
           `#include <common>
           uniform float uSnow;
-          varying vec3 vTint;`,
+          varying vec3 vTint;
+          varying float vBladeH;`,
         )
         .replace(
           '#include <color_fragment>',
           `#include <color_fragment>
-          diffuseColor.rgb *= mix(vTint, vec3(1.35, 1.42, 1.5), uSnow);`,
+          // Tips catch the light, roots stay in shadow
+          vec3 grassTint = vTint * (0.72 + vBladeH * 0.62);
+          diffuseColor.rgb *= mix(grassTint, vec3(1.35, 1.42, 1.5), uSnow);`,
         )
     }
 
@@ -142,21 +152,35 @@ export function GrassField({ terrainMode }: { terrainMode: TerrainMode }) {
     const matrices = new Float32Array(count * 16)
     const tints = new Float32Array(count * 3)
     const phases = new Float32Array(count)
-    const baseColor = new Color('#6d9950')
-    const dryColor = new Color('#a8ad63')
-    const lushColor = new Color('#4e8442')
+    const baseColor = new Color('#86ab63')
+    const dryColor = new Color('#bcbd7e')
+    const lushColor = new Color('#6d9a55')
     const tmp = new Color()
 
     let placed = 0
     let guard = 0
-    while (placed < count && guard < count * 5) {
+    // Blades grow in tufts around a wandering centre rather than evenly
+    let clumpX = 0
+    let clumpZ = 0
+    let clumpLeft = 0
+    while (placed < count && guard < count * 6) {
       guard += 1
-      const x = (Math.random() * 2 - 1) * boardHalf
-      const z = (Math.random() * 2 - 1) * boardHalf
+
+      if (clumpLeft <= 0) {
+        clumpX = (Math.random() * 2 - 1) * boardHalf
+        clumpZ = (Math.random() * 2 - 1) * boardHalf
+        clumpLeft = 3 + Math.floor(Math.random() * 9)
+      }
+      clumpLeft -= 1
+      // Gaussian-ish spread around the tuft centre
+      const spread = 0.5 + Math.random() * 1.3
+      const x = clumpX + (Math.random() + Math.random() - 1) * spread
+      const z = clumpZ + (Math.random() + Math.random() - 1) * spread
+      if (Math.abs(x) > boardHalf || Math.abs(z) > boardHalf) continue
       if (isOverWater(x, z)) continue
 
       // Bias toward shorter blades, with occasional tall stragglers
-      const height = 0.18 + Math.pow(Math.random(), 1.7) * 0.42
+      const height = 0.15 + Math.pow(Math.random(), 1.9) * 0.34
       dummy.position.set(x, 0, z)
       dummy.rotation.set(
         (Math.random() - 0.5) * 0.22,
@@ -172,7 +196,7 @@ export function GrassField({ terrainMode }: { terrainMode: TerrainMode }) {
       tmp.copy(baseColor)
       if (roll < 0.33) tmp.lerp(dryColor, Math.random() * 0.7)
       else if (roll > 0.72) tmp.lerp(lushColor, Math.random() * 0.6)
-      tmp.multiplyScalar(0.82 + Math.random() * 0.34)
+      tmp.multiplyScalar(0.92 + Math.random() * 0.22)
       tints[placed * 3] = tmp.r
       tints[placed * 3 + 1] = tmp.g
       tints[placed * 3 + 2] = tmp.b

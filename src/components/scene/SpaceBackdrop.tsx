@@ -320,23 +320,16 @@ function Planets() {
     <group>
       {/* Large banded world low on the horizon */}
       <group position={[-74, 18, -88]}>
+        {/* Lit for real, so the terminator falls where the star actually is */}
         <mesh ref={giantRef} renderOrder={-880}>
           <sphereGeometry args={[19, 56, 36]} />
-          <meshBasicMaterial
+          <meshStandardMaterial
             map={textures.giant}
             color="#ffffff"
-            toneMapped={false}
-            fog={false}
-          />
-        </mesh>
-        {/* Night side: a dark sphere offset to carve a terminator */}
-        <mesh position={[6.5, -2.5, 5]} renderOrder={-879}>
-          <sphereGeometry args={[18.4, 48, 32]} />
-          <meshBasicMaterial
-            color="#05030d"
-            transparent
-            opacity={0.72}
-            depthWrite={false}
+            roughness={1}
+            metalness={0}
+            emissive="#1a0f2e"
+            emissiveIntensity={0.5}
             fog={false}
           />
         </mesh>
@@ -359,20 +352,13 @@ function Planets() {
       <group position={[86, 32, -62]} rotation={[0, 0, 0.34]}>
         <mesh renderOrder={-880}>
           <sphereGeometry args={[8.5, 44, 30]} />
-          <meshBasicMaterial
+          <meshStandardMaterial
             map={textures.ringed}
             color="#ffffff"
-            toneMapped={false}
-            fog={false}
-          />
-        </mesh>
-        <mesh position={[3, -1.5, 3]} renderOrder={-879}>
-          <sphereGeometry args={[8.2, 36, 24]} />
-          <meshBasicMaterial
-            color="#0a0713"
-            transparent
-            opacity={0.6}
-            depthWrite={false}
+            roughness={1}
+            metalness={0}
+            emissive="#20140a"
+            emissiveIntensity={0.5}
             fog={false}
           />
         </mesh>
@@ -417,8 +403,8 @@ function Planets() {
 /** Sister islands: irregular rock keels under uneven caps, each on its own bob. */
 function FloatingIslands() {
   const geometries = useMemo(() => {
-    const keel = jitter(new ConeGeometry(0.95, 1.9, 11, 3), 0.16, 1)
-    const cap = jitter(new ConeGeometry(1.05, 0.34, 12, 1), 0.09, 2.3)
+    const keel = jitter(new ConeGeometry(0.95, 2.1, 9, 5), 0.3, 1)
+    const cap = jitter(new ConeGeometry(1.05, 0.42, 10, 2), 0.2, 2.3)
     return { keel, cap }
   }, [])
 
@@ -467,17 +453,27 @@ function FloatingIslands() {
         >
           {/* Uneven grass cap */}
           <mesh geometry={geometries.cap} position={[0, 0.1, 0]}>
-            <meshBasicMaterial color="#41663c" toneMapped={false} />
+            <meshStandardMaterial
+              color="#5c8a4e"
+              roughness={1}
+              emissive="#0d1a10"
+              emissiveIntensity={0.6}
+            />
           </mesh>
           {/* Jagged rock keel hanging beneath */}
           <mesh geometry={geometries.keel} position={[0, -0.95, 0]} rotation={[Math.PI, 0, 0]}>
-            <meshBasicMaterial color="#2e2a43" toneMapped={false} />
+            <meshStandardMaterial
+              color="#4a4363"
+              roughness={1}
+              emissive="#12101f"
+              emissiveIntensity={0.6}
+            />
           </mesh>
           {/* An occasional spire so silhouettes differ */}
           {isle.hasSpire ? (
             <mesh position={[0.3, 0.5, -0.2]} scale={[0.16, 0.7, 0.16]}>
               <coneGeometry args={[1, 1, 6]} />
-              <meshBasicMaterial color="#2b3f2a" toneMapped={false} />
+              <meshStandardMaterial color="#3d5a38" roughness={1} />
             </mesh>
           ) : null}
         </group>
@@ -533,7 +529,12 @@ function AsteroidField() {
       frustumCulled={false}
       raycast={() => null}
     >
-      <meshBasicMaterial color="#3b3550" toneMapped={false} />
+      <meshStandardMaterial
+        color="#544c6e"
+        roughness={1}
+        emissive="#14121f"
+        emissiveIntensity={0.6}
+      />
     </instancedMesh>
   )
 }
