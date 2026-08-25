@@ -1379,6 +1379,7 @@ function AtmosphereStage() {
       state.timeOfDay,
       state.weather,
       state.weatherIntensity,
+      state.worldStyle,
       sample,
     )
 

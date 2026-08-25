@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import {
   weatherKinds,
   weatherLabels,
+  worldLabels,
+  worldStyles,
   type WeatherKind,
+  type WorldStyle,
 } from '../../data/atmosphere'
 import { useSceneStore } from '../../store/sceneStore'
 import type { AtmospherePreset, TerrainMode } from '../../types/scene'
@@ -68,6 +71,8 @@ export function Toolbar() {
   const weatherIntensity = useSceneStore((state) => state.weatherIntensity)
   const setWeather = useSceneStore((state) => state.setWeather)
   const setWeatherIntensity = useSceneStore((state) => state.setWeatherIntensity)
+  const worldStyle = useSceneStore((state) => state.worldStyle)
+  const setWorldStyle = useSceneStore((state) => state.setWorldStyle)
   const saveScene = useSceneStore((state) => state.saveScene)
   const loadScene = useSceneStore((state) => state.loadScene)
   const autoSaveScene = useSceneStore((state) => state.autoSaveScene)
@@ -212,10 +217,35 @@ export function Toolbar() {
           <summary title="Time of day, weather, and named presets.">
             <span className="sky-summary-clock">{formatClock(timeOfDay)}</span>
             <span className="sky-summary-sep" aria-hidden="true" />
-            <span>{weatherLabels[weather]}</span>
+            <span>
+              {worldStyle === 'natural'
+                ? weatherLabels[weather]
+                : worldLabels[worldStyle]}
+            </span>
             <span className="sky-summary-caret" aria-hidden="true">▾</span>
           </summary>
           <div className="scene-menu-content sky-menu-content">
+            <label className="sky-field">
+              <span>World</span>
+              <select
+                value={worldStyle}
+                onChange={(event) => {
+                  setWorldStyle(event.target.value as WorldStyle)
+                  setMessage(
+                    `${worldLabels[event.target.value as WorldStyle]} world.`,
+                  )
+                }}
+              >
+                {worldStyles.map((world) => (
+                  <option key={world} value={world}>
+                    {worldLabels[world]}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className="scene-menu-divider" role="separator" />
+
             <label className="sky-field">
               <span>Preset</span>
               <select

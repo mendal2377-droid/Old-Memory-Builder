@@ -115,6 +115,7 @@ export function useWaterMaterial(opacity = 0.82) {
       state.timeOfDay,
       state.weather,
       state.weatherIntensity,
+      state.worldStyle,
       sample,
     )
 

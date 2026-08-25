@@ -12,6 +12,20 @@ import type { AtmospherePreset } from '../types/scene'
 
 export type WeatherKind = 'clear' | 'overcast' | 'rain' | 'storm' | 'snow'
 
+/**
+ * The setting the diorama sits in. A third axis alongside time and weather:
+ * it swaps the sky palette, the distant backdrop and the ground treatment,
+ * while leaving every placed object untouched.
+ */
+export type WorldStyle = 'natural' | 'cyber'
+
+export const worldStyles: WorldStyle[] = ['natural', 'cyber']
+
+export const worldLabels: Record<WorldStyle, string> = {
+  natural: 'Natural',
+  cyber: 'Cyber City',
+}
+
 export const weatherKinds: WeatherKind[] = [
   'clear',
   'overcast',
@@ -75,7 +89,7 @@ interface DayKeyframe {
   star: number
 }
 
-const rawKeyframes: DayKeyframe[] = [
+const naturalKeyframes: DayKeyframe[] = [
   { h: 0, bg: '#0a1120', top: '#070d18', bot: '#141f38', amb: 0.3, hemi: '#2a3a5e', hemiG: '#0e1524', hemiI: 0.18, dir: '#5f7bb5', dirI: 0.3, fog: '#0e1830', fogN: 20, fogF: 110, star: 1 },
   { h: 5, bg: '#20304f', top: '#101d38', bot: '#3a4c74', amb: 0.36, hemi: '#3c5382', hemiG: '#151d30', hemiI: 0.22, dir: '#7d8fc0', dirI: 0.45, fog: '#1c2c4c', fogN: 18, fogF: 105, star: 0.7 },
   { h: 6.5, bg: '#e6a074', top: '#6d7fae', bot: '#ffc48c', amb: 0.5, hemi: '#c9b7cf', hemiG: '#5a4636', hemiI: 0.5, dir: '#ffb266', dirI: 1.7, fog: '#e2a578', fogN: 22, fogF: 110, star: 0.15 },
@@ -88,7 +102,23 @@ const rawKeyframes: DayKeyframe[] = [
   { h: 24, bg: '#0a1120', top: '#070d18', bot: '#141f38', amb: 0.3, hemi: '#2a3a5e', hemiG: '#0e1524', hemiI: 0.18, dir: '#5f7bb5', dirI: 0.3, fog: '#0e1830', fogN: 20, fogF: 110, star: 1 },
 ]
 
-const keyframes = rawKeyframes.map((k) => ({
+// Cyber City: smog-hazed daylight that collapses into magenta/cyan neon at
+// night. Darker and foggier than nature at every hour.
+const cyberKeyframes: DayKeyframe[] = [
+  { h: 0, bg: '#0a0618', top: '#05030f', bot: '#1a0a2e', amb: 0.34, hemi: '#2a1a4e', hemiG: '#0d0618', hemiI: 0.3, dir: '#b060ff', dirI: 0.5, fog: '#0d0722', fogN: 12, fogF: 78, star: 0.85 },
+  { h: 5, bg: '#140a28', top: '#0a0620', bot: '#2e1444', amb: 0.38, hemi: '#3a2266', hemiG: '#120a22', hemiI: 0.32, dir: '#c070ff', dirI: 0.6, fog: '#150c2c', fogN: 12, fogF: 76, star: 0.6 },
+  { h: 6.5, bg: '#3a2448', top: '#1e1236', bot: '#6a3a5e', amb: 0.46, hemi: '#6a4a8a', hemiG: '#241830', hemiI: 0.42, dir: '#ff8ab0', dirI: 1.1, fog: '#33203f', fogN: 14, fogF: 80, star: 0.2 },
+  { h: 9, bg: '#5a4a66', top: '#38304e', bot: '#8a7086', amb: 0.55, hemi: '#8a7aa6', hemiG: '#3a3244', hemiI: 0.55, dir: '#ffc0a0', dirI: 1.4, fog: '#4e4258', fogN: 18, fogF: 88, star: 0 },
+  { h: 12, bg: '#6e6274', top: '#4a4460', bot: '#9a8a96', amb: 0.6, hemi: '#9a92ae', hemiG: '#46404e', hemiI: 0.6, dir: '#ffd8b8', dirI: 1.6, fog: '#605868', fogN: 20, fogF: 92, star: 0 },
+  { h: 15, bg: '#665a70', top: '#423a58', bot: '#927e90', amb: 0.56, hemi: '#928aa4', hemiG: '#423c4c', hemiI: 0.56, dir: '#ffc8a8', dirI: 1.45, fog: '#584e62', fogN: 18, fogF: 88, star: 0 },
+  { h: 18, bg: '#4a2a52', top: '#2a1840', bot: '#8a3a70', amb: 0.46, hemi: '#7a4a96', hemiG: '#2e1c34', hemiI: 0.45, dir: '#ff70b0', dirI: 1.2, fog: '#3e2448', fogN: 14, fogF: 80, star: 0.25 },
+  { h: 19.5, bg: '#2a1440', top: '#160a2c', bot: '#52206a', amb: 0.4, hemi: '#4e2a7a', hemiG: '#1a0e26', hemiI: 0.36, dir: '#d060ff', dirI: 0.8, fog: '#241236', fogN: 12, fogF: 74, star: 0.6 },
+  { h: 21, bg: '#12082a', top: '#08041a', bot: '#2a0e4e', amb: 0.36, hemi: '#341c60', hemiG: '#100822', hemiI: 0.32, dir: '#b050ff', dirI: 0.6, fog: '#150a2e', fogN: 10, fogF: 72, star: 0.9 },
+  { h: 24, bg: '#0a0618', top: '#05030f', bot: '#1a0a2e', amb: 0.34, hemi: '#2a1a4e', hemiG: '#0d0618', hemiI: 0.3, dir: '#b060ff', dirI: 0.5, fog: '#0d0722', fogN: 12, fogF: 78, star: 0.85 },
+]
+
+const prepare = (frames: DayKeyframe[]) =>
+  frames.map((k) => ({
   ...k,
   cBg: new Color(k.bg),
   cTop: new Color(k.top),
@@ -97,7 +127,12 @@ const keyframes = rawKeyframes.map((k) => ({
   cHemiG: new Color(k.hemiG),
   cDir: new Color(k.dir),
   cFog: new Color(k.fog),
-}))
+  }))
+
+const keyframesByWorld: Record<WorldStyle, ReturnType<typeof prepare>> = {
+  natural: prepare(naturalKeyframes),
+  cyber: prepare(cyberKeyframes),
+}
 
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t
@@ -173,9 +208,11 @@ export function sampleAtmosphere(
   hour: number,
   weather: WeatherKind,
   intensity: number,
+  world: WorldStyle = 'natural',
   out: AtmosphereSample = createAtmosphereSample(),
 ): AtmosphereSample {
   const clampedHour = Math.max(0, Math.min(24, hour))
+  const keyframes = keyframesByWorld[world] ?? keyframesByWorld.natural
 
   let i = 0
   while (i < keyframes.length - 2 && clampedHour > keyframes[i + 1].h) {
@@ -225,8 +262,9 @@ export function sampleAtmosphere(
     out.starOpacity *= 1 - cloud
   }
 
-  // Snow brightens the scene back up (high albedo, bright overcast)
-  if (weather === 'snow') {
+  // Snow brightens the scene back up (high albedo, bright overcast).
+  // The neon city keeps more of its own colour.
+  if (weather === 'snow' && world === 'natural') {
     const s = Math.max(0, Math.min(1, intensity))
     out.ambientIntensity *= 1 + s * 0.35
     out.background.lerp(new Color('#dce8ef'), s * 0.4 * (out.isDay ? 1 : 0.4))

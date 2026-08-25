@@ -9,6 +9,7 @@ import {
 } from 'three'
 import type { TerrainMode } from '../../types/scene'
 import { useSceneStore } from '../../store/sceneStore'
+import { CityBackdrop } from './CityBackdrop'
 import { GrassField } from './GrassField'
 import { PondWater, RiverWater, type WaterBlob } from './StylizedWater'
 
@@ -716,6 +717,7 @@ export function GroundPlane({
 }: GroundPlaneProps) {
   const weather = useSceneStore((state) => state.weather)
   const weatherIntensity = useSceneStore((state) => state.weatherIntensity)
+  const isCyber = useSceneStore((state) => state.worldStyle === 'cyber')
   const terrainTexture = useMemo(() => createTerrainTexture(terrainMode), [
     terrainMode,
   ])
@@ -749,8 +751,14 @@ export function GroundPlane({
       <TerrainEdgeShadows terrainMode={terrainMode} />
       <TerrainDetails terrainMode={terrainMode} />
       <SharedRiver />
-      <TerrainBackdrop terrainMode={terrainMode} />
-      <TerrainScatter />
+      {isCyber ? (
+        <CityBackdrop />
+      ) : (
+        <>
+          <TerrainBackdrop terrainMode={terrainMode} />
+          <TerrainScatter />
+        </>
+      )}
       <GrassField terrainMode={terrainMode} />
       {weather === 'rain' || weather === 'storm' ? (
         <WetGroundOverlay

@@ -1,6 +1,10 @@
 import { create } from 'zustand'
 import { assets } from '../data/assets'
-import { presetCoords, type WeatherKind } from '../data/atmosphere'
+import {
+  presetCoords,
+  type WeatherKind,
+  type WorldStyle,
+} from '../data/atmosphere'
 import { memoryKits } from '../data/memoryKits'
 import { sceneTemplates } from '../data/sceneTemplates'
 import type {
@@ -34,6 +38,7 @@ interface SavedSceneState {
   timeOfDay: number
   weather: WeatherKind
   weatherIntensity: number
+  worldStyle: WorldStyle
   isGridVisible: boolean
   cameraMode: 'build' | 'walk'
   sceneObjects: SavedSceneObject[]
@@ -322,6 +327,7 @@ interface SceneState {
   timeOfDay: number
   weather: WeatherKind
   weatherIntensity: number
+  worldStyle: WorldStyle
   terrainMode: TerrainMode
   atmospherePreset: AtmospherePreset
   isMuted: boolean
@@ -350,6 +356,7 @@ interface SceneState {
   setTimeOfDay: (hour: number) => void
   setWeather: (weather: WeatherKind, intensity?: number) => void
   setWeatherIntensity: (intensity: number) => void
+  setWorldStyle: (world: WorldStyle) => void
   undo: () => void
   addObject: (assetId: string) => void
   setPlacementAsset: (assetId: string) => void
@@ -455,6 +462,7 @@ function createSceneSnapshot(state: SceneState): SavedSceneState {
     timeOfDay: state.timeOfDay,
     weather: state.weather,
     weatherIntensity: state.weatherIntensity,
+    worldStyle: state.worldStyle,
     isGridVisible: state.isGridVisible,
     cameraMode: state.cameraMode,
     sceneObjects: state.sceneObjects.map((object) => ({
@@ -477,6 +485,7 @@ function parseSceneSnapshot(json: string): SavedSceneState | null {
       timeOfDay?: unknown
       weather?: unknown
       weatherIntensity?: unknown
+      worldStyle?: unknown
       isGridVisible?: unknown
       cameraMode?: unknown
     }
@@ -519,6 +528,8 @@ function parseSceneSnapshot(json: string): SavedSceneState | null {
         typeof parsedScene.weatherIntensity === 'number'
           ? Math.max(0, Math.min(1, parsedScene.weatherIntensity))
           : fallback.weatherIntensity,
+      worldStyle:
+        parsedScene.worldStyle === 'cyber' ? 'cyber' : 'natural',
       isGridVisible:
         typeof parsedScene.isGridVisible === 'boolean'
           ? parsedScene.isGridVisible
@@ -551,6 +562,7 @@ export const useSceneStore = create<SceneState>((set, get) => {
   timeOfDay: presetCoords[defaultAtmospherePreset].timeOfDay,
   weather: presetCoords[defaultAtmospherePreset].weather,
   weatherIntensity: presetCoords[defaultAtmospherePreset].weatherIntensity,
+  worldStyle: 'natural' as WorldStyle,
   setTimeOfDay: (hour) => set({ timeOfDay: Math.max(0, Math.min(24, hour)) }),
   setWeather: (weather, intensity) =>
     set((state) => ({
@@ -560,6 +572,7 @@ export const useSceneStore = create<SceneState>((set, get) => {
     })),
   setWeatherIntensity: (intensity) =>
     set({ weatherIntensity: Math.max(0, Math.min(1, intensity)) }),
+  setWorldStyle: (worldStyle) => set({ worldStyle }),
   beginBriefing: () => {
     set({
       gameMode: 'briefing',
@@ -966,6 +979,7 @@ export const useSceneStore = create<SceneState>((set, get) => {
       timeOfDay: snapshot.timeOfDay,
       weather: snapshot.weather,
       weatherIntensity: snapshot.weatherIntensity,
+      worldStyle: snapshot.worldStyle,
       isGridVisible: snapshot.isGridVisible,
       cameraMode: 'build',
       isCameraTransitioning: false,
@@ -1001,6 +1015,7 @@ export const useSceneStore = create<SceneState>((set, get) => {
       timeOfDay: snapshot.timeOfDay,
       weather: snapshot.weather,
       weatherIntensity: snapshot.weatherIntensity,
+      worldStyle: snapshot.worldStyle,
       isGridVisible: snapshot.isGridVisible,
       cameraMode: 'build',
       isCameraTransitioning: false,
