@@ -1359,7 +1359,17 @@ function AtmosphereStage() {
   const hemiRef = useRef<HemisphereLight>(null)
   const dirRef = useRef<DirectionalLight>(null)
   const sunRef = useRef<Group>(null)
+  const sunRaysRef = useRef<Group>(null)
   const moonRef = useRef<Group>(null)
+  // Tapered flare rays, jittered so the star never looks mechanical
+  const sunRays = useMemo(
+    () =>
+      Array.from({ length: 12 }).map((_, i) => ({
+        angle: (i / 12) * Math.PI * 2,
+        length: 9 * (0.55 + Math.random() * 0.85),
+      })),
+    [],
+  )
   const starOpacityRef = useRef(0)
 
   useEffect(() => {
@@ -1437,6 +1447,10 @@ function AtmosphereStage() {
       dirRef.current.intensity = sample.sunIntensity
     }
 
+    if (sunRaysRef.current) {
+      sunRaysRef.current.rotation.z = state.timeOfDay * 0.35
+    }
+
     starOpacityRef.current = sample.starOpacity
   })
 
@@ -1464,30 +1478,44 @@ function AtmosphereStage() {
         shadow-camera-far={90}
       />
       <group ref={sunRef}>
-        <mesh renderOrder={100}>
-          <circleGeometry args={[3.6, 48]} />
-          <meshBasicMaterial color="#fff3c8" transparent opacity={0.96} depthWrite={false} depthTest={false} />
+        {/* Outer atmospheric bloom */}
+        <mesh position={[0, 0, -0.06]} renderOrder={97}>
+          <circleGeometry args={[6.2, 48]} />
+          <meshBasicMaterial color="#ffcf7a" transparent opacity={0.1} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
         </mesh>
+        {/* Tapered flare rays, turning slowly through the day */}
+        <group ref={sunRaysRef} position={[0, 0, -0.04]}>
+          {sunRays.map((ray, index) => (
+            <group key={`sun-ray-${index}`} rotation={[0, 0, ray.angle]}>
+              <mesh position={[0, ray.length * 0.5 + 1.1, 0]} renderOrder={98}>
+                <coneGeometry args={[0.5, ray.length, 3]} />
+                <meshBasicMaterial color="#fff0c0" transparent opacity={0.2} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
+              </mesh>
+            </group>
+          ))}
+        </group>
+        {/* Inner halo */}
         <mesh position={[0, 0, -0.02]} renderOrder={99}>
-          <circleGeometry args={[7, 48]} />
-          <meshBasicMaterial color="#ffdf9a" transparent opacity={0.3} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
+          <circleGeometry args={[2.9, 48]} />
+          <meshBasicMaterial color="#ffdf9a" transparent opacity={0.4} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
         </mesh>
-        <mesh position={[0, 0, -0.04]} renderOrder={98}>
-          <circleGeometry args={[13, 48]} />
-          <meshBasicMaterial color="#ffcf7a" transparent opacity={0.12} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
+        {/* Bright core */}
+        <mesh renderOrder={100}>
+          <circleGeometry args={[1.7, 48]} />
+          <meshBasicMaterial color="#fff8dc" transparent opacity={0.97} depthWrite={false} depthTest={false} />
         </mesh>
       </group>
       <group ref={moonRef}>
         <mesh position={[0, 0, -0.06]}>
-          <circleGeometry args={[13, 64]} />
-          <meshBasicMaterial color="#7fa8ff" transparent opacity={0.08} depthWrite={false} blending={AdditiveBlending} />
+          <circleGeometry args={[7.5, 64]} />
+          <meshBasicMaterial color="#7fa8ff" transparent opacity={0.07} depthWrite={false} blending={AdditiveBlending} />
         </mesh>
         <mesh position={[0, 0, -0.03]}>
-          <circleGeometry args={[6.5, 64]} />
-          <meshBasicMaterial color="#aecbff" transparent opacity={0.16} depthWrite={false} blending={AdditiveBlending} />
+          <circleGeometry args={[4.2, 64]} />
+          <meshBasicMaterial color="#aecbff" transparent opacity={0.15} depthWrite={false} blending={AdditiveBlending} />
         </mesh>
         <mesh renderOrder={100}>
-          <circleGeometry args={[3.6, 64]} />
+          <circleGeometry args={[2.4, 64]} />
           <meshBasicMaterial map={getMoonFace()} color="#ffffff" transparent opacity={0.97} depthWrite={false} depthTest={false} />
         </mesh>
       </group>
