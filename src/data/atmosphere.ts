@@ -121,16 +121,16 @@ const cyberKeyframes: DayKeyframe[] = [
 // Deep Space: an island adrift. Near-black at every hour with the stars always
 // out; "time" only moves which star is lighting the rock and how warm it is.
 const spaceKeyframes: DayKeyframe[] = [
-  { h: 0, bg: '#04050e', top: '#010206', bot: '#090a1c', amb: 0.3, hemi: '#1a2246', hemiG: '#05060e', hemiI: 0.24, dir: '#9fb8ff', dirI: 0.7, fog: '#05060f', fogN: 60, fogF: 260, star: 1 },
-  { h: 5, bg: '#060714', top: '#02030a', bot: '#0d0e26', amb: 0.32, hemi: '#20295a', hemiG: '#06070f', hemiI: 0.26, dir: '#b9c8ff', dirI: 0.95, fog: '#060713', fogN: 60, fogF: 260, star: 1 },
-  { h: 6.5, bg: '#0a0a1a', top: '#04040e', bot: '#151230', amb: 0.36, hemi: '#2c2a66', hemiG: '#08080f', hemiI: 0.3, dir: '#ffd2a8', dirI: 1.35, fog: '#08081a', fogN: 60, fogF: 260, star: 0.95 },
-  { h: 9, bg: '#0d0f22', top: '#050614', bot: '#191a3c', amb: 0.42, hemi: '#33386f', hemiG: '#0a0b16', hemiI: 0.34, dir: '#ffeccf', dirI: 1.7, fog: '#0b0c1e', fogN: 60, fogF: 260, star: 0.88 },
-  { h: 12, bg: '#101228', top: '#070818', bot: '#1c1e44', amb: 0.46, hemi: '#3a4080', hemiG: '#0c0d1a', hemiI: 0.38, dir: '#fff6e2', dirI: 1.95, fog: '#0d0f24', fogN: 60, fogF: 260, star: 0.82 },
-  { h: 15, bg: '#0e1024', top: '#060716', bot: '#1a1b3f', amb: 0.43, hemi: '#363c76', hemiG: '#0b0c18', hemiI: 0.35, dir: '#ffe8c8', dirI: 1.72, fog: '#0c0d20', fogN: 60, fogF: 260, star: 0.88 },
-  { h: 18, bg: '#0a0a1c', top: '#040510', bot: '#151334', amb: 0.37, hemi: '#2e2c6a', hemiG: '#09090f', hemiI: 0.3, dir: '#ffbf9a', dirI: 1.3, fog: '#08081b', fogN: 60, fogF: 260, star: 0.94 },
-  { h: 19.5, bg: '#070816', top: '#02030b', bot: '#100f28', amb: 0.33, hemi: '#242a5e', hemiG: '#07070d', hemiI: 0.27, dir: '#c3b4ff', dirI: 0.95, fog: '#060714', fogN: 60, fogF: 260, star: 0.98 },
-  { h: 21, bg: '#050610', top: '#010207', bot: '#0b0b20', amb: 0.31, hemi: '#1c2350', hemiG: '#05060e', hemiI: 0.25, dir: '#a5b8ff', dirI: 0.78, fog: '#050611', fogN: 60, fogF: 260, star: 1 },
-  { h: 24, bg: '#04050e', top: '#010206', bot: '#090a1c', amb: 0.3, hemi: '#1a2246', hemiG: '#05060e', hemiI: 0.24, dir: '#9fb8ff', dirI: 0.7, fog: '#05060f', fogN: 60, fogF: 260, star: 1 },
+  { h: 0, bg: '#03060f', top: '#010309', bot: '#061020', amb: 0.26, hemi: '#132a4e', hemiG: '#03060e', hemiI: 0.24, dir: '#7fb4ff', dirI: 0.7, fog: '#04070f', fogN: 60, fogF: 260, star: 1 },
+  { h: 5, bg: '#040814', top: '#010409', bot: '#08142a', amb: 0.28, hemi: '#17335e', hemiG: '#04070f', hemiI: 0.26, dir: '#95c4ff', dirI: 0.95, fog: '#050913', fogN: 60, fogF: 260, star: 1 },
+  { h: 6.5, bg: '#060b1a', top: '#02050c', bot: '#0b1a34', amb: 0.32, hemi: '#1d3c6e', hemiG: '#05080f', hemiI: 0.3, dir: '#cfe0ff', dirI: 1.3, fog: '#060a16', fogN: 60, fogF: 260, star: 0.96 },
+  { h: 9, bg: '#070d1e', top: '#020610', bot: '#0d1f3c', amb: 0.36, hemi: '#22467c', hemiG: '#060916', hemiI: 0.32, dir: '#e8f2ff', dirI: 1.6, fog: '#070b1a', fogN: 60, fogF: 260, star: 0.9 },
+  { h: 12, bg: '#081026', top: '#030714', bot: '#0f2444', amb: 0.4, hemi: '#284e88', hemiG: '#070a18', hemiI: 0.36, dir: '#ffffff', dirI: 1.85, fog: '#080d1e', fogN: 60, fogF: 260, star: 0.86 },
+  { h: 15, bg: '#070e20', top: '#020611', bot: '#0d203e', amb: 0.37, hemi: '#244880', hemiG: '#060916', hemiI: 0.33, dir: '#eef4ff', dirI: 1.62, fog: '#070b1b', fogN: 60, fogF: 260, star: 0.9 },
+  { h: 18, bg: '#050a18', top: '#02040d', bot: '#0a172f', amb: 0.32, hemi: '#1c3a6a', hemiG: '#05080f', hemiI: 0.3, dir: '#ffd0a8', dirI: 1.25, fog: '#050914', fogN: 60, fogF: 260, star: 0.95 },
+  { h: 19.5, bg: '#040713', top: '#01030a', bot: '#071227', amb: 0.29, hemi: '#163158', hemiG: '#04070e', hemiI: 0.27, dir: '#a8c4ff', dirI: 0.95, fog: '#040711', fogN: 60, fogF: 260, star: 0.99 },
+  { h: 21, bg: '#030610', top: '#010209', bot: '#061021', amb: 0.27, hemi: '#132a50', hemiG: '#03060e', hemiI: 0.25, dir: '#89b8ff', dirI: 0.78, fog: '#04070f', fogN: 60, fogF: 260, star: 1 },
+  { h: 24, bg: '#03060f', top: '#010309', bot: '#061020', amb: 0.26, hemi: '#132a4e', hemiG: '#03060e', hemiI: 0.24, dir: '#7fb4ff', dirI: 0.7, fog: '#04070f', fogN: 60, fogF: 260, star: 1 },
 ]
 
 const prepare = (frames: DayKeyframe[]) =>
