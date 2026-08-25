@@ -1415,8 +1415,11 @@ function AtmosphereStage() {
       -30,
     ]
 
-    // Heavy cloud hides the disc entirely
-    const discVisible = sample.cloudiness < 0.55
+    // Heavy cloud hides the disc entirely. The discs are also walk-mode only:
+    // the build camera is orthographic, so distance does not shrink them and a
+    // sun would draw hundreds of pixels wide across the diorama.
+    const inWalk = state.cameraMode === 'walk'
+    const discVisible = inWalk && sample.cloudiness < 0.55
     if (sunRef.current) {
       sunRef.current.position.set(...sunPos)
       sunRef.current.visible = sample.isDay && discVisible
