@@ -67,17 +67,18 @@ function getNebulaTexture(): CanvasTexture | null {
 
   // Blue-dominant, with a single restrained magenta accent
   const inks = [
-    'rgba(50,140,255,0.5)',
-    'rgba(30,190,240,0.42)',
-    'rgba(70,110,240,0.4)',
-    'rgba(150,70,220,0.22)',
+    'rgba(90,190,255,0.95)',
+    'rgba(40,220,255,0.85)',
+    'rgba(120,160,255,0.8)',
+    'rgba(60,120,255,0.7)',
+    'rgba(180,110,255,0.35)',
   ]
 
   ctx.lineCap = 'round'
   for (let i = 0; i < 46; i += 1) {
     ctx.strokeStyle = inks[Math.floor(Math.random() * inks.length)]
     ctx.lineWidth = 6 + Math.random() * 30
-    ctx.globalAlpha = 0.25 + Math.random() * 0.4
+    ctx.globalAlpha = 0.45 + Math.random() * 0.5
     const y = 40 + Math.random() * 176
     const amp = 10 + Math.random() * 34
     ctx.beginPath()
@@ -118,7 +119,7 @@ function Nebula() {
         height: 14 + Math.random() * 48,
         scale: 88 + Math.random() * 70,
         spin: (Math.random() - 0.5) * 1.1,
-        opacity: 0.3 + Math.random() * 0.24,
+        opacity: 0.5 + Math.random() * 0.34,
       })),
     [],
   )
@@ -198,18 +199,18 @@ function Moons() {
     <group>
       <group position={[-78, 40, -92]}>
         <mesh renderOrder={-880}>
-          <sphereGeometry args={[21, 56, 40]} />
+          <sphereGeometry args={[26, 56, 40]} />
           <meshStandardMaterial
             map={textures.a}
             roughness={1}
             metalness={0}
-            emissive="#0b1220"
-            emissiveIntensity={0.55}
+            emissive="#1a2536"
+            emissiveIntensity={0.9}
             fog={false}
           />
         </mesh>
         <mesh renderOrder={-881}>
-          <sphereGeometry args={[22.6, 32, 24]} />
+          <sphereGeometry args={[28, 32, 24]} />
           <meshBasicMaterial
             color="#5c8fd6"
             transparent
@@ -414,9 +415,9 @@ function PassingShips() {
           period: heavy ? 80 + Math.random() * 50 : 30 + Math.random() * 26,
           offset: Math.random() * 70,
           height: 10 + Math.random() * 44,
-          depth: -78 - Math.random() * 70,
+          depth: -58 - Math.random() * 60,
           span: 230,
-          scale: heavy ? 2.4 + Math.random() * 1.8 : 0.55 + Math.random() * 0.8,
+          scale: heavy ? 3.6 + Math.random() * 2.4 : 1.1 + Math.random() * 1.2,
           tilt: (Math.random() - 0.5) * 0.3,
           reverse: i % 2 === 0,
         }
@@ -585,6 +586,150 @@ function IslandCore() {
   )
 }
 
+// -- Rim installations -------------------------------------------------------
+
+/** A point on the square board edge, plus the outward direction there. */
+function rimPoint(t: number, half: number) {
+  const p = ((t % 1) + 1) % 1
+  const side = Math.floor(p * 4)
+  const f = p * 4 - side
+  const a = -half + f * half * 2
+  switch (side) {
+    case 0:
+      return { x: a, z: -half, nx: 0, nz: -1, yaw: 0 }
+    case 1:
+      return { x: half, z: a, nx: 1, nz: 0, yaw: Math.PI / 2 }
+    case 2:
+      return { x: -a, z: half, nx: 0, nz: 1, yaw: Math.PI }
+    default:
+      return { x: -half, z: -a, nx: -1, nz: 0, yaw: -Math.PI / 2 }
+  }
+}
+
+/**
+ * Docking platforms and antenna spires clamped around the island's edge —
+ * the thing that reads most immediately as "this rock has been built on".
+ */
+function RimInstallations() {
+  const rigs = useMemo(() => {
+    const half = 22.5
+    const count = 26
+    return Array.from({ length: count }).map((_, i) => {
+      const t = i / count + (Math.random() - 0.5) * 0.012
+      const p = rimPoint(t, half)
+      const out = 0.4 + Math.random() * 2.2
+      return {
+        x: p.x + p.nx * out,
+        z: p.z + p.nz * out,
+        yaw: p.yaw,
+        towerH: 3 + Math.pow(Math.random(), 1.6) * 12,
+        towerW: 0.5 + Math.random() * 1.1,
+        deckW: 1.6 + Math.random() * 3.4,
+        deckD: 1.2 + Math.random() * 2.2,
+        drop: 1 + Math.random() * 4,
+        hasMast: Math.random() > 0.45,
+        lightPhase: Math.random() * Math.PI * 2,
+      }
+    })
+  }, [])
+
+  const lightRefs = useRef<Array<Mesh | null>>([])
+
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime
+    rigs.forEach((rig, i) => {
+      const m = lightRefs.current[i]
+      if (!m) return
+      const mat = m.material as { opacity: number }
+      mat.opacity = 0.45 + Math.abs(Math.sin(t * 0.8 + rig.lightPhase)) * 0.5
+    })
+  })
+
+  return (
+    <group>
+      {rigs.map((rig, i) => (
+        <group key={`rig-${i}`} position={[rig.x, 0, rig.z]} rotation={[0, rig.yaw, 0]}>
+          {/* Deck clamped to the rim, hanging slightly below the surface */}
+          <mesh position={[0, -0.5, 0]}>
+            <boxGeometry args={[rig.deckW, 0.5, rig.deckD]} />
+            <meshStandardMaterial
+              color="#1a2032"
+              roughness={1}
+              emissive="#080d18"
+              emissiveIntensity={0.6}
+            />
+          </mesh>
+          {/* Structure dropping down the cliff face */}
+          <mesh position={[0, -0.6 - rig.drop / 2, 0]}>
+            <boxGeometry args={[rig.deckW * 0.55, rig.drop, rig.deckD * 0.6]} />
+            <meshStandardMaterial
+              color="#161c2c"
+              roughness={1}
+              emissive="#070b14"
+              emissiveIntensity={0.6}
+            />
+          </mesh>
+          {/* Lit window strip down the drop */}
+          <mesh position={[0, -0.6 - rig.drop / 2, rig.deckD * 0.31]}>
+            <planeGeometry args={[rig.deckW * 0.3, rig.drop * 0.72]} />
+            <meshBasicMaterial
+              color={GLOW}
+              transparent
+              opacity={0.5}
+              depthWrite={false}
+              blending={AdditiveBlending}
+            />
+          </mesh>
+          {/* Tower */}
+          <mesh position={[0, rig.towerH / 2, 0]}>
+            <boxGeometry args={[rig.towerW, rig.towerH, rig.towerW]} />
+            <meshStandardMaterial
+              color="#1c2336"
+              roughness={1}
+              emissive="#0a1120"
+              emissiveIntensity={0.6}
+            />
+          </mesh>
+          {/* Vertical light seam up the tower */}
+          <mesh position={[0, rig.towerH / 2, rig.towerW * 0.52]}>
+            <planeGeometry args={[rig.towerW * 0.26, rig.towerH * 0.82]} />
+            <meshBasicMaterial
+              color={GLOW}
+              transparent
+              opacity={0.6}
+              depthWrite={false}
+              blending={AdditiveBlending}
+            />
+          </mesh>
+          {/* Slim antenna mast */}
+          {rig.hasMast ? (
+            <mesh position={[0, rig.towerH + 1.6, 0]}>
+              <cylinderGeometry args={[0.05, 0.09, 3.2, 6]} />
+              <meshStandardMaterial color="#2a3146" roughness={1} />
+            </mesh>
+          ) : null}
+          {/* Blinking beacon on top */}
+          <mesh
+            ref={(el) => {
+              lightRefs.current[i] = el
+            }}
+            position={[0, rig.towerH + (rig.hasMast ? 3.3 : 0.3), 0]}
+          >
+            <sphereGeometry args={[0.16, 8, 8]} />
+            <meshBasicMaterial
+              color="#ff5a6e"
+              transparent
+              opacity={0.8}
+              depthWrite={false}
+              blending={AdditiveBlending}
+            />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  )
+}
+
 export function SpaceBackdrop() {
   return (
     <group raycast={() => null}>
@@ -594,6 +739,7 @@ export function SpaceBackdrop() {
       <FloatingIslands />
       <PassingShips />
       <IslandCore />
+      <RimInstallations />
     </group>
   )
 }
