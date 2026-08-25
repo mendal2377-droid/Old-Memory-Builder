@@ -17,13 +17,14 @@ export type WeatherKind = 'clear' | 'overcast' | 'rain' | 'storm' | 'snow'
  * it swaps the sky palette, the distant backdrop and the ground treatment,
  * while leaving every placed object untouched.
  */
-export type WorldStyle = 'natural' | 'cyber'
+export type WorldStyle = 'natural' | 'cyber' | 'space'
 
-export const worldStyles: WorldStyle[] = ['natural', 'cyber']
+export const worldStyles: WorldStyle[] = ['natural', 'cyber', 'space']
 
 export const worldLabels: Record<WorldStyle, string> = {
   natural: 'Natural',
   cyber: 'Cyber City',
+  space: 'Deep Space',
 }
 
 export const weatherKinds: WeatherKind[] = [
@@ -117,6 +118,21 @@ const cyberKeyframes: DayKeyframe[] = [
   { h: 24, bg: '#0a0618', top: '#05030f', bot: '#1a0a2e', amb: 0.34, hemi: '#2a1a4e', hemiG: '#0d0618', hemiI: 0.3, dir: '#b060ff', dirI: 0.5, fog: '#0d0722', fogN: 12, fogF: 78, star: 0.85 },
 ]
 
+// Deep Space: an island adrift. Near-black at every hour with the stars always
+// out; "time" only moves which star is lighting the rock and how warm it is.
+const spaceKeyframes: DayKeyframe[] = [
+  { h: 0, bg: '#04050e', top: '#010206', bot: '#090a1c', amb: 0.3, hemi: '#1a2246', hemiG: '#05060e', hemiI: 0.24, dir: '#9fb8ff', dirI: 0.7, fog: '#05060f', fogN: 60, fogF: 260, star: 1 },
+  { h: 5, bg: '#060714', top: '#02030a', bot: '#0d0e26', amb: 0.32, hemi: '#20295a', hemiG: '#06070f', hemiI: 0.26, dir: '#b9c8ff', dirI: 0.95, fog: '#060713', fogN: 60, fogF: 260, star: 1 },
+  { h: 6.5, bg: '#0a0a1a', top: '#04040e', bot: '#151230', amb: 0.36, hemi: '#2c2a66', hemiG: '#08080f', hemiI: 0.3, dir: '#ffd2a8', dirI: 1.35, fog: '#08081a', fogN: 60, fogF: 260, star: 0.95 },
+  { h: 9, bg: '#0d0f22', top: '#050614', bot: '#191a3c', amb: 0.42, hemi: '#33386f', hemiG: '#0a0b16', hemiI: 0.34, dir: '#ffeccf', dirI: 1.7, fog: '#0b0c1e', fogN: 60, fogF: 260, star: 0.88 },
+  { h: 12, bg: '#101228', top: '#070818', bot: '#1c1e44', amb: 0.46, hemi: '#3a4080', hemiG: '#0c0d1a', hemiI: 0.38, dir: '#fff6e2', dirI: 1.95, fog: '#0d0f24', fogN: 60, fogF: 260, star: 0.82 },
+  { h: 15, bg: '#0e1024', top: '#060716', bot: '#1a1b3f', amb: 0.43, hemi: '#363c76', hemiG: '#0b0c18', hemiI: 0.35, dir: '#ffe8c8', dirI: 1.72, fog: '#0c0d20', fogN: 60, fogF: 260, star: 0.88 },
+  { h: 18, bg: '#0a0a1c', top: '#040510', bot: '#151334', amb: 0.37, hemi: '#2e2c6a', hemiG: '#09090f', hemiI: 0.3, dir: '#ffbf9a', dirI: 1.3, fog: '#08081b', fogN: 60, fogF: 260, star: 0.94 },
+  { h: 19.5, bg: '#070816', top: '#02030b', bot: '#100f28', amb: 0.33, hemi: '#242a5e', hemiG: '#07070d', hemiI: 0.27, dir: '#c3b4ff', dirI: 0.95, fog: '#060714', fogN: 60, fogF: 260, star: 0.98 },
+  { h: 21, bg: '#050610', top: '#010207', bot: '#0b0b20', amb: 0.31, hemi: '#1c2350', hemiG: '#05060e', hemiI: 0.25, dir: '#a5b8ff', dirI: 0.78, fog: '#050611', fogN: 60, fogF: 260, star: 1 },
+  { h: 24, bg: '#04050e', top: '#010206', bot: '#090a1c', amb: 0.3, hemi: '#1a2246', hemiG: '#05060e', hemiI: 0.24, dir: '#9fb8ff', dirI: 0.7, fog: '#05060f', fogN: 60, fogF: 260, star: 1 },
+]
+
 const prepare = (frames: DayKeyframe[]) =>
   frames.map((k) => ({
   ...k,
@@ -132,6 +148,7 @@ const prepare = (frames: DayKeyframe[]) =>
 const keyframesByWorld: Record<WorldStyle, ReturnType<typeof prepare>> = {
   natural: prepare(naturalKeyframes),
   cyber: prepare(cyberKeyframes),
+  space: prepare(spaceKeyframes),
 }
 
 function lerp(a: number, b: number, t: number) {
@@ -264,7 +281,7 @@ export function sampleAtmosphere(
 
   // Snow brightens the scene back up (high albedo, bright overcast).
   // The neon city keeps more of its own colour.
-  if (weather === 'snow' && world === 'natural') {
+  if (weather === 'snow' && world !== 'space') {
     const s = Math.max(0, Math.min(1, intensity))
     out.ambientIntensity *= 1 + s * 0.35
     out.background.lerp(new Color('#dce8ef'), s * 0.4 * (out.isDay ? 1 : 0.4))

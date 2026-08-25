@@ -10,6 +10,7 @@ import {
 import type { TerrainMode } from '../../types/scene'
 import { useSceneStore } from '../../store/sceneStore'
 import { CityBackdrop } from './CityBackdrop'
+import { SpaceBackdrop } from './SpaceBackdrop'
 import { GrassField } from './GrassField'
 import { PondWater, RiverWater, type WaterBlob } from './StylizedWater'
 
@@ -717,7 +718,7 @@ export function GroundPlane({
 }: GroundPlaneProps) {
   const weather = useSceneStore((state) => state.weather)
   const weatherIntensity = useSceneStore((state) => state.weatherIntensity)
-  const isCyber = useSceneStore((state) => state.worldStyle === 'cyber')
+  const worldStyle = useSceneStore((state) => state.worldStyle)
   const terrainTexture = useMemo(() => createTerrainTexture(terrainMode), [
     terrainMode,
   ])
@@ -751,14 +752,14 @@ export function GroundPlane({
       <TerrainEdgeShadows terrainMode={terrainMode} />
       <TerrainDetails terrainMode={terrainMode} />
       <SharedRiver />
-      {isCyber ? (
-        <CityBackdrop />
-      ) : (
-        <>
-          <TerrainBackdrop terrainMode={terrainMode} />
-          <TerrainScatter />
-        </>
-      )}
+      {/* Only the horizon changes between worlds — the island itself keeps its
+          scatter and grass, which is the whole point of it drifting. */}
+      {worldStyle === 'cyber' ? <CityBackdrop /> : null}
+      {worldStyle === 'space' ? <SpaceBackdrop /> : null}
+      {worldStyle === 'natural' ? (
+        <TerrainBackdrop terrainMode={terrainMode} />
+      ) : null}
+      <TerrainScatter />
       <GrassField terrainMode={terrainMode} />
       {weather === 'rain' || weather === 'storm' ? (
         <WetGroundOverlay

@@ -529,7 +529,10 @@ function parseSceneSnapshot(json: string): SavedSceneState | null {
           ? Math.max(0, Math.min(1, parsedScene.weatherIntensity))
           : fallback.weatherIntensity,
       worldStyle:
-        parsedScene.worldStyle === 'cyber' ? 'cyber' : 'natural',
+        parsedScene.worldStyle === 'cyber' ||
+        parsedScene.worldStyle === 'space'
+          ? parsedScene.worldStyle
+          : 'natural',
       isGridVisible:
         typeof parsedScene.isGridVisible === 'boolean'
           ? parsedScene.isGridVisible

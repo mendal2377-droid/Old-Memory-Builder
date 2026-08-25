@@ -20,9 +20,10 @@ import {
  * geometry, which keeps them legible at every hour.
  */
 
-const TOWER_COUNT = 150
-const RING_INNER = 33
-const RING_OUTER = 62
+const TOWER_COUNT = 130
+// Pushed well back: at 33 units the towers walled in a 46-unit board
+const RING_INNER = 58
+const RING_OUTER = 110
 
 /** Lit-window facade: dark slab with a scatter of glowing windows. */
 let facadeCache: CanvasTexture | null = null
@@ -39,14 +40,15 @@ function getFacadeTexture(): CanvasTexture | null {
   ctx.fillStyle = '#0a0714'
   ctx.fillRect(0, 0, 64, 128)
 
-  const neon = ['#4df0ff', '#ff4dd2', '#ffd24d', '#7a5cff', '#4dff9e']
+  // Restrained palette: mostly cool, a few warm accents
+  const neon = ['#5fd2e8', '#8fa8d8', '#c98fd0', '#e8c98f', '#6f8fc8']
   const cols = 6
   const rows = 22
   for (let r = 0; r < rows; r += 1) {
     for (let c = 0; c < cols; c += 1) {
-      if (Math.random() > 0.42) continue
+      if (Math.random() > 0.3) continue
       ctx.fillStyle = neon[Math.floor(Math.random() * neon.length)]
-      ctx.globalAlpha = 0.35 + Math.random() * 0.65
+      ctx.globalAlpha = 0.25 + Math.random() * 0.5
       ctx.fillRect(4 + c * 10, 4 + r * 5.5, 6, 3.2)
     }
   }
@@ -87,8 +89,8 @@ function CitySkyline() {
       const radius = RING_INNER + Math.random() * (RING_OUTER - RING_INNER)
       // Nearer towers stay shorter so the skyline reads as depth, not a wall
       const depth = (radius - RING_INNER) / (RING_OUTER - RING_INNER)
-      const height = 6 + Math.pow(Math.random(), 0.7) * (10 + depth * 26)
-      const width = 2.4 + Math.random() * 3.6
+      const height = 8 + Math.pow(Math.random(), 0.8) * (12 + depth * 30)
+      const width = 4 + Math.random() * 6
 
       dummy.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius)
       dummy.rotation.set(0, -angle + (Math.random() - 0.5) * 0.5, 0)
@@ -144,8 +146,8 @@ function BeaconLights() {
     const phases = new Float32Array(count)
     for (let i = 0; i < count; i += 1) {
       const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4
-      const radius = RING_INNER + 6 + Math.random() * (RING_OUTER - RING_INNER - 8)
-      const height = 18 + Math.random() * 20
+      const radius = RING_INNER + 8 + Math.random() * (RING_OUTER - RING_INNER - 12)
+      const height = 24 + Math.random() * 26
       dummy.position.set(Math.cos(angle) * radius, height, Math.sin(angle) * radius)
       dummy.scale.setScalar(0.8 + Math.random() * 0.8)
       dummy.updateMatrix()
