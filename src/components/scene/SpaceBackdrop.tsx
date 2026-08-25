@@ -51,133 +51,139 @@ function jitter(geometry: BufferGeometry, amount: number, seedScale = 1) {
 
 // -- Nebula ------------------------------------------------------------------
 
-/** Wispy gas rather than soft bokeh blobs: long feathered streaks. */
-const nebulaCache: Array<CanvasTexture | null> = []
-function getNebulaTexture(variant: number): CanvasTexture | null {
+/**
+ * The nebula lives on a shell, not on billboards.
+ *
+ * Billboard planes need their edges feathered, and a radial feather on a plane
+ * that covers 40 degrees of sky reads as a giant translucent ball — four of
+ * them looked like planets parked around the island. A sphere has no edge to
+ * hide, so the gas can be as bright as it likes.
+ */
+let nebulaShell: CanvasTexture | null = null
+function getNebulaTexture(): CanvasTexture | null {
   if (typeof document === 'undefined') return null
-  if (nebulaCache[variant]) return nebulaCache[variant]
+  if (nebulaShell) return nebulaShell
 
-  const size = 256
+  const w = 1024
+  const h = 512
   const canvas = document.createElement('canvas')
-  canvas.width = size
-  canvas.height = size
+  canvas.width = w
+  canvas.height = h
   const ctx = canvas.getContext('2d')
   if (!ctx) return null
-  ctx.clearRect(0, 0, size, size)
+  ctx.fillStyle = '#000000'
+  ctx.fillRect(0, 0, w, h)
 
-  // Blue-dominant, with a single restrained magenta accent
-  const inks = [
-    'rgba(70,150,220,0.8)',
-    'rgba(40,180,215,0.7)',
-    'rgba(100,130,215,0.66)',
-    'rgba(50,95,190,0.58)',
-    'rgba(150,95,215,0.34)',
-  ]
-
-  // Strokes fan out from one point rather than running in parallel bands: a
-  // cloud with a source reads as gas, a set of horizontal ribbons reads as
-  // a smear across the lens.
-  const cx = 60 + Math.random() * 136
-  const cy = 60 + Math.random() * 136
-  ctx.lineCap = 'round'
-  for (let i = 0; i < 34; i += 1) {
-    ctx.strokeStyle = inks[Math.floor(Math.random() * inks.length)]
-    ctx.lineWidth = 4 + Math.random() * 17
-    ctx.globalAlpha = 0.3 + Math.random() * 0.4
-    const dir = Math.random() * Math.PI * 2
-    const reach = 40 + Math.random() * 105
-    const drift = 26 + Math.random() * 44
-    let x = cx + Math.cos(dir) * (Math.random() * 34)
-    let y = cy + Math.sin(dir) * (Math.random() * 34)
-    ctx.beginPath()
-    ctx.moveTo(x, y)
-    const steps = 5
-    for (let s = 0; s < steps; s += 1) {
-      const wobble = dir + (Math.random() - 0.5) * 0.9
-      const nx = x + Math.cos(wobble) * (reach / steps)
-      const ny = y + Math.sin(wobble) * (reach / steps)
-      ctx.quadraticCurveTo(
-        x + Math.cos(wobble + 1.2) * drift * 0.2,
-        y + Math.sin(wobble + 1.2) * drift * 0.2,
-        nx,
-        ny,
-      )
-      x = nx
-      y = ny
-    }
-    ctx.stroke()
+  // Wrap-safe stroke: anything drawn near an edge is repeated on the other
+  // side, so the shell has no visible seam behind the diorama.
+  const wrapped = (draw: (offset: number) => void) => {
+    draw(0)
+    draw(-w)
+    draw(w)
   }
-  ctx.globalAlpha = 1
+
+  // The reference's gas is filaments, not clouds: thin bright veins of
+  // electric blue with a soft haze behind them.
+  const veins = 150
+  ctx.lineCap = 'round'
+  ctx.globalCompositeOperation = 'lighter'
+
+  // Haze first — broad, dim, banded across the middle latitudes
+  for (let i = 0; i < 34; i += 1) {
+    const cy = h * (0.2 + Math.random() * 0.6)
+    const cx = Math.random() * w
+    const rx = 90 + Math.random() * 210
+    const ry = 40 + Math.random() * 90
+    wrapped((ox) => {
+      const g = ctx.createRadialGradient(cx + ox, cy, 0, cx + ox, cy, rx)
+      g.addColorStop(0, `rgba(38,96,190,${0.1 + Math.random() * 0.12})`)
+      g.addColorStop(0.5, 'rgba(20,52,130,0.05)')
+      g.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = g
+      ctx.save()
+      ctx.translate(cx + ox, cy)
+      ctx.scale(1, ry / rx)
+      ctx.beginPath()
+      ctx.arc(0, 0, rx, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.restore()
+    })
+  }
+
+  // Then the veins themselves
+  for (let i = 0; i < veins; i += 1) {
+    const bright = Math.random()
+    ctx.strokeStyle =
+      bright > 0.86
+        ? `rgba(190,235,255,${0.5 + Math.random() * 0.4})`
+        : bright > 0.5
+          ? `rgba(70,175,255,${0.3 + Math.random() * 0.35})`
+          : `rgba(30,95,215,${0.2 + Math.random() * 0.3})`
+    ctx.lineWidth = bright > 0.86 ? 0.8 + Math.random() * 1.4 : 1.5 + Math.random() * 4
+    const startX = Math.random() * w
+    // Cluster toward the middle latitudes; poles get very little
+    const startY = h * (0.15 + Math.pow(Math.random(), 0.8) * 0.7)
+    const dir = (Math.random() - 0.5) * 1.5 + (Math.random() > 0.5 ? 0 : Math.PI)
+    const segs = 5 + Math.floor(Math.random() * 9)
+    const step = 12 + Math.random() * 40
+    wrapped((ox) => {
+      let x = startX + ox
+      let y = startY
+      let d = dir
+      ctx.beginPath()
+      ctx.moveTo(x, y)
+      for (let s = 0; s < segs; s += 1) {
+        d += (Math.random() - 0.5) * 0.7
+        const nx = x + Math.cos(d) * step
+        const ny = y + Math.sin(d) * step * 0.45
+        ctx.quadraticCurveTo(x + Math.cos(d) * step * 0.5, y, nx, ny)
+        x = nx
+        y = ny
+      }
+      ctx.stroke()
+    })
+  }
 
   // Stars caught in the gas
-  for (let i = 0; i < 260; i += 1) {
-    ctx.fillStyle = `rgba(220,240,255,${0.25 + Math.random() * 0.65})`
-    ctx.fillRect(Math.random() * size, Math.random() * size, 1, 1)
+  for (let i = 0; i < 1400; i += 1) {
+    const s = Math.random()
+    ctx.fillStyle = `rgba(225,240,255,${0.2 + Math.random() * 0.75})`
+    const size = s > 0.97 ? 2 : 1
+    ctx.fillRect(Math.random() * w, Math.random() * h, size, size)
   }
-
-  // Feather the rim hard so each cloud ends in space, not at a plane edge
-  const vignette = ctx.createRadialGradient(128, 128, 18, 128, 128, 122)
-  vignette.addColorStop(0, 'rgba(0,0,0,0)')
-  vignette.addColorStop(0.55, 'rgba(0,0,0,0.25)')
-  vignette.addColorStop(1, 'rgba(0,0,0,1)')
-  ctx.globalCompositeOperation = 'destination-out'
-  ctx.fillStyle = vignette
-  ctx.fillRect(0, 0, size, size)
   ctx.globalCompositeOperation = 'source-over'
 
   const tex = new CanvasTexture(canvas)
   tex.needsUpdate = true
-  nebulaCache[variant] = tex
+  nebulaShell = tex
   return tex
 }
 
 /**
- * Distant gas. Deliberately sparse and dim: a nebula that fills the sky stops
- * reading as depth and starts reading as fog on the lens, and it drowns the
- * stars that give space its scale.
+ * A shell of gas surrounding everything. Slowly turning, so the sky drifts
+ * without any single feature ever crossing an edge.
  */
 function Nebula() {
-  const groupRef = useRef<Group>(null)
-  const clouds = useMemo(
-    () =>
-      Array.from({ length: 4 }).map((_, i) => ({
-        angle: (i / 4) * Math.PI * 2 + Math.random() * 0.6,
-        height: 30 + Math.random() * 56,
-        scale: 96 + Math.random() * 72,
-        spin: Math.random() * Math.PI * 2,
-        opacity: 0.3 + Math.random() * 0.2,
-        variant: i % 3,
-      })),
-    [],
-  )
+  const meshRef = useRef<Mesh>(null)
 
   useFrame((_, delta) => {
-    if (groupRef.current) groupRef.current.rotation.y += delta * 0.004
+    if (meshRef.current) meshRef.current.rotation.y += delta * 0.004
   })
 
   return (
-    <group ref={groupRef}>
-      {clouds.map((c, i) => (
-        <mesh
-          key={`nebula-${i}`}
-          position={[Math.cos(c.angle) * 165, c.height, Math.sin(c.angle) * 165]}
-          rotation={[0, -c.angle + Math.PI / 2, c.spin]}
-          renderOrder={-940}
-        >
-          <planeGeometry args={[c.scale, c.scale]} />
-          <meshBasicMaterial
-            map={getNebulaTexture(c.variant)}
-            transparent
-            opacity={c.opacity}
-            depthWrite={false}
-            depthTest={false}
-            blending={AdditiveBlending}
-            side={DoubleSide}
-            fog={false}
-          />
-        </mesh>
-      ))}
-    </group>
+    <mesh ref={meshRef} renderOrder={-940}>
+      <sphereGeometry args={[132, 48, 32]} />
+      <meshBasicMaterial
+        map={getNebulaTexture()}
+        transparent
+        opacity={0.85}
+        side={BackSide}
+        depthWrite={false}
+        depthTest={false}
+        blending={AdditiveBlending}
+        fog={false}
+      />
+    </mesh>
   )
 }
 
@@ -193,8 +199,8 @@ function makeMoonTexture(base: string, crater: string) {
   if (!ctx) return null
   ctx.fillStyle = base
   ctx.fillRect(0, 0, w, h)
-  for (let i = 0; i < 90; i += 1) {
-    const r = 2 + Math.random() * 13
+  for (let i = 0; i < 150; i += 1) {
+    const r = 1.5 + Math.pow(Math.random(), 2) * 16
     const x = Math.random() * w
     const y = Math.random() * h
     const g = ctx.createRadialGradient(x, y, 0, x, y, r)
@@ -231,8 +237,11 @@ function Moons() {
             map={textures.a}
             roughness={1}
             metalness={0}
-            emissive="#1a2536"
-            emissiveIntensity={0.9}
+            // Enough self-lift that the unlit limb keeps its craters. At pure
+            // black the terminator becomes a straight edge and the moon reads
+            // as a paper half-disc rather than a sphere.
+            emissive="#3d4a63"
+            emissiveIntensity={1.15}
             fog={false}
           />
         </mesh>
@@ -257,8 +266,8 @@ function Moons() {
             map={textures.b}
             roughness={1}
             metalness={0}
-            emissive="#0a1018"
-            emissiveIntensity={0.5}
+            emissive="#2b3648"
+            emissiveIntensity={0.95}
             fog={false}
           />
         </mesh>
@@ -674,12 +683,17 @@ function RimInstallations() {
         x: p.x + p.nx * out,
         z: p.z + p.nz * out,
         yaw: p.yaw,
-        towerH: 3 + Math.pow(Math.random(), 1.6) * 12,
-        towerW: 0.85 + Math.random() * 1.3,
+        // Mostly low blockhouses with a few slender spires, as in the
+        // reference. Uniformly tall boxes turned the rim into a fence.
+        towerH: 1.6 + Math.pow(Math.random(), 2.6) * 11,
+        towerW: 0.7 + Math.random() * 0.9,
         deckW: 1.6 + Math.random() * 3.4,
         deckD: 1.2 + Math.random() * 2.2,
         drop: 1 + Math.random() * 4,
         hasMast: Math.random() > 0.45,
+        // Only a few carry a beacon; every rig having one read as a balloon
+        // field strung around the island
+        hasBeacon: Math.random() > 0.68,
         lightPhase: Math.random() * Math.PI * 2,
       }
     })
@@ -723,11 +737,11 @@ function RimInstallations() {
           </mesh>
           {/* Lit window strip down the drop */}
           <mesh position={[0, -0.6 - rig.drop / 2, rig.deckD * 0.31]}>
-            <planeGeometry args={[rig.deckW * 0.3, rig.drop * 0.72]} />
+            <planeGeometry args={[rig.deckW * 0.12, rig.drop * 0.66]} />
             <meshBasicMaterial
               color={GLOW}
               transparent
-              opacity={0.5}
+              opacity={0.55}
               depthWrite={false}
               blending={AdditiveBlending}
             />
@@ -742,40 +756,54 @@ function RimInstallations() {
               emissiveIntensity={0.6}
             />
           </mesh>
-          {/* Vertical light seam up the tower */}
-          <mesh position={[0, rig.towerH / 2, rig.towerW * 0.52]}>
-            <planeGeometry args={[rig.towerW * 0.34, rig.towerH * 0.82]} />
-            <meshBasicMaterial
-              color={GLOW}
-              transparent
-              opacity={0.85}
-              depthWrite={false}
-              blending={AdditiveBlending}
-            />
+          {/* Thin light seams up the tower. A wide bright strip turned the
+              whole tower into a slab of glowing glass; hairlines read as
+              lit windows on dark metal instead. */}
+          {[-0.28, 0.28].map((sx) => (
+            <mesh
+              key={`seam-${sx}`}
+              position={[rig.towerW * sx, rig.towerH * 0.52, rig.towerW * 0.51]}
+            >
+              <planeGeometry args={[rig.towerW * 0.09, rig.towerH * 0.7]} />
+              <meshBasicMaterial
+                color={GLOW}
+                transparent
+                opacity={0.7}
+                depthWrite={false}
+                blending={AdditiveBlending}
+              />
+            </mesh>
+          ))}
+          {/* Banding, so the tower has scale to read against */}
+          <mesh position={[0, rig.towerH * 0.72, 0]}>
+            <boxGeometry args={[rig.towerW * 1.35, rig.towerH * 0.06, rig.towerW * 1.35]} />
+            <meshStandardMaterial color="#2b3550" roughness={0.9} />
           </mesh>
           {/* Slim antenna mast */}
           {rig.hasMast ? (
             <mesh position={[0, rig.towerH + 1.6, 0]}>
-              <cylinderGeometry args={[0.05, 0.09, 3.2, 6]} />
+              <cylinderGeometry args={[0.03, 0.06, 3.2, 6]} />
               <meshStandardMaterial color="#2a3146" roughness={1} />
             </mesh>
           ) : null}
-          {/* Blinking beacon on top */}
-          <mesh
-            ref={(el) => {
-              lightRefs.current[i] = el
-            }}
-            position={[0, rig.towerH + (rig.hasMast ? 3.3 : 0.3), 0]}
-          >
-            <sphereGeometry args={[0.16, 8, 8]} />
-            <meshBasicMaterial
-              color="#ff5a6e"
-              transparent
-              opacity={0.8}
-              depthWrite={false}
-              blending={AdditiveBlending}
-            />
-          </mesh>
+          {/* Blinking beacon, on a minority of the rigs */}
+          {rig.hasBeacon ? (
+            <mesh
+              ref={(el) => {
+                lightRefs.current[i] = el
+              }}
+              position={[0, rig.towerH + (rig.hasMast ? 3.3 : 0.3), 0]}
+            >
+              <sphereGeometry args={[0.07, 8, 8]} />
+              <meshBasicMaterial
+                color="#ff4438"
+                transparent
+                opacity={0.8}
+                depthWrite={false}
+                blending={AdditiveBlending}
+              />
+            </mesh>
+          ) : null}
         </group>
       ))}
     </group>
