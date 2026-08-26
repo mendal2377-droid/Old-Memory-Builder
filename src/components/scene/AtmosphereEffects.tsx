@@ -541,7 +541,7 @@ function StarField({ masterOpacity }: { masterOpacity?: () => number }) {
   const materialRef = useRef<ShaderMaterial>(null)
 
   const geometry = useMemo(() => {
-    const count = 620
+    const count = 310
     const positions = new Float32Array(count * 3)
     const sizes = new Float32Array(count)
     const phases = new Float32Array(count)
@@ -567,7 +567,8 @@ function StarField({ masterOpacity }: { masterOpacity?: () => number }) {
 
       // Most stars small and faint; a few are big and bright (near)
       const near = Math.random()
-      sizes[i] = near > 0.94 ? 4.5 + Math.random() * 3.5 : 1.2 + Math.random() * 2.4
+      // 70% smaller: a handful stay as glowing points, the rest are pinpricks
+      sizes[i] = near > 0.97 ? 1.7 + Math.random() * 1.1 : 0.36 + Math.random() * 0.72
       phases[i] = Math.random() * Math.PI * 2
       speeds[i] = 0.6 + Math.random() * 2.6
 

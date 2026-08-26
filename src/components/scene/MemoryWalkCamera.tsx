@@ -30,7 +30,9 @@ interface WalkMemoryTrigger {
   used: boolean
 }
 
-const boardHalfSize = 22
+// The outer ring is bare terrain with nothing built on it. Keep the walk
+// inside the part of the island that is actually finished.
+const boardHalfSize = 19
 const eyeHeight = 1.68
 const transitionDuration = 2.4
 const walkSpeed = 2.0
@@ -672,10 +674,23 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
       )
 
       sceneCenterRef.current.copy(sceneCenter)
-      walkMemoryTriggersRef.current = createWalkMemoryTriggers(
+      const objects = useSceneStore.getState().sceneObjects
+      const benchObj = objects.find((o) => o.assetId.startsWith('woodpile'))
+      const poemTrigger: WalkMemoryTrigger[] = benchObj
+        ? [
+            {
+              position: new Vector3(benchObj.position[0], eyeHeight, benchObj.position[2]),
+              title: 'Under the Red Tree',
+              text: 'Sit a while. The leaves keep falling whether or not anyone is counting, and the river goes on saying the same soft thing to the stones.',
+              sound: 'soft',
+              used: false,
+            },
+          ]
+        : []
+      walkMemoryTriggersRef.current = poemTrigger.concat(createWalkMemoryTriggers(
         sceneCenter,
         colliders,
-      )
+      ))
       memoryCooldownRef.current = 0
       buildPosition.copy(camera.position)
       buildTarget.copy(controlsRef.current?.target ?? sceneCenter)

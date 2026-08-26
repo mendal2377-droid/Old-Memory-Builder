@@ -312,20 +312,8 @@ function Moons() {
         </mesh>
       </group>
 
-      <group position={[88, 30, -70]}>
-        <mesh renderOrder={-880}>
-          <sphereGeometry args={[6.5, 20, 14]} />
-          <meshStandardMaterial
-            map={textures.b}
-            flatShading
-            roughness={1}
-            metalness={0}
-            emissive="#2b3648"
-            emissiveIntensity={0.95}
-            fog={false}
-          />
-        </mesh>
-      </group>
+      {/* Only one dominant moon per direction, per the brief */}
+
     </group>
   )
 }
@@ -516,7 +504,7 @@ function AsteroidField() {
 function PassingShips() {
   const ships = useMemo(
     () =>
-      Array.from({ length: 4 }).map((_, i) => {
+      Array.from({ length: 3 }).map((_, i) => {
         const heavy = i % 3 === 0
         const depth = -58 - Math.random() * 60
         return {

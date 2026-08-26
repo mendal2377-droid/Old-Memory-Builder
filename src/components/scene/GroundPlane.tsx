@@ -11,6 +11,7 @@ import type { TerrainMode } from '../../types/scene'
 import { useSceneStore } from '../../store/sceneStore'
 import { CityBackdrop } from './CityBackdrop'
 import { SpaceBackdrop } from './SpaceBackdrop'
+import { GardenRoute } from './GardenRoute'
 import { GrassField } from './GrassField'
 import { PondWater, RiverWater, type WaterBlob } from './StylizedWater'
 
@@ -761,6 +762,7 @@ export function GroundPlane({
       ) : null}
       <TerrainScatter />
       <GrassField terrainMode={terrainMode} />
+      <GardenRoute />
       {weather === 'rain' || weather === 'storm' ? (
         <WetGroundOverlay
           strength={(weather === 'storm' ? 0.18 : 0.08) * weatherIntensity}

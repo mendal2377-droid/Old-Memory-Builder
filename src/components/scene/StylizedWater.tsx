@@ -12,14 +12,16 @@ import { useSceneStore } from '../../store/sceneStore'
 export type WaterBlob = [number, number, number, number, number]
 
 /** Body colour of the water itself, before the sky is mixed in. */
-const bodyDeep = new Color('#123c52')
-const bodyShallow = new Color('#3f93b4')
+const bodyDeep = new Color('#0d4a4e')
+const bodyShallow = new Color('#4fb8a6')
 const white = new Color('#ffffff')
 
 const vertexShader = /* glsl */ `
   varying vec3 vWorldPos;
   varying float vViewY;
+  varying vec2 vUv;
   void main() {
+    vUv = uv;
     vec4 wp = modelMatrix * vec4(position, 1.0);
     vWorldPos = wp.xyz;
     vec3 viewDir = normalize(cameraPosition - wp.xyz);
@@ -32,6 +34,7 @@ const fragmentShader = /* glsl */ `
   precision highp float;
   varying vec3 vWorldPos;
   varying float vViewY;
+  varying vec2 vUv;
   uniform float uTime;
   uniform vec3 uDeep;
   uniform vec3 uShallow;
@@ -76,7 +79,21 @@ const fragmentShader = /* glsl */ `
     col = mix(col, uHighlight, fres * 0.5);
     col += uHighlight * sparkle * (0.7 + 0.4 * uChoppy);
 
-    float alpha = uOpacity + fres * 0.28 + sparkle * 0.3;
+    // Distance out from the middle of the channel, 0 at the centre line and
+    // 1 at the bank. Each river blob is an ellipse, so its own UVs give this
+    // for free without needing to know where the terrain is.
+    float toBank = clamp(length(vUv - 0.5) * 2.0, 0.0, 1.0);
+
+    // Foam gathers in a band just short of the bank, broken up by the same
+    // drifting noise so it churns instead of sitting as a clean ring
+    float foamBand = smoothstep(0.62, 0.93, toBank) * (1.0 - smoothstep(0.93, 1.0, toBank));
+    float foam = foamBand * smoothstep(0.35, 0.85, nFine * 0.6 + ripple * 0.55);
+    col = mix(col, vec3(0.92, 0.97, 0.97), foam * 0.75);
+
+    // Shallows go clear at the edge so grass and stones read through
+    float shallowFade = 1.0 - smoothstep(0.72, 1.0, toBank) * 0.72;
+
+    float alpha = (uOpacity + fres * 0.28 + sparkle * 0.3) * shallowFade + foam * 0.5;
     gl_FragColor = vec4(col, clamp(alpha, 0.0, 1.0));
   }
 `
@@ -128,17 +145,17 @@ export function useWaterMaterial(opacity = 0.82) {
     const highlight = material.uniforms.uHighlight.value as Color
 
     // Depth: the body colour, dimmed to match the ambient light level
-    deep.copy(bodyDeep).multiplyScalar(0.3 + skyLuminance * 1.05)
+    deep.copy(bodyDeep).multiplyScalar(0.5 + skyLuminance * 0.95)
     // Surface: mostly the reflected sky, pulled toward water's own hue
-    shallow.copy(sky).lerp(bodyShallow, 0.45)
+    shallow.copy(sky).lerp(bodyShallow, 0.3)
     // Specular glints take the colour of whatever is lighting the scene
     highlight.copy(sample.sunColor).lerp(white, 0.25)
 
     // Wind roughens the surface and speeds the flow
     const windStrength = windUniforms.uWindStrength.value
-    material.uniforms.uChoppy.value = 0.55 + windStrength * 2.4
+    material.uniforms.uChoppy.value = 0.85 + windStrength * 2.2
     material.uniforms.uTime.value =
-      clock.elapsedTime * (0.85 + windStrength * 1.6)
+      clock.elapsedTime * (1.15 + windStrength * 1.6)
   })
 
   return material
