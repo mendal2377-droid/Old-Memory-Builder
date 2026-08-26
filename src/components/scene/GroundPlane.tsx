@@ -11,7 +11,9 @@ import type { TerrainMode } from '../../types/scene'
 import { useSceneStore } from '../../store/sceneStore'
 import { CityBackdrop } from './CityBackdrop'
 import { SpaceBackdrop } from './SpaceBackdrop'
+import { EmbeddedTech } from './EmbeddedTech'
 import { GardenRoute } from './GardenRoute'
+import { RiverBankDressing } from './RiverBankDressing'
 import { GrassField } from './GrassField'
 import { ObservationTerrace } from './ObservationTerrace'
 import { PondWater, RiverWater, type WaterBlob } from './StylizedWater'
@@ -764,7 +766,9 @@ export function GroundPlane({
       <TerrainScatter />
       <GrassField terrainMode={terrainMode} />
       <GardenRoute />
+      <RiverBankDressing />
       <ObservationTerrace />
+      {worldStyle === 'space' ? <EmbeddedTech /> : null}
       {weather === 'rain' || weather === 'storm' ? (
         <WetGroundOverlay
           strength={(weather === 'storm' ? 0.18 : 0.08) * weatherIntensity}

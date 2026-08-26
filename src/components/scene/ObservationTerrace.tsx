@@ -261,6 +261,51 @@ function EdgeDressing() {
   )
 }
 
+/**
+ * A narrow stone-and-metal spur running in from the garden. Slabs with a thin
+ * lit strip between them, so the way in is legible without a second lawn path.
+ */
+function ApproachPath() {
+  const slabs = useMemo(
+    () =>
+      Array.from({ length: 9 }).map((_, i) => {
+        const t = i / 8
+        return {
+          z: RADIUS + 0.5 + t * 7.5,
+          x: Math.sin(t * 2.1) * 1.15,
+          w: 1.5 - t * 0.28,
+          rot: Math.sin(t * 3.3) * 0.16,
+        }
+      }),
+    [],
+  )
+
+  return (
+    <group>
+      {slabs.map((sl, i) => (
+        <group key={`slab-${i}`} position={[sl.x, 0, sl.z]} rotation={[0, sl.rot, 0]}>
+          <mesh position={[0, 0.035, 0]} receiveShadow raycast={() => null}>
+            <boxGeometry args={[sl.w, 0.07, 1.05]} />
+            <meshStandardMaterial color={STONE} roughness={0.96} flatShading />
+          </mesh>
+          {/* Metal seam down the middle of the run */}
+          <mesh position={[0, 0.075, 0]} rotation={[-Math.PI / 2, 0, 0]} raycast={() => null}>
+            <planeGeometry args={[0.075, 0.95]} />
+            <meshBasicMaterial
+              color={GLOW}
+              transparent
+              opacity={0.16}
+              side={DoubleSide}
+              depthWrite={false}
+              blending={AdditiveBlending}
+            />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  )
+}
+
 /** Low markers picking out the way in, as on the approach path in the reference. */
 function PathMarkers() {
   return (
@@ -308,6 +353,7 @@ export function ObservationTerrace() {
       <InlaidLight />
       <Railing />
       <Bench />
+      <ApproachPath />
       <SunkenStones />
       <EdgeDressing />
       <PathMarkers />
