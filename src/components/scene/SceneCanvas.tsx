@@ -140,6 +140,19 @@ export function SceneCanvas() {
   const controlsRef = useRef<OrbitControlsImpl>(null)
   const isWalkCameraActive = cameraMode === 'walk' || isCameraTransitioning
 
+  // The movement guide is for the first few seconds only; after that it is
+  // just furniture in what is meant to be a quiet garden.
+  const [hintVisible, setHintVisible] = useState(false)
+  useEffect(() => {
+    if (cameraMode !== 'walk') {
+      setHintVisible(false)
+      return
+    }
+    setHintVisible(true)
+    const timer = window.setTimeout(() => setHintVisible(false), 4000)
+    return () => window.clearTimeout(timer)
+  }, [cameraMode])
+
   useEffect(() => {
     if (activeMemoryPoint) {
       playMemoryPointSound(activeMemoryPoint.sound, isMuted)
@@ -289,11 +302,11 @@ export function SceneCanvas() {
           className="walk-exit-btn"
           onClick={() => setCameraMode('build')}
         >
-          Exit Walk
+          Return to Garden
         </button>
       ) : null}
-      {cameraMode === 'walk' ? (
-        <div className="walk-mode-hint" aria-live="polite">
+      {cameraMode === 'walk' && hintVisible ? (
+        <div className="walk-mode-hint walk-mode-hint--fading" aria-live="polite">
           <span>WASD / Arrow Keys: Move</span>
           <span>Drag Mouse: Look Around</span>
         </div>

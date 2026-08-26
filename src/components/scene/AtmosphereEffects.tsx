@@ -506,6 +506,7 @@ const starVertexShader = /* glsl */ `
   attribute float aSpeed;
   attribute vec3 aColor;
   uniform float uTime;
+  uniform float uSizeScale;
   varying vec3 vColor;
   varying float vTwinkle;
   void main() {
@@ -514,7 +515,7 @@ const starVertexShader = /* glsl */ `
     float pulse = 0.5 + 0.5 * sin(uTime * aSpeed + aPhase);
     vTwinkle = 0.32 + 0.68 * pulse * pulse;
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = aSize;
+    gl_PointSize = aSize * uSizeScale;
     gl_Position = projectionMatrix * mvPosition;
   }
 `
@@ -582,7 +583,11 @@ function StarField({ masterOpacity }: { masterOpacity?: () => number }) {
   const material = useMemo(
     () =>
       new ShaderMaterial({
-        uniforms: { uTime: { value: 0 }, uOpacity: { value: 1 } },
+        uniforms: {
+          uTime: { value: 0 },
+          uOpacity: { value: 1 },
+          uSizeScale: { value: 1 },
+        },
         vertexShader: starVertexShader,
         fragmentShader: starFragmentShader,
         transparent: true,
@@ -596,7 +601,10 @@ function StarField({ masterOpacity }: { masterOpacity?: () => number }) {
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = clock.elapsedTime
       if (masterOpacity) {
-        materialRef.current.uniforms.uOpacity.value = masterOpacity()
+        const o = masterOpacity()
+        materialRef.current.uniforms.uOpacity.value = o
+        // Shrink toward pinpricks as the sky brightens
+        materialRef.current.uniforms.uSizeScale.value = 0.34 + o * 0.66
       }
     }
   })

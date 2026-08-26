@@ -1355,3 +1355,19 @@
     border-bottom: 1px solid #d8ccba;
   }
 }
+
+/* The movement guide fades out rather than vanishing, so it reads as the
+   garden settling rather than the UI blinking off. */
+.walk-mode-hint--fading {
+  animation: walk-hint-fade 4s ease-in forwards;
+}
+
+@keyframes walk-hint-fade {
+  0%,
+  62% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

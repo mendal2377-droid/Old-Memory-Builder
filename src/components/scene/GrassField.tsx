@@ -35,11 +35,11 @@ function isOverWater(x: number, z: number) {
 
 /** How lush each terrain is. Courtyard is mostly paving, so it stays sparse. */
 const bladeCountByTerrain: Record<TerrainMode, number> = {
-  Riverbank: 5200,
-  'Field Path': 5600,
-  'Empty Field': 6000,
-  'Village Road': 4200,
-  Courtyard: 1600,
+  Riverbank: 3650,
+  'Field Path': 3900,
+  'Empty Field': 4200,
+  'Village Road': 2950,
+  Courtyard: 1120,
 }
 
 const boardHalf = 23
@@ -180,7 +180,7 @@ export function GrassField({ terrainMode }: { terrainMode: TerrainMode }) {
       if (isOverWater(x, z)) continue
 
       // Bias toward shorter blades, with occasional tall stragglers
-      const height = 0.15 + Math.pow(Math.random(), 1.9) * 0.34
+      const height = 0.1 + Math.pow(Math.random(), 1.9) * 0.22
       dummy.position.set(x, 0, z)
       dummy.rotation.set(
         (Math.random() - 0.5) * 0.22,
@@ -196,7 +196,7 @@ export function GrassField({ terrainMode }: { terrainMode: TerrainMode }) {
       tmp.copy(baseColor)
       if (roll < 0.33) tmp.lerp(dryColor, Math.random() * 0.7)
       else if (roll > 0.72) tmp.lerp(lushColor, Math.random() * 0.6)
-      tmp.multiplyScalar(0.92 + Math.random() * 0.22)
+      tmp.multiplyScalar(0.82 + Math.random() * 0.42)
       tints[placed * 3] = tmp.r
       tints[placed * 3 + 1] = tmp.g
       tints[placed * 3 + 2] = tmp.b

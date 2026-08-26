@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { assets } from '../../data/assets'
 import { useSceneStore } from '../../store/sceneStore'
 
-const MAP_SIZE = 150
+const MAP_SIZE = 120
 const WORLD_HALF = 24 // world spans roughly -24..24 on each axis
 
 // River centreline blobs [x, z, halfWidth, halfLength] — mirrors the scene river

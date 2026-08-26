@@ -31,9 +31,9 @@ interface WalkMemoryTrigger {
 }
 
 const boardHalfSize = 22
-const eyeHeight = 1.7
+const eyeHeight = 1.68
 const transitionDuration = 2.4
-const walkSpeed = 1.45
+const walkSpeed = 2.0
 /** Seconds-ish constant for easing into and out of a walk. */
 const walkAccel = 5.5
 const playerRadius = 0.6
@@ -827,7 +827,7 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
       }
     }
     const bobY = hasInput
-      ? Math.sin(walkTimeRef.current) * 0.026
+      ? Math.sin(walkTimeRef.current) * 0.018
       : Math.sin(clock.elapsedTime * 0.65) * 0.005
     const targetSwayX = hasInput
       ? Math.sin(walkTimeRef.current * 0.5) * 0.012
@@ -952,7 +952,7 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
     <PerspectiveCamera
       ref={perspectiveCameraRef}
       makeDefault={isActive}
-      fov={64}
+      fov={66}
       near={0.08}
       far={300}
     />

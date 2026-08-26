@@ -284,7 +284,7 @@ function Moons() {
     <group>
       <group position={[-78, 40, -92]}>
         <mesh renderOrder={-880}>
-          <sphereGeometry args={[20, 26, 18]} />
+          <sphereGeometry args={[13, 26, 18]} />
           <meshStandardMaterial
             map={textures.a}
             flatShading
@@ -299,11 +299,11 @@ function Moons() {
           />
         </mesh>
         <mesh renderOrder={-881}>
-          <sphereGeometry args={[21.6, 32, 24]} />
+          <sphereGeometry args={[14.1, 32, 24]} />
           <meshBasicMaterial
             color="#5c8fd6"
             transparent
-            opacity={0.1}
+            opacity={0.03}
             side={BackSide}
             depthWrite={false}
             blending={AdditiveBlending}
@@ -314,7 +314,7 @@ function Moons() {
 
       <group position={[88, 30, -70]}>
         <mesh renderOrder={-880}>
-          <sphereGeometry args={[10, 20, 14]} />
+          <sphereGeometry args={[6.5, 20, 14]} />
           <meshStandardMaterial
             map={textures.b}
             flatShading
