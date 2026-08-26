@@ -83,8 +83,10 @@ function getNebulaTexture(): CanvasTexture | null {
   }
 
   // The reference's gas is filaments, not clouds: thin bright veins of
-  // electric blue with a soft haze behind them.
-  const veins = 150
+  // electric blue with a soft haze behind them. Kept sparse — a sky webbed
+  // with ribbons stops reading as distant gas and starts reading as a net
+  // strung in front of the camera.
+  const veins = 38
   ctx.lineCap = 'round'
   ctx.globalCompositeOperation = 'lighter'
 
@@ -114,12 +116,12 @@ function getNebulaTexture(): CanvasTexture | null {
   for (let i = 0; i < veins; i += 1) {
     const bright = Math.random()
     ctx.strokeStyle =
-      bright > 0.86
-        ? `rgba(190,235,255,${0.5 + Math.random() * 0.4})`
-        : bright > 0.5
-          ? `rgba(70,175,255,${0.3 + Math.random() * 0.35})`
-          : `rgba(30,95,215,${0.2 + Math.random() * 0.3})`
-    ctx.lineWidth = bright > 0.86 ? 0.8 + Math.random() * 1.4 : 1.5 + Math.random() * 4
+      bright > 0.9
+        ? `rgba(170,215,255,${0.24 + Math.random() * 0.2})`
+        : bright > 0.55
+          ? `rgba(60,150,230,${0.14 + Math.random() * 0.16})`
+          : `rgba(28,85,190,${0.09 + Math.random() * 0.13})`
+    ctx.lineWidth = bright > 0.9 ? 0.7 + Math.random() * 1 : 1.2 + Math.random() * 2.6
     const startX = Math.random() * w
     // Cluster toward the middle latitudes; poles get very little
     const startY = h * (0.15 + Math.pow(Math.random(), 0.8) * 0.7)
@@ -176,10 +178,12 @@ function Nebula() {
       <meshBasicMaterial
         map={getNebulaTexture()}
         transparent
-        opacity={0.85}
+        opacity={0.6}
         side={BackSide}
         depthWrite={false}
-        depthTest={false}
+        // Depth testing must stay ON. Without it the shell paints over the
+        // terrain and the buildings, so the gas appeared to run in front of
+        // the grass and across the lighthouse.
         blending={AdditiveBlending}
         fog={false}
       />
