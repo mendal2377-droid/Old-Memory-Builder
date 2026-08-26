@@ -8,6 +8,7 @@ import {
   DodecahedronGeometry,
   DoubleSide,
   Matrix4,
+  MeshBasicMaterial,
   Object3D,
   type BufferGeometry,
   type Group,
@@ -189,6 +190,52 @@ function Nebula() {
       />
     </mesh>
   )
+}
+
+// -- Breathing signal lights -------------------------------------------------
+
+/**
+ * Every lit band on every tower shares one of a handful of materials.
+ *
+ * Animating a material per mesh would mean writing to ~200 materials a frame
+ * and would also stop the bands batching. Six shared materials on staggered
+ * phases give the same variety for six writes -- and because a tower picks its
+ * material by (tower bucket + floor), the swell climbs the shaft rather than
+ * flashing the whole building at once.
+ */
+const BAND_PHASES = 6
+
+let bandMaterials: MeshBasicMaterial[] | null = null
+function getBandMaterials() {
+  if (!bandMaterials) {
+    bandMaterials = Array.from({ length: BAND_PHASES }).map(
+      () =>
+        new MeshBasicMaterial({
+          color: GLOW,
+          transparent: true,
+          opacity: 0.7,
+          depthWrite: false,
+          blending: AdditiveBlending,
+        }),
+    )
+  }
+  return bandMaterials
+}
+
+function BandBreathing() {
+  const mats = getBandMaterials()
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime
+    for (let i = 0; i < mats.length; i += 1) {
+      const phase = (i / BAND_PHASES) * Math.PI * 2
+      // A slow swell with a faster shimmer riding on it, so it reads as
+      // breathing rather than as a metronome
+      const swell = Math.sin(t * 0.85 + phase) * 0.5 + 0.5
+      const shimmer = Math.sin(t * 2.3 + phase * 1.7) * 0.11
+      mats[i].opacity = 0.42 + swell * 0.45 + shimmer
+    }
+  })
+  return null
 }
 
 // -- Moons -------------------------------------------------------------------
@@ -772,6 +819,7 @@ function RimInstallations() {
             mastH: 2 + Math.random() * 4.5,
             mastRatios: [1, 0.6 + Math.random() * 0.3, 0.6 + Math.random() * 0.3],
             hasBeacon: Math.random() > 0.55,
+            bucket: Math.floor(Math.random() * BAND_PHASES),
             phase: Math.random() * Math.PI * 2,
             // Greebling. These are the closest structures at ~24 units, so
             // this is where surface detail actually reaches the eye. Rolled
@@ -794,6 +842,7 @@ function RimInstallations() {
     })
   }, [])
 
+  const bandMats = getBandMaterials()
   const lightRefs = useRef<Array<Mesh | null>>([])
   const phases = useMemo(
     () => clusters.flatMap((c) => c.towers.map((t) => t.phase)),
@@ -854,15 +903,12 @@ function RimInstallations() {
                       calls, and it reads as a continuous lit storey the way
                       the reference does instead of four detached slits. */}
                   {Array.from({ length: tw.floors }).map((_, f) => (
-                    <mesh key={`band-${f}`} position={[0, 1.1 + f * 1.5, 0]}>
+                    <mesh
+                      key={`band-${f}`}
+                      position={[0, 1.1 + f * 1.5, 0]}
+                      material={bandMats[(tw.bucket + f) % BAND_PHASES]}
+                    >
                       <boxGeometry args={[tw.w * 1.32, 0.15, tw.w * 1.32]} />
-                      <meshBasicMaterial
-                        color={GLOW}
-                        transparent
-                        opacity={0.7}
-                        depthWrite={false}
-                        blending={AdditiveBlending}
-                      />
                     </mesh>
                   ))}
                   {/* Service pods bracketing the shaft */}
@@ -1008,6 +1054,7 @@ function RimInstallations() {
  * scene fog tints it toward the sky so it recedes the way distance should.
  */
 function DistantSkyline() {
+  const bandMats = getBandMaterials()
   const keelGeo = useMemo(
     () => jitter(new ConeGeometry(1, 1.9, 9, 4), 0.34, 5.7),
     [],
@@ -1029,6 +1076,7 @@ function DistantSkyline() {
             h: (radius / 12) * (0.5 + Math.pow(Math.random(), 1.5) * 1.1),
             w: (radius / 90) * (0.9 + Math.random() * 0.9),
             mastH: (radius / 26) * (0.6 + Math.random() * 0.9),
+            bucket: Math.floor(Math.random() * BAND_PHASES),
           }),
         )
         return {
@@ -1097,15 +1145,12 @@ function DistantSkyline() {
                     tower gave big square panes, which read as an office block
                     rather than something built out here. */}
                 {Array.from({ length: Math.max(2, Math.floor(t.h / 2.2)) }).map((_, f) => (
-                  <mesh key={`fw-${f}`} position={[0, t.h * 0.16 + f * 2.2, 0]}>
+                  <mesh
+                    key={`fw-${f}`}
+                    position={[0, t.h * 0.16 + f * 2.2, 0]}
+                    material={bandMats[(t.bucket + f) % BAND_PHASES]}
+                  >
                     <boxGeometry args={[t.w * 1.28, 0.22, t.w * 1.28]} />
-                    <meshBasicMaterial
-                      color={GLOW}
-                      transparent
-                      opacity={0.5}
-                      depthWrite={false}
-                      blending={AdditiveBlending}
-                    />
                   </mesh>
                 ))}
                 <mesh position={[0, t.h + t.mastH / 2, 0]}>
@@ -1124,6 +1169,7 @@ function DistantSkyline() {
 export function SpaceBackdrop() {
   return (
     <group raycast={() => null}>
+      <BandBreathing />
       <Nebula />
       <Moons />
       <AsteroidField />
