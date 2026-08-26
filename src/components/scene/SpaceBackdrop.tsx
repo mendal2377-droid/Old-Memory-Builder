@@ -688,7 +688,10 @@ function RimInstallations() {
       const p = rimPoint(t, half)
       const towers = Array.from({ length: 2 + Math.floor(Math.random() * 3) }).map(
         () => {
-          const h = 7 + Math.pow(Math.random(), 1.3) * 15
+          // These stand only ~24 units away, so height here costs far more
+          // screen than the same height on the far skyline does. Kept low
+          // enough that the diorama, not the rim, is what you look at.
+          const h = 4.5 + Math.pow(Math.random(), 1.9) * 9
           return {
             // Spread along the rim edge and slightly outboard of it
             along: (Math.random() - 0.5) * 7,
@@ -696,7 +699,7 @@ function RimInstallations() {
             h,
             w: 0.5 + Math.random() * 0.55,
             // Windows sit in horizontal registers, like floors
-            floors: 3 + Math.floor(Math.random() * 5),
+            floors: 2 + Math.floor(Math.random() * 4),
             masts: 1 + Math.floor(Math.random() * 3),
             mastH: 2 + Math.random() * 4.5,
             hasBeacon: Math.random() > 0.55,
@@ -765,7 +768,9 @@ function RimInstallations() {
                   </mesh>
                   {/* Window registers on all four faces */}
                   {Array.from({ length: tw.floors }).map((_, f) => {
-                    const y = tw.h * (0.12 + (f / tw.floors) * 0.62)
+                    // Fixed-height slits: scaling a window with its tower is
+                    // what produced big square office panes
+                    const y = 1.1 + f * 1.5
                     return [0, 1, 2, 3].map((face) => (
                       <mesh
                         key={`w-${f}-${face}`}
@@ -776,7 +781,7 @@ function RimInstallations() {
                         ]}
                         rotation={[0, (face * Math.PI) / 2 + Math.PI / 2, 0]}
                       >
-                        <planeGeometry args={[tw.w * 0.85, tw.h * 0.035]} />
+                        <planeGeometry args={[tw.w * 0.8, 0.15]} />
                         <meshBasicMaterial
                           color={GLOW}
                           transparent
@@ -843,22 +848,34 @@ function RimInstallations() {
  * scene fog tints it toward the sky so it recedes the way distance should.
  */
 function DistantSkyline() {
+  const keelGeo = useMemo(
+    () => jitter(new ConeGeometry(1, 1.9, 9, 4), 0.34, 5.7),
+    [],
+  )
+
   const clusters = useMemo(
     () =>
-      Array.from({ length: 8 }).map(() => {
+      Array.from({ length: 7 }).map(() => {
         const angle = Math.random() * Math.PI * 2
-        const radius = 75 + Math.random() * 60
+        const radius = 72 + Math.random() * 58
+        const spread = 9 + Math.random() * 9
         const towers = Array.from({ length: 3 + Math.floor(Math.random() * 4) }).map(
           () => ({
-            offset: (Math.random() - 0.5) * 34,
-            depth: (Math.random() - 0.5) * 8,
-            h: 14 + Math.pow(Math.random(), 1.4) * 34,
-            w: 1.6 + Math.random() * 2.4,
-            floors: 4 + Math.floor(Math.random() * 6),
-            mastH: 3 + Math.random() * 9,
+            offset: (Math.random() - 0.5) * spread * 1.6,
+            depth: (Math.random() - 0.5) * spread * 0.7,
+            h: 9 + Math.pow(Math.random(), 1.5) * 22,
+            w: 1.2 + Math.random() * 1.8,
+            mastH: 3 + Math.random() * 8,
           }),
         )
-        return { angle, radius, towers }
+        return {
+          angle,
+          radius,
+          spread,
+          // Neighbouring rocks hang at their own heights, not all on one plane
+          baseY: -16 + Math.random() * 26,
+          towers,
+        }
       }),
     [],
   )
@@ -868,35 +885,49 @@ function DistantSkyline() {
       {clusters.map((c, i) => {
         const cx = Math.cos(c.angle) * c.radius
         const cz = Math.sin(c.angle) * c.radius
-        // Face the board so the window bands read broadside
         const yaw = -c.angle + Math.PI / 2
         return (
-          <group key={`far-${i}`} position={[cx, 0, cz]} rotation={[0, yaw, 0]}>
+          <group key={`far-${i}`} position={[cx, c.baseY, cz]} rotation={[0, yaw, 0]}>
+            {/* The rock these stand on. Without it the towers rose out of
+                empty space, because the island itself ends at 23 units. */}
+            <mesh position={[0, -0.5, 0]}>
+              <cylinderGeometry args={[c.spread * 1.15, c.spread * 0.95, 1.4, 9]} />
+              <meshStandardMaterial color={ROCK} roughness={0.95} metalness={0.05} />
+            </mesh>
+            <mesh
+              geometry={keelGeo}
+              position={[0, -1.2 - c.spread * 0.55, 0]}
+              rotation={[Math.PI, 0, 0]}
+              scale={[c.spread * 0.95, c.spread * 1.15, c.spread * 0.95]}
+            >
+              <meshStandardMaterial color={ROCK} roughness={1} />
+            </mesh>
             {c.towers.map((t, j) => (
-              <group key={`ft-${j}`} position={[t.offset, 0, t.depth]}>
+              <group key={`ft-${j}`} position={[t.offset, 0.2, t.depth]}>
                 <mesh position={[0, t.h / 2, 0]}>
                   <boxGeometry args={[t.w, t.h, t.w]} />
                   <meshStandardMaterial color="#2c3550" roughness={0.85} metalness={0.2} />
                 </mesh>
-                {/* Window bands, front face only -- nothing else is visible at
-                    this range and it keeps the draw count down */}
-                {Array.from({ length: t.floors }).map((_, f) => (
+                {/* Window slits at a fixed world height. Scaling them with the
+                    tower gave big square panes, which read as an office block
+                    rather than something built out here. */}
+                {Array.from({ length: Math.max(3, Math.floor(t.h / 1.6)) }).map((_, f) => (
                   <mesh
                     key={`fw-${f}`}
-                    position={[0, t.h * (0.15 + (f / t.floors) * 0.7), t.w * 0.51]}
+                    position={[0, 1.4 + f * 1.6, t.w * 0.51]}
                   >
-                    <planeGeometry args={[t.w * 0.7, t.h * 0.026]} />
+                    <planeGeometry args={[t.w * 0.72, 0.16]} />
                     <meshBasicMaterial
                       color={GLOW}
                       transparent
-                      opacity={0.4}
+                      opacity={0.5}
                       depthWrite={false}
                       blending={AdditiveBlending}
                     />
                   </mesh>
                 ))}
                 <mesh position={[0, t.h + t.mastH / 2, 0]}>
-                  <cylinderGeometry args={[0.06, 0.14, t.mastH, 5]} />
+                  <cylinderGeometry args={[0.05, 0.12, t.mastH, 5]} />
                   <meshStandardMaterial color="#3a4560" roughness={0.9} />
                 </mesh>
               </group>
