@@ -23,8 +23,8 @@ import {
  * contrast is what makes a floating island read as vast rather than flat.
  */
 
-const ROCK = '#12162a'
-const ROCK_LIT = '#232a44'
+const ROCK = '#2d3450'
+const ROCK_LIT = '#4a5372'
 const GLOW = '#39d8ff'
 const GLOW_DIM = '#1b6f9c'
 
@@ -341,10 +341,10 @@ function FloatingIslands() {
           {/* Thin band of soil; most of the mass is rock */}
           <mesh geometry={geometries.cap} position={[0, 0.12, 0]}>
             <meshStandardMaterial
-              color="#43614a"
+              color="#5c7f5f"
               roughness={1}
-              emissive="#101d16"
-              emissiveIntensity={0.9}
+              emissive="#1c2f21"
+              emissiveIntensity={1}
             />
           </mesh>
           {/* Dark broken keel */}
@@ -355,9 +355,9 @@ function FloatingIslands() {
           >
             <meshStandardMaterial
               color={ROCK}
-              roughness={1}
-              emissive="#060a14"
-              emissiveIntensity={0.5}
+              roughness={0.95}
+              emissive="#141b2e"
+              emissiveIntensity={0.7}
             />
           </mesh>
           {/* Glowing veins threading the underside */}
@@ -443,9 +443,9 @@ function AsteroidField() {
     >
       <meshStandardMaterial
         color={ROCK_LIT}
-        roughness={1}
-        emissive="#05080f"
-        emissiveIntensity={0.5}
+        roughness={0.95}
+        emissive="#171e30"
+        emissiveIntensity={0.7}
       />
     </instancedMesh>
   )
@@ -834,6 +834,80 @@ function RimInstallations() {
   )
 }
 
+/**
+ * A second, far-off skyline beyond the rim.
+ *
+ * Every rim spire stands about 24 units out, so they all subtend the same
+ * angle and the sky reads as one flat wall of towers. Putting a smaller
+ * skyline at 75-135 units gives the eye two depths to compare, and the
+ * scene fog tints it toward the sky so it recedes the way distance should.
+ */
+function DistantSkyline() {
+  const clusters = useMemo(
+    () =>
+      Array.from({ length: 8 }).map(() => {
+        const angle = Math.random() * Math.PI * 2
+        const radius = 75 + Math.random() * 60
+        const towers = Array.from({ length: 3 + Math.floor(Math.random() * 4) }).map(
+          () => ({
+            offset: (Math.random() - 0.5) * 34,
+            depth: (Math.random() - 0.5) * 8,
+            h: 14 + Math.pow(Math.random(), 1.4) * 34,
+            w: 1.6 + Math.random() * 2.4,
+            floors: 4 + Math.floor(Math.random() * 6),
+            mastH: 3 + Math.random() * 9,
+          }),
+        )
+        return { angle, radius, towers }
+      }),
+    [],
+  )
+
+  return (
+    <group>
+      {clusters.map((c, i) => {
+        const cx = Math.cos(c.angle) * c.radius
+        const cz = Math.sin(c.angle) * c.radius
+        // Face the board so the window bands read broadside
+        const yaw = -c.angle + Math.PI / 2
+        return (
+          <group key={`far-${i}`} position={[cx, 0, cz]} rotation={[0, yaw, 0]}>
+            {c.towers.map((t, j) => (
+              <group key={`ft-${j}`} position={[t.offset, 0, t.depth]}>
+                <mesh position={[0, t.h / 2, 0]}>
+                  <boxGeometry args={[t.w, t.h, t.w]} />
+                  <meshStandardMaterial color="#2c3550" roughness={0.85} metalness={0.2} />
+                </mesh>
+                {/* Window bands, front face only -- nothing else is visible at
+                    this range and it keeps the draw count down */}
+                {Array.from({ length: t.floors }).map((_, f) => (
+                  <mesh
+                    key={`fw-${f}`}
+                    position={[0, t.h * (0.15 + (f / t.floors) * 0.7), t.w * 0.51]}
+                  >
+                    <planeGeometry args={[t.w * 0.7, t.h * 0.026]} />
+                    <meshBasicMaterial
+                      color={GLOW}
+                      transparent
+                      opacity={0.4}
+                      depthWrite={false}
+                      blending={AdditiveBlending}
+                    />
+                  </mesh>
+                ))}
+                <mesh position={[0, t.h + t.mastH / 2, 0]}>
+                  <cylinderGeometry args={[0.06, 0.14, t.mastH, 5]} />
+                  <meshStandardMaterial color="#3a4560" roughness={0.9} />
+                </mesh>
+              </group>
+            ))}
+          </group>
+        )
+      })}
+    </group>
+  )
+}
+
 export function SpaceBackdrop() {
   return (
     <group raycast={() => null}>
@@ -843,6 +917,7 @@ export function SpaceBackdrop() {
       <FloatingIslands />
       <PassingShips />
       <IslandCore />
+      <DistantSkyline />
       <RimInstallations />
     </group>
   )
