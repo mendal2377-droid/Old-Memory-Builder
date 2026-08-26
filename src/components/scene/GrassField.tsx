@@ -25,6 +25,16 @@ const riverBlobs: Array<[number, number, number, number]> = [
   [15, 20, 4, 5],
 ]
 
+/**
+ * The observation terrace is paved. Keep blades off it, the same way they are
+ * kept off the river, or grass grows straight up through the stone.
+ */
+const terrace = { x: 2.4, z: -13.6, r: 5.35 }
+
+function isOnTerrace(x: number, z: number) {
+  return Math.hypot(x - terrace.x, z - terrace.z) < terrace.r
+}
+
 function isOverWater(x: number, z: number) {
   return riverBlobs.some(([cx, cz, w, l]) => {
     const dx = (x - cx) / w
@@ -178,6 +188,7 @@ export function GrassField({ terrainMode }: { terrainMode: TerrainMode }) {
       const z = clumpZ + (Math.random() + Math.random() - 1) * spread
       if (Math.abs(x) > boardHalf || Math.abs(z) > boardHalf) continue
       if (isOverWater(x, z)) continue
+      if (isOnTerrace(x, z)) continue
 
       // Bias toward shorter blades, with occasional tall stragglers
       const height = 0.1 + Math.pow(Math.random(), 1.9) * 0.22

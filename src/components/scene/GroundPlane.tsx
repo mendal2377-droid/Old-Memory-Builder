@@ -13,6 +13,7 @@ import { CityBackdrop } from './CityBackdrop'
 import { SpaceBackdrop } from './SpaceBackdrop'
 import { GardenRoute } from './GardenRoute'
 import { GrassField } from './GrassField'
+import { ObservationTerrace } from './ObservationTerrace'
 import { PondWater, RiverWater, type WaterBlob } from './StylizedWater'
 
 interface GroundPlaneProps {
@@ -763,6 +764,7 @@ export function GroundPlane({
       <TerrainScatter />
       <GrassField terrainMode={terrainMode} />
       <GardenRoute />
+      <ObservationTerrace />
       {weather === 'rain' || weather === 'storm' ? (
         <WetGroundOverlay
           strength={(weather === 'storm' ? 0.18 : 0.08) * weatherIntensity}
