@@ -76,8 +76,8 @@ const fragmentShader = /* glsl */ `
     float fres = pow(1.0 - clamp(abs(vViewY), 0.0, 1.0), 3.0);
 
     vec3 col = mix(uDeep, uShallow, clamp(ripple * 0.7 + nBase * 0.25, 0.0, 1.0));
-    col = mix(col, uHighlight, fres * 0.5);
-    col += uHighlight * sparkle * (0.7 + 0.4 * uChoppy);
+    col = mix(col, uHighlight, fres * 0.18);
+    col += uHighlight * sparkle * 0.16;
 
     // Distance out from the middle of the channel, 0 at the centre line and
     // 1 at the bank. Each river blob is an ellipse, so its own UVs give this
@@ -86,14 +86,14 @@ const fragmentShader = /* glsl */ `
 
     // Foam gathers in a band just short of the bank, broken up by the same
     // drifting noise so it churns instead of sitting as a clean ring
-    float foamBand = smoothstep(0.62, 0.93, toBank) * (1.0 - smoothstep(0.93, 1.0, toBank));
+    float foamBand = smoothstep(0.88, 0.985, toBank) * (1.0 - smoothstep(0.985, 1.0, toBank));
     float foam = foamBand * smoothstep(0.35, 0.85, nFine * 0.6 + ripple * 0.55);
-    col = mix(col, vec3(0.92, 0.97, 0.97), foam * 0.75);
+    col = mix(col, vec3(0.90, 0.96, 0.95), foam * 0.5);
 
     // Shallows go clear at the edge so grass and stones read through
-    float shallowFade = 1.0 - smoothstep(0.72, 1.0, toBank) * 0.72;
+    float shallowFade = 1.0 - smoothstep(0.55, 1.0, toBank) * 0.8;
 
-    float alpha = (uOpacity + fres * 0.28 + sparkle * 0.3) * shallowFade + foam * 0.5;
+    float alpha = (uOpacity + fres * 0.1 + sparkle * 0.08) * shallowFade + foam * 0.35;
     gl_FragColor = vec4(col, clamp(alpha, 0.0, 1.0));
   }
 `
@@ -122,7 +122,7 @@ function makeWaterMaterial(opacity: number): ShaderMaterial {
  * blue at midnight without any per-preset table — and its surface roughens
  * with the shared wind.
  */
-export function useWaterMaterial(opacity = 0.82) {
+export function useWaterMaterial(opacity = 0.6) {
   const material = useMemo(() => makeWaterMaterial(opacity), [opacity])
   const sample = useMemo(() => createAtmosphereSample(), [])
 
@@ -147,9 +147,9 @@ export function useWaterMaterial(opacity = 0.82) {
     // Depth: the body colour, dimmed to match the ambient light level
     deep.copy(bodyDeep).multiplyScalar(0.5 + skyLuminance * 0.95)
     // Surface: mostly the reflected sky, pulled toward water's own hue
-    shallow.copy(sky).lerp(bodyShallow, 0.3)
+    shallow.copy(sky).lerp(bodyShallow, 0.68)
     // Specular glints take the colour of whatever is lighting the scene
-    highlight.copy(sample.sunColor).lerp(white, 0.25)
+    highlight.copy(sample.sunColor).lerp(white, 0.1)
 
     // Wind roughens the surface and speeds the flow
     const windStrength = windUniforms.uWindStrength.value

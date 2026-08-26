@@ -3,6 +3,8 @@ import { useFrame } from '@react-three/fiber'
 import {
   AdditiveBlending,
   CatmullRomCurve3,
+  ExtrudeGeometry,
+  Shape,
   Color,
   DoubleSide,
   Object3D,
@@ -51,7 +53,7 @@ function useRouteLandmarks() {
 function PathRibbon({ curve }: { curve: CatmullRomCurve3 }) {
   const { positions, uvs, indices } = useMemo(() => {
     const steps = 90
-    const halfWidth = 0.95
+    const halfWidth = 0.62
     const pos: number[] = []
     const uv: number[] = []
     const idx: number[] = []
@@ -94,7 +96,7 @@ function PathRibbon({ curve }: { curve: CatmullRomCurve3 }) {
         roughness={1}
         metalness={0}
         transparent
-        opacity={0.94}
+        opacity={0.8}
         polygonOffset
         polygonOffsetFactor={-2}
         side={DoubleSide}
@@ -106,7 +108,7 @@ function PathRibbon({ curve }: { curve: CatmullRomCurve3 }) {
 /** Red leaves drifting down under the canopy. */
 function FallingLeaves({ centre, spread }: { centre: Vector3; spread: number }) {
   const meshRef = useRef<InstancedMesh>(null)
-  const count = 90
+  const count = 34
 
   const seeds = useMemo(() => {
     const a = new Float32Array(count * 4)
@@ -135,6 +137,19 @@ function FallingLeaves({ centre, spread }: { centre: Vector3; spread: number }) 
 
   const dummy = useMemo(() => new Object3D(), [])
 
+  // A pointed leaf rather than a square: two curves meeting at a tip, which is
+  // what stops them reading as confetti.
+  const leafGeometry = useMemo(() => {
+    const shape = new Shape()
+    shape.moveTo(0, -0.5)
+    shape.quadraticCurveTo(0.42, -0.16, 0.1, 0.5)
+    shape.quadraticCurveTo(-0.02, 0.2, -0.1, 0.5)
+    shape.quadraticCurveTo(-0.42, -0.16, 0, -0.5)
+    const geo = new ExtrudeGeometry(shape, { depth: 0.012, bevelEnabled: false })
+    geo.center()
+    return geo
+  }, [])
+
   useFrame(({ clock }) => {
     const mesh = meshRef.current
     if (!mesh) return
@@ -148,15 +163,21 @@ function FallingLeaves({ centre, spread }: { centre: Vector3; spread: number }) 
       const speed = seeds[i * 4 + 3]
 
       // Fall, wrap, and sway sideways on the way down
-      const fall = (phase + t * 0.045 * speed) % 1
+      const fall = (phase + t * 0.03 * speed) % 1
       const y = top * (1 - fall)
-      const sway = Math.sin(t * 0.9 * speed + phase * 12) * 0.55
+      // Spiral: angle winds slowly as it descends, radius breathes a little
+      const spin = phase * Math.PI * 2 + fall * Math.PI * 3.2 * speed
+      const radius = 0.35 + Math.sin(fall * Math.PI) * 0.5
 
-      dummy.position.set(centre.x + ox + sway, y + 0.15, centre.z + oz + sway * 0.4)
-      dummy.rotation.set(t * speed * 0.8 + phase * 6, t * speed * 1.1, phase * 3)
+      dummy.position.set(
+        centre.x + ox + Math.cos(spin) * radius,
+        y + 0.15,
+        centre.z + oz + Math.sin(spin) * radius,
+      )
+      dummy.rotation.set(spin * 0.6, spin, Math.sin(spin * 0.7) * 0.8)
       // Fade in at the top and out at the ground so none pop mid-air
       const s =
-        0.11 * Math.min(1, fall * 6) * Math.min(1, (1 - fall) * 9 + 0.15)
+        0.2 * Math.min(1, fall * 6) * Math.min(1, (1 - fall) * 9 + 0.15)
       dummy.scale.setScalar(s)
       dummy.updateMatrix()
       mesh.setMatrixAt(i, dummy.matrix)
@@ -171,7 +192,7 @@ function FallingLeaves({ centre, spread }: { centre: Vector3; spread: number }) 
       frustumCulled={false}
       raycast={() => null}
     >
-      <planeGeometry args={[1, 0.72]} />
+      <primitive object={leafGeometry} attach="geometry" />
       <meshStandardMaterial
         vertexColors
         roughness={0.9}
@@ -212,6 +233,24 @@ function CanopyLight({ centre }: { centre: Vector3 }) {
         distance={11}
         decay={2}
       />
+      {/* Low warm sun raking in from the east, through the branches. Aimed at
+          the ground under the canopy so the tree throws a real shadow across
+          the bench and the path. */}
+      <directionalLight
+        position={[9, 6.5, 3]}
+        target-position={[0, 0, 0]}
+        color="#ffc07a"
+        intensity={1.5}
+        castShadow
+        shadow-mapSize={[1024, 1024]}
+        shadow-bias={-0.0004}
+        shadow-camera-left={-9}
+        shadow-camera-right={9}
+        shadow-camera-top={9}
+        shadow-camera-bottom={-9}
+        shadow-camera-near={0.5}
+        shadow-camera-far={26}
+      />
     </group>
   )
 }
@@ -241,6 +280,47 @@ export function GardenRoute() {
     useSceneStore
       .getState()
       .updateObjectMotion(bench.id, [seat.x, 0, seat.z], [0, Math.PI / 2, 0])
+  }, [marks])
+
+  // Thin the village to three cottages, spread out rather than clustered.
+  // Runs once and only ever removes surplus cabins, so it is a single
+  // undoable step rather than something that fights the player.
+  const thinnedVillage = useRef(false)
+  useEffect(() => {
+    if (thinnedVillage.current || !marks) return
+    const store = useSceneStore.getState()
+    const cabins = store.sceneObjects.filter((o) => o.assetId.startsWith('cabin'))
+    if (cabins.length === 0) return
+    thinnedVillage.current = true
+    if (cabins.length <= 3) return
+
+    // Keep the three that stand furthest apart, so what remains reads as a
+    // scattered hamlet instead of a row
+    const keep: typeof cabins = [cabins[0]]
+    while (keep.length < 3) {
+      let best = cabins[0]
+      let bestScore = -1
+      for (const c of cabins) {
+        if (keep.includes(c)) continue
+        const score = Math.min(
+          ...keep.map((k) =>
+            Math.hypot(k.position[0] - c.position[0], k.position[2] - c.position[2]),
+          ),
+        )
+        if (score > bestScore) {
+          bestScore = score
+          best = c
+        }
+      }
+      keep.push(best)
+    }
+
+    for (const c of cabins) {
+      if (keep.includes(c)) continue
+      store.selectObject(c.id)
+      store.deleteSelected()
+    }
+    store.selectObject(null)
   }, [marks])
 
   const curve = useMemo(() => {

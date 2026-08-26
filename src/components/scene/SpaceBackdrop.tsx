@@ -332,13 +332,14 @@ function FloatingIslands() {
 
   const islands = useMemo(
     () =>
-      Array.from({ length: 4 }).map((_, i) => {
-        const angle = (i / 4) * Math.PI * 2 + Math.random() * 0.7
+      Array.from({ length: 2 }).map((_, i) => {
+        const angle = (i / 2) * Math.PI * 2 + Math.random() * 0.7
         const radius = 56 + Math.random() * 62
         // Keep them out of the eye-level band. An island sitting on the
         // horizon is seen edge-on and reads as a grey blade, not a rock.
         const above = i % 2 === 0
-        const y = above ? 20 + Math.random() * 34 : -34 - Math.random() * 22
+        // Well above or well below, never hanging in the garden's sightline
+        const y = above ? 46 + Math.random() * 26 : -48 - Math.random() * 20
         // Size from true slant distance, the same rule the far platforms and
         // the debris use. Rolling scale independently of range let a near
         // island cover a third of the screen and hang over the lighthouse.
