@@ -396,7 +396,7 @@ function FloatingIslands() {
  */
 function AsteroidField() {
   const meshRef = useRef<InstancedMesh>(null)
-  const count = 44
+  const count = 30
   const geometry = useMemo(
     () => jitter(new DodecahedronGeometry(1, 0), 0.42, 4.1),
     [],
@@ -406,16 +406,16 @@ function AsteroidField() {
     const matrices = new Float32Array(count * 16)
     for (let i = 0; i < count; i += 1) {
       const a = Math.random() * Math.PI * 2
-      const r = 40 + Math.random() * 62
-      // Size with distance so everything subtends roughly the same angle
-      const spread = (r - 40) / 62
+      const r = 50 + Math.random() * 60
+      // Size straight from distance so each rock holds ~2-3.5 degrees. A
+      // flat size range made the near ones read as boulders overhead.
       dummy.position.set(
         Math.cos(a) * r,
         -24 + Math.random() * 62,
         Math.sin(a) * r,
       )
       dummy.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3)
-      dummy.scale.setScalar((1.1 + Math.random() * 2.6) * (0.8 + spread * 0.9))
+      dummy.scale.setScalar((r / 45) * (0.7 + Math.random() * 0.7))
       dummy.updateMatrix()
       dummy.matrix.toArray(matrices, i * 16)
     }
@@ -858,14 +858,17 @@ function DistantSkyline() {
       Array.from({ length: 7 }).map(() => {
         const angle = Math.random() * Math.PI * 2
         const radius = 72 + Math.random() * 58
-        const spread = 9 + Math.random() * 9
-        const towers = Array.from({ length: 3 + Math.floor(Math.random() * 4) }).map(
+        // Scale with distance. A fixed spread meant the near clusters
+        // subtended a third of the field of view and read as grey walls;
+        // tying it to range keeps every one of them at roughly 5-8 degrees.
+        const spread = (radius / 22) * (0.85 + Math.random() * 0.4)
+        const towers = Array.from({ length: 2 + Math.floor(Math.random() * 3) }).map(
           () => ({
-            offset: (Math.random() - 0.5) * spread * 1.6,
-            depth: (Math.random() - 0.5) * spread * 0.7,
-            h: 9 + Math.pow(Math.random(), 1.5) * 22,
-            w: 1.2 + Math.random() * 1.8,
-            mastH: 3 + Math.random() * 8,
+            offset: (Math.random() - 0.5) * spread * 1.5,
+            depth: (Math.random() - 0.5) * spread * 0.6,
+            h: (radius / 12) * (0.5 + Math.pow(Math.random(), 1.5) * 1.1),
+            w: (radius / 90) * (0.9 + Math.random() * 0.9),
+            mastH: (radius / 26) * (0.6 + Math.random() * 0.9),
           }),
         )
         return {
@@ -896,9 +899,9 @@ function DistantSkyline() {
             </mesh>
             <mesh
               geometry={keelGeo}
-              position={[0, -1.2 - c.spread * 0.55, 0]}
+              position={[0, -1.1 - c.spread * 0.26, 0]}
               rotation={[Math.PI, 0, 0]}
-              scale={[c.spread * 0.95, c.spread * 1.15, c.spread * 0.95]}
+              scale={[c.spread * 0.92, c.spread * 0.55, c.spread * 0.92]}
             >
               <meshStandardMaterial color={ROCK} roughness={1} />
             </mesh>
@@ -911,12 +914,12 @@ function DistantSkyline() {
                 {/* Window slits at a fixed world height. Scaling them with the
                     tower gave big square panes, which read as an office block
                     rather than something built out here. */}
-                {Array.from({ length: Math.max(3, Math.floor(t.h / 1.6)) }).map((_, f) => (
+                {Array.from({ length: Math.max(2, Math.floor(t.h / 2.2)) }).map((_, f) => (
                   <mesh
                     key={`fw-${f}`}
-                    position={[0, 1.4 + f * 1.6, t.w * 0.51]}
+                    position={[0, t.h * 0.16 + f * 2.2, t.w * 0.51]}
                   >
-                    <planeGeometry args={[t.w * 0.72, 0.16]} />
+                    <planeGeometry args={[t.w * 0.72, 0.22]} />
                     <meshBasicMaterial
                       color={GLOW}
                       transparent
