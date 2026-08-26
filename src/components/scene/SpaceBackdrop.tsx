@@ -668,144 +668,164 @@ function rimPoint(t: number, half: number) {
 }
 
 /**
- * Docking platforms and antenna spires clamped around the island's edge —
- * the thing that reads most immediately as "this rock has been built on".
+ * Skyline spires clustered around the island's edge.
+ *
+ * The reference builds these in groups of two to four slender towers with
+ * antenna arrays, not as an even fence of blockhouses — clusters leave gaps
+ * you can see the sky through, which is what keeps the rim from walling the
+ * diorama in.
  */
 function RimInstallations() {
-  const rigs = useMemo(() => {
+  const clusters = useMemo(() => {
     const half = 22.5
-    const count = 26
-    return Array.from({ length: count }).map((_, i) => {
-      const t = i / count + (Math.random() - 0.5) * 0.012
+    const groups = 9
+    return Array.from({ length: groups }).map((_, g) => {
+      const t = g / groups + (Math.random() - 0.5) * 0.05
       const p = rimPoint(t, half)
-      const out = 0.4 + Math.random() * 2.2
-      return {
-        x: p.x + p.nx * out,
-        z: p.z + p.nz * out,
-        yaw: p.yaw,
-        // Mostly low blockhouses with a few slender spires, as in the
-        // reference. Uniformly tall boxes turned the rim into a fence.
-        towerH: 1.6 + Math.pow(Math.random(), 2.6) * 11,
-        towerW: 0.7 + Math.random() * 0.9,
-        deckW: 1.6 + Math.random() * 3.4,
-        deckD: 1.2 + Math.random() * 2.2,
-        drop: 1 + Math.random() * 4,
-        hasMast: Math.random() > 0.45,
-        // Only a few carry a beacon; every rig having one read as a balloon
-        // field strung around the island
-        hasBeacon: Math.random() > 0.68,
-        lightPhase: Math.random() * Math.PI * 2,
-      }
+      const towers = Array.from({ length: 2 + Math.floor(Math.random() * 3) }).map(
+        () => {
+          const h = 7 + Math.pow(Math.random(), 1.3) * 15
+          return {
+            // Spread along the rim edge and slightly outboard of it
+            along: (Math.random() - 0.5) * 7,
+            out: 0.6 + Math.random() * 3,
+            h,
+            w: 0.5 + Math.random() * 0.55,
+            // Windows sit in horizontal registers, like floors
+            floors: 3 + Math.floor(Math.random() * 5),
+            masts: 1 + Math.floor(Math.random() * 3),
+            mastH: 2 + Math.random() * 4.5,
+            hasBeacon: Math.random() > 0.55,
+            phase: Math.random() * Math.PI * 2,
+          }
+        },
+      )
+      return { p, towers }
     })
   }, [])
 
   const lightRefs = useRef<Array<Mesh | null>>([])
+  const phases = useMemo(
+    () => clusters.flatMap((c) => c.towers.map((t) => t.phase)),
+    [clusters],
+  )
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime
-    rigs.forEach((rig, i) => {
-      const m = lightRefs.current[i]
+    lightRefs.current.forEach((m, i) => {
       if (!m) return
       const mat = m.material as { opacity: number }
-      mat.opacity = 0.45 + Math.abs(Math.sin(t * 0.8 + rig.lightPhase)) * 0.5
+      mat.opacity = 0.35 + Math.abs(Math.sin(t * 0.9 + phases[i])) * 0.6
     })
   })
 
+  let beaconIndex = 0
+
   return (
     <group>
-      {rigs.map((rig, i) => (
-        <group key={`rig-${i}`} position={[rig.x, 0, rig.z]} rotation={[0, rig.yaw, 0]}>
-          {/* Deck clamped to the rim, hanging slightly below the surface */}
-          <mesh position={[0, -0.5, 0]}>
-            <boxGeometry args={[rig.deckW, 0.5, rig.deckD]} />
-            <meshStandardMaterial
-              color="#1a2032"
-              roughness={1}
-              emissive="#080d18"
-              emissiveIntensity={0.6}
-            />
-          </mesh>
-          {/* Structure dropping down the cliff face */}
-          <mesh position={[0, -0.6 - rig.drop / 2, 0]}>
-            <boxGeometry args={[rig.deckW * 0.55, rig.drop, rig.deckD * 0.6]} />
-            <meshStandardMaterial
-              color="#161c2c"
-              roughness={1}
-              emissive="#070b14"
-              emissiveIntensity={0.6}
-            />
-          </mesh>
-          {/* Lit window strip down the drop */}
-          <mesh position={[0, -0.6 - rig.drop / 2, rig.deckD * 0.31]}>
-            <planeGeometry args={[rig.deckW * 0.12, rig.drop * 0.66]} />
-            <meshBasicMaterial
-              color={GLOW}
-              transparent
-              opacity={0.55}
-              depthWrite={false}
-              blending={AdditiveBlending}
-            />
-          </mesh>
-          {/* Tower */}
-          <mesh position={[0, rig.towerH / 2, 0]}>
-            <boxGeometry args={[rig.towerW, rig.towerH, rig.towerW]} />
-            <meshStandardMaterial
-              color="#1c2336"
-              roughness={1}
-              emissive="#0a1120"
-              emissiveIntensity={0.6}
-            />
-          </mesh>
-          {/* Thin light seams up the tower. A wide bright strip turned the
-              whole tower into a slab of glowing glass; hairlines read as
-              lit windows on dark metal instead. */}
-          {[-0.28, 0.28].map((sx) => (
-            <mesh
-              key={`seam-${sx}`}
-              position={[rig.towerW * sx, rig.towerH * 0.52, rig.towerW * 0.51]}
-            >
-              <planeGeometry args={[rig.towerW * 0.09, rig.towerH * 0.7]} />
-              <meshBasicMaterial
-                color={GLOW}
-                transparent
-                opacity={0.7}
-                depthWrite={false}
-                blending={AdditiveBlending}
-              />
-            </mesh>
-          ))}
-          {/* Banding, so the tower has scale to read against */}
-          <mesh position={[0, rig.towerH * 0.72, 0]}>
-            <boxGeometry args={[rig.towerW * 1.35, rig.towerH * 0.06, rig.towerW * 1.35]} />
-            <meshStandardMaterial color="#2b3550" roughness={0.9} />
-          </mesh>
-          {/* Slim antenna mast */}
-          {rig.hasMast ? (
-            <mesh position={[0, rig.towerH + 1.6, 0]}>
-              <cylinderGeometry args={[0.03, 0.06, 3.2, 6]} />
-              <meshStandardMaterial color="#2a3146" roughness={1} />
-            </mesh>
-          ) : null}
-          {/* Blinking beacon, on a minority of the rigs */}
-          {rig.hasBeacon ? (
-            <mesh
-              ref={(el) => {
-                lightRefs.current[i] = el
-              }}
-              position={[0, rig.towerH + (rig.hasMast ? 3.3 : 0.3), 0]}
-            >
-              <sphereGeometry args={[0.07, 8, 8]} />
-              <meshBasicMaterial
-                color="#ff4438"
-                transparent
-                opacity={0.8}
-                depthWrite={false}
-                blending={AdditiveBlending}
-              />
-            </mesh>
-          ) : null}
-        </group>
-      ))}
+      {clusters.map((cluster, g) => {
+        const { p } = cluster
+        // Along-edge direction is the outward normal turned 90 degrees
+        const ax = -p.nz
+        const az = p.nx
+        return (
+          <group key={`cluster-${g}`}>
+            {cluster.towers.map((tw, j) => {
+              const x = p.x + ax * tw.along + p.nx * tw.out
+              const z = p.z + az * tw.along + p.nz * tw.out
+              const myBeacon = tw.hasBeacon ? beaconIndex++ : -1
+              return (
+                <group key={`tw-${j}`} position={[x, 0, z]} rotation={[0, p.yaw, 0]}>
+                  {/* Base plinth */}
+                  <mesh position={[0, 0.35, 0]}>
+                    <boxGeometry args={[tw.w * 2.4, 0.7, tw.w * 2.4]} />
+                    <meshStandardMaterial color="#2b3145" roughness={0.9} />
+                  </mesh>
+                  {/* Lower shaft */}
+                  <mesh position={[0, tw.h * 0.32, 0]}>
+                    <boxGeometry args={[tw.w * 1.25, tw.h * 0.64, tw.w * 1.25]} />
+                    <meshStandardMaterial
+                      color="#39415c"
+                      roughness={0.75}
+                      metalness={0.25}
+                    />
+                  </mesh>
+                  {/* Upper shaft, stepped in */}
+                  <mesh position={[0, tw.h * 0.8, 0]}>
+                    <boxGeometry args={[tw.w * 0.8, tw.h * 0.34, tw.w * 0.8]} />
+                    <meshStandardMaterial
+                      color="#454e6c"
+                      roughness={0.7}
+                      metalness={0.3}
+                    />
+                  </mesh>
+                  {/* Window registers on all four faces */}
+                  {Array.from({ length: tw.floors }).map((_, f) => {
+                    const y = tw.h * (0.12 + (f / tw.floors) * 0.62)
+                    return [0, 1, 2, 3].map((face) => (
+                      <mesh
+                        key={`w-${f}-${face}`}
+                        position={[
+                          face === 0 ? tw.w * 0.64 : face === 2 ? -tw.w * 0.64 : 0,
+                          y,
+                          face === 1 ? tw.w * 0.64 : face === 3 ? -tw.w * 0.64 : 0,
+                        ]}
+                        rotation={[0, (face * Math.PI) / 2 + Math.PI / 2, 0]}
+                      >
+                        <planeGeometry args={[tw.w * 0.85, tw.h * 0.035]} />
+                        <meshBasicMaterial
+                          color={GLOW}
+                          transparent
+                          opacity={0.75}
+                          side={DoubleSide}
+                          depthWrite={false}
+                          blending={AdditiveBlending}
+                        />
+                      </mesh>
+                    ))
+                  })}
+                  {/* Antenna array on the crown */}
+                  {Array.from({ length: tw.masts }).map((_, m) => {
+                    const off = (m - (tw.masts - 1) / 2) * tw.w * 0.5
+                    const mh = tw.mastH * (m === 0 ? 1 : 0.6 + Math.random() * 0.3)
+                    return (
+                      <mesh
+                        key={`m-${m}`}
+                        position={[off, tw.h * 0.97 + mh / 2, 0]}
+                      >
+                        <cylinderGeometry args={[0.025, 0.06, mh, 5]} />
+                        <meshStandardMaterial
+                          color="#5a6480"
+                          roughness={0.8}
+                          metalness={0.4}
+                        />
+                      </mesh>
+                    )
+                  })}
+                  {/* Aircraft-warning beacon */}
+                  {myBeacon >= 0 ? (
+                    <mesh
+                      ref={(el) => {
+                        lightRefs.current[myBeacon] = el
+                      }}
+                      position={[0, tw.h * 0.97 + tw.mastH + 0.15, 0]}
+                    >
+                      <sphereGeometry args={[0.09, 8, 8]} />
+                      <meshBasicMaterial
+                        color="#ff4438"
+                        transparent
+                        opacity={0.8}
+                        depthWrite={false}
+                        blending={AdditiveBlending}
+                      />
+                    </mesh>
+                  ) : null}
+                </group>
+              )
+            })}
+          </group>
+        )
+      })}
     </group>
   )
 }

@@ -118,19 +118,22 @@ const cyberKeyframes: DayKeyframe[] = [
   { h: 24, bg: '#0a0618', top: '#05030f', bot: '#1a0a2e', amb: 0.34, hemi: '#2a1a4e', hemiG: '#0d0618', hemiI: 0.3, dir: '#b060ff', dirI: 0.5, fog: '#0d0722', fogN: 12, fogF: 78, star: 0.85 },
 ]
 
-// Deep Space: an island adrift. Near-black at every hour with the stars always
-// out; "time" only moves which star is lighting the rock and how warm it is.
+// Deep Space: an island adrift, but with a real day. A thin envelope still
+// scatters its star into a deep cobalt sky, so daylight lands on the grass the
+// way it does anywhere else — what marks it as space is that the stars and the
+// moons never go away, even at noon. Distances stay huge (far fog) so the rim
+// towers and traffic read all the way out to the horizon.
 const spaceKeyframes: DayKeyframe[] = [
-  { h: 0, bg: '#03060f', top: '#010309', bot: '#061020', amb: 0.26, hemi: '#132a4e', hemiG: '#03060e', hemiI: 0.24, dir: '#7fb4ff', dirI: 0.7, fog: '#04070f', fogN: 60, fogF: 260, star: 1 },
-  { h: 5, bg: '#040814', top: '#010409', bot: '#08142a', amb: 0.28, hemi: '#17335e', hemiG: '#04070f', hemiI: 0.26, dir: '#95c4ff', dirI: 0.95, fog: '#050913', fogN: 60, fogF: 260, star: 1 },
-  { h: 6.5, bg: '#060b1a', top: '#02050c', bot: '#0b1a34', amb: 0.32, hemi: '#1d3c6e', hemiG: '#05080f', hemiI: 0.3, dir: '#cfe0ff', dirI: 1.3, fog: '#060a16', fogN: 60, fogF: 260, star: 0.96 },
-  { h: 9, bg: '#070d1e', top: '#020610', bot: '#0d1f3c', amb: 0.36, hemi: '#22467c', hemiG: '#060916', hemiI: 0.32, dir: '#e8f2ff', dirI: 1.6, fog: '#070b1a', fogN: 60, fogF: 260, star: 0.9 },
-  { h: 12, bg: '#081026', top: '#030714', bot: '#0f2444', amb: 0.4, hemi: '#284e88', hemiG: '#070a18', hemiI: 0.36, dir: '#ffffff', dirI: 1.85, fog: '#080d1e', fogN: 60, fogF: 260, star: 0.86 },
-  { h: 15, bg: '#070e20', top: '#020611', bot: '#0d203e', amb: 0.37, hemi: '#244880', hemiG: '#060916', hemiI: 0.33, dir: '#eef4ff', dirI: 1.62, fog: '#070b1b', fogN: 60, fogF: 260, star: 0.9 },
-  { h: 18, bg: '#050a18', top: '#02040d', bot: '#0a172f', amb: 0.32, hemi: '#1c3a6a', hemiG: '#05080f', hemiI: 0.3, dir: '#ffd0a8', dirI: 1.25, fog: '#050914', fogN: 60, fogF: 260, star: 0.95 },
-  { h: 19.5, bg: '#040713', top: '#01030a', bot: '#071227', amb: 0.29, hemi: '#163158', hemiG: '#04070e', hemiI: 0.27, dir: '#a8c4ff', dirI: 0.95, fog: '#040711', fogN: 60, fogF: 260, star: 0.99 },
-  { h: 21, bg: '#030610', top: '#010209', bot: '#061021', amb: 0.27, hemi: '#132a50', hemiG: '#03060e', hemiI: 0.25, dir: '#89b8ff', dirI: 0.78, fog: '#04070f', fogN: 60, fogF: 260, star: 1 },
-  { h: 24, bg: '#03060f', top: '#010309', bot: '#061020', amb: 0.26, hemi: '#132a4e', hemiG: '#03060e', hemiI: 0.24, dir: '#7fb4ff', dirI: 0.7, fog: '#04070f', fogN: 60, fogF: 260, star: 1 },
+  { h: 0, bg: '#050a1a', top: '#02040d', bot: '#0b1730', amb: 0.3, hemi: '#16305a', hemiG: '#050912', hemiI: 0.26, dir: '#7fb4ff', dirI: 0.7, fog: '#060b1c', fogN: 70, fogF: 300, star: 1 },
+  { h: 5, bg: '#0d1c3e', top: '#061029', bot: '#1c3a66', amb: 0.36, hemi: '#22447a', hemiG: '#080e1e', hemiI: 0.32, dir: '#95c4ff', dirI: 1, fog: '#0e1c3c', fogN: 70, fogF: 300, star: 0.98 },
+  { h: 6.5, bg: '#2e5f96', top: '#123e82', bot: '#6d9ec4', amb: 0.5, hemi: '#4a7cb4', hemiG: '#2a2e2c', hemiI: 0.55, dir: '#ffc98a', dirI: 1.9, fog: '#3f6f9e', fogN: 70, fogF: 300, star: 0.72 },
+  { h: 9, bg: '#3f8ecb', top: '#1559a8', bot: '#8ec2e2', amb: 0.6, hemi: '#69a8dc', hemiG: '#3c4a38', hemiI: 0.8, dir: '#fff2d4', dirI: 2.35, fog: '#5e9ec8', fogN: 70, fogF: 320, star: 0.55 },
+  { h: 12, bg: '#4a9bd6', top: '#1462b8', bot: '#9dcce8', amb: 0.66, hemi: '#78b4e4', hemiG: '#41503c', hemiI: 0.88, dir: '#ffffff', dirI: 2.6, fog: '#6ba8d2', fogN: 70, fogF: 330, star: 0.5 },
+  { h: 15, bg: '#4291cf', top: '#155cae', bot: '#93c6e5', amb: 0.61, hemi: '#6faade', hemiG: '#3e4c3a', hemiI: 0.82, dir: '#fff0cf', dirI: 2.38, fog: '#62a0ca', fogN: 70, fogF: 320, star: 0.55 },
+  { h: 18, bg: '#3a6b9e', top: '#17457f', bot: '#b58a7e', amb: 0.5, hemi: '#5a84b4', hemiG: '#3a3230', hemiI: 0.56, dir: '#ffb877', dirI: 2, fog: '#4a739c', fogN: 70, fogF: 300, star: 0.74 },
+  { h: 19.5, bg: '#1d3a68', top: '#0b2148', bot: '#3f5a86', amb: 0.4, hemi: '#2e5288', hemiG: '#1a2030', hemiI: 0.36, dir: '#a8c4ff', dirI: 1.05, fog: '#1e3c68', fogN: 70, fogF: 300, star: 0.92 },
+  { h: 21, bg: '#0a1730', top: '#040b1e', bot: '#132548', amb: 0.32, hemi: '#1a3763', hemiG: '#070c18', hemiI: 0.28, dir: '#89b8ff', dirI: 0.8, fog: '#0b1832', fogN: 70, fogF: 300, star: 1 },
+  { h: 24, bg: '#050a1a', top: '#02040d', bot: '#0b1730', amb: 0.3, hemi: '#16305a', hemiG: '#050912', hemiI: 0.26, dir: '#7fb4ff', dirI: 0.7, fog: '#060b1c', fogN: 70, fogF: 300, star: 1 },
 ]
 
 const prepare = (frames: DayKeyframe[]) =>
