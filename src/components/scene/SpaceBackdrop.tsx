@@ -770,8 +770,23 @@ function RimInstallations() {
             floors: 2 + Math.floor(Math.random() * 4),
             masts: 1 + Math.floor(Math.random() * 3),
             mastH: 2 + Math.random() * 4.5,
+            mastRatios: [1, 0.6 + Math.random() * 0.3, 0.6 + Math.random() * 0.3],
             hasBeacon: Math.random() > 0.55,
             phase: Math.random() * Math.PI * 2,
+            // Greebling. These are the closest structures at ~24 units, so
+            // this is where surface detail actually reaches the eye. Rolled
+            // once here rather than in render, or they would reshuffle
+            // every frame.
+            hasPods: Math.random() > 0.4,
+            podY: 0.3 + Math.random() * 0.3,
+            hasRing: Math.random() > 0.5,
+            ringY: 0.5 + Math.random() * 0.28,
+            hasDish: Math.random() > 0.62,
+            dishTilt: 0.5 + Math.random() * 0.5,
+            dishSpin: Math.random() * Math.PI * 2,
+            hasGantry: Math.random() > 0.65,
+            gantryY: 0.24 + Math.random() * 0.3,
+            vents: 1 + Math.floor(Math.random() * 3),
           }
         },
       )
@@ -834,37 +849,114 @@ function RimInstallations() {
                       metalness={0.3}
                     />
                   </mesh>
-                  {/* Window registers on all four faces */}
-                  {Array.from({ length: tw.floors }).map((_, f) => {
-                    // Fixed-height slits: scaling a window with its tower is
-                    // what produced big square office panes
-                    const y = 1.1 + f * 1.5
-                    return [0, 1, 2, 3].map((face) => (
-                      <mesh
-                        key={`w-${f}-${face}`}
-                        position={[
-                          face === 0 ? tw.w * 0.64 : face === 2 ? -tw.w * 0.64 : 0,
-                          y,
-                          face === 1 ? tw.w * 0.64 : face === 3 ? -tw.w * 0.64 : 0,
-                        ]}
-                        rotation={[0, (face * Math.PI) / 2 + Math.PI / 2, 0]}
-                      >
-                        <planeGeometry args={[tw.w * 0.8, 0.15]} />
-                        <meshBasicMaterial
-                          color={GLOW}
-                          transparent
-                          opacity={0.75}
-                          side={DoubleSide}
-                          depthWrite={false}
-                          blending={AdditiveBlending}
+                  {/* Light bands. One box that wraps the shaft, rather than
+                      four separate planes per floor -- a quarter of the draw
+                      calls, and it reads as a continuous lit storey the way
+                      the reference does instead of four detached slits. */}
+                  {Array.from({ length: tw.floors }).map((_, f) => (
+                    <mesh key={`band-${f}`} position={[0, 1.1 + f * 1.5, 0]}>
+                      <boxGeometry args={[tw.w * 1.32, 0.15, tw.w * 1.32]} />
+                      <meshBasicMaterial
+                        color={GLOW}
+                        transparent
+                        opacity={0.7}
+                        depthWrite={false}
+                        blending={AdditiveBlending}
+                      />
+                    </mesh>
+                  ))}
+                  {/* Service pods bracketing the shaft */}
+                  {tw.hasPods
+                    ? [1, -1].map((s) => (
+                        <mesh
+                          key={`pod-${s}`}
+                          position={[s * tw.w * 0.95, tw.h * tw.podY, 0]}
+                        >
+                          <boxGeometry args={[tw.w * 0.7, tw.h * 0.16, tw.w * 0.9]} />
+                          <meshStandardMaterial
+                            color="#333b54"
+                            roughness={0.85}
+                            metalness={0.2}
+                          />
+                        </mesh>
+                      ))
+                    : null}
+                  {/* Catwalk ring */}
+                  {tw.hasRing ? (
+                    <mesh
+                      position={[0, tw.h * tw.ringY, 0]}
+                      rotation={[Math.PI / 2, 0, 0]}
+                    >
+                      <torusGeometry args={[tw.w * 1.15, tw.w * 0.075, 5, 12]} />
+                      <meshStandardMaterial
+                        color="#525c7c"
+                        roughness={0.7}
+                        metalness={0.35}
+                      />
+                    </mesh>
+                  ) : null}
+                  {/* Comms dish */}
+                  {tw.hasDish ? (
+                    <group
+                      position={[0, tw.h * 0.9, tw.w * 0.7]}
+                      rotation={[tw.dishTilt, tw.dishSpin, 0]}
+                    >
+                      <mesh rotation={[Math.PI / 2, 0, 0]}>
+                        <cylinderGeometry args={[tw.w * 0.62, tw.w * 0.12, 0.1, 10]} />
+                        <meshStandardMaterial
+                          color="#5c6788"
+                          roughness={0.6}
+                          metalness={0.4}
                         />
                       </mesh>
-                    ))
-                  })}
+                      <mesh position={[0, 0, -tw.w * 0.3]}>
+                        <cylinderGeometry args={[0.03, 0.03, tw.w * 0.6, 5]} />
+                        <meshStandardMaterial color="#3a4560" roughness={0.9} />
+                      </mesh>
+                    </group>
+                  ) : null}
+                  {/* Docking gantry reaching outboard */}
+                  {tw.hasGantry ? (
+                    <>
+                      <mesh
+                        position={[0, tw.h * tw.gantryY, tw.w * 1.7]}
+                        rotation={[0, 0, Math.PI / 2]}
+                      >
+                        <cylinderGeometry args={[0.055, 0.055, tw.w * 2.4, 5]} />
+                        <meshStandardMaterial
+                          color="#4a5470"
+                          roughness={0.8}
+                          metalness={0.3}
+                        />
+                      </mesh>
+                      <mesh position={[0, tw.h * tw.gantryY - 0.18, tw.w * 2.6]}>
+                        <boxGeometry args={[tw.w * 1.1, 0.22, tw.w * 0.8]} />
+                        <meshStandardMaterial
+                          color="#39415c"
+                          roughness={0.85}
+                          metalness={0.2}
+                        />
+                      </mesh>
+                    </>
+                  ) : null}
+                  {/* Roof vents, so the crown is not a flat cut */}
+                  {Array.from({ length: tw.vents }).map((_, v) => (
+                    <mesh
+                      key={`vent-${v}`}
+                      position={[
+                        (v - (tw.vents - 1) / 2) * tw.w * 0.42,
+                        tw.h * 0.98,
+                        tw.w * 0.2,
+                      ]}
+                    >
+                      <boxGeometry args={[tw.w * 0.3, tw.h * 0.05, tw.w * 0.3]} />
+                      <meshStandardMaterial color="#4e587a" roughness={0.75} metalness={0.3} />
+                    </mesh>
+                  ))}
                   {/* Antenna array on the crown */}
                   {Array.from({ length: tw.masts }).map((_, m) => {
                     const off = (m - (tw.masts - 1) / 2) * tw.w * 0.5
-                    const mh = tw.mastH * (m === 0 ? 1 : 0.6 + Math.random() * 0.3)
+                    const mh = tw.mastH * tw.mastRatios[m]
                     return (
                       <mesh
                         key={`m-${m}`}
@@ -973,6 +1065,28 @@ function DistantSkyline() {
             >
               <meshStandardMaterial color={ROCK} roughness={1} />
             </mesh>
+            {/* Landing pad and outbuildings, so the rock reads as occupied
+                rather than as a bare slab with spires on it */}
+            <mesh position={[c.spread * 0.55, 0.24, -c.spread * 0.4]} rotation={[Math.PI / 2, 0, 0]}>
+              <ringGeometry args={[c.spread * 0.16, c.spread * 0.27, 12]} />
+              <meshBasicMaterial
+                color={GLOW_DIM}
+                transparent
+                opacity={0.4}
+                side={DoubleSide}
+                depthWrite={false}
+                blending={AdditiveBlending}
+              />
+            </mesh>
+            {[-1, 1].map((sx) => (
+              <mesh
+                key={`out-${sx}`}
+                position={[sx * c.spread * 0.62, 0.5, c.spread * 0.45]}
+              >
+                <boxGeometry args={[c.spread * 0.3, 1, c.spread * 0.22]} />
+                <meshStandardMaterial color="#333c56" roughness={0.9} metalness={0.15} />
+              </mesh>
+            ))}
             {c.towers.map((t, j) => (
               <group key={`ft-${j}`} position={[t.offset, 0.2, t.depth]}>
                 <mesh position={[0, t.h / 2, 0]}>
@@ -983,11 +1097,8 @@ function DistantSkyline() {
                     tower gave big square panes, which read as an office block
                     rather than something built out here. */}
                 {Array.from({ length: Math.max(2, Math.floor(t.h / 2.2)) }).map((_, f) => (
-                  <mesh
-                    key={`fw-${f}`}
-                    position={[0, t.h * 0.16 + f * 2.2, t.w * 0.51]}
-                  >
-                    <planeGeometry args={[t.w * 0.72, 0.22]} />
+                  <mesh key={`fw-${f}`} position={[0, t.h * 0.16 + f * 2.2, 0]}>
+                    <boxGeometry args={[t.w * 1.28, 0.22, t.w * 1.28]} />
                     <meshBasicMaterial
                       color={GLOW}
                       transparent
