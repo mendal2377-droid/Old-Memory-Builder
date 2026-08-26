@@ -468,14 +468,19 @@ function PassingShips() {
     () =>
       Array.from({ length: 10 }).map((_, i) => {
         const heavy = i % 4 === 0
+        const depth = -58 - Math.random() * 60
         return {
           heavy,
           period: heavy ? 80 + Math.random() * 50 : 30 + Math.random() * 26,
           offset: Math.random() * 70,
           height: 10 + Math.random() * 44,
-          depth: -58 - Math.random() * 60,
+          depth,
           span: 230,
-          scale: heavy ? 3.6 + Math.random() * 2.4 : 1.1 + Math.random() * 1.2,
+          // Sized from its own lane, like everything else out here. A fixed
+          // scale meant a heavy in the near lane spanned a third of the view.
+          scale:
+            (Math.abs(depth) / (heavy ? 38 : 60)) *
+            (0.85 + Math.random() * 0.38),
           tilt: (Math.random() - 0.5) * 0.3,
           reverse: i % 2 === 0,
         }

@@ -1368,9 +1368,12 @@ function AtmosphereStage() {
   // Tapered flare rays, jittered so the star never looks mechanical
   const sunRays = useMemo(
     () =>
+      // Four long spikes with short ones between, at jittered angles. Ten
+      // evenly spaced rays of similar length read as a stamped star sprite;
+      // real diffraction is a few dominant spikes and a lot of small ones.
       Array.from({ length: 10 }).map((_, i) => ({
-        angle: (i / 10) * Math.PI * 2,
-        length: 7.5 * (0.5 + Math.random() * 0.8),
+        angle: (i / 10) * Math.PI * 2 + (Math.random() - 0.5) * 0.22,
+        length: 3.4 * (i % 3 === 0 ? 0.85 + Math.random() * 0.5 : 0.3 + Math.random() * 0.35),
       })),
     [],
   )
@@ -1498,15 +1501,15 @@ function AtmosphereStage() {
       <group ref={sunRef}>
         {/* Outer atmospheric bloom */}
         <mesh ref={registerScatter(0, 0.07)} position={[0, 0, -0.06]} renderOrder={97}>
-          <circleGeometry args={[7.4, 48]} />
+          <circleGeometry args={[4.6, 48]} />
           <meshBasicMaterial color="#ffcf7a" transparent opacity={0.07} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
         </mesh>
         {/* Tapered flare rays, turning slowly through the day */}
         <group ref={sunRaysRef} position={[0, 0, -0.04]}>
           {sunRays.map((ray, index) => (
             <group key={`sun-ray-${index}`} rotation={[0, 0, ray.angle]}>
-              <mesh position={[0, ray.length * 0.5 + 1.1, 0]} renderOrder={98}>
-                <coneGeometry args={[0.34, ray.length, 3]} />
+              <mesh position={[0, ray.length * 0.5 + 0.7, 0]} renderOrder={98}>
+                <coneGeometry args={[0.2, ray.length, 3]} />
                 <meshBasicMaterial color="#fff0c0" transparent opacity={0.11} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
               </mesh>
             </group>
@@ -1514,12 +1517,12 @@ function AtmosphereStage() {
         </group>
         {/* Inner halo */}
         <mesh ref={registerScatter(1, 0.26)} position={[0, 0, -0.02]} renderOrder={99}>
-          <circleGeometry args={[3.2, 48]} />
+          <circleGeometry args={[1.9, 48]} />
           <meshBasicMaterial color="#ffdf9a" transparent opacity={0.26} depthWrite={false} depthTest={false} blending={AdditiveBlending} />
         </mesh>
         {/* Bright core */}
         <mesh renderOrder={100}>
-          <circleGeometry args={[1.7, 48]} />
+          <circleGeometry args={[0.85, 48]} />
           <meshBasicMaterial color="#fff8dc" transparent opacity={0.97} depthWrite={false} depthTest={false} />
         </mesh>
       </group>
