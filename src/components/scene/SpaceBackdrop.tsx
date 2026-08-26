@@ -285,8 +285,10 @@ function Moons() {
 /** Sister islands: dark broken rock with glowing veins, each on its own bob. */
 function FloatingIslands() {
   const geometries = useMemo(() => {
-    const keel = jitter(new ConeGeometry(0.95, 2.4, 9, 6), 0.42, 1)
-    const cap = jitter(new ConeGeometry(1.05, 0.4, 10, 2), 0.2, 2.3)
+    // A tall narrow cone reads as a paper dart. Real torn-loose rock is
+    // squat and broken, so the keel is shorter and much rougher.
+    const keel = jitter(new ConeGeometry(1.0, 1.35, 9, 6), 0.6, 1)
+    const cap = jitter(new ConeGeometry(1.05, 0.4, 10, 2), 0.24, 2.3)
     return { keel, cap }
   }, [])
 
@@ -299,11 +301,15 @@ function FloatingIslands() {
         // horizon is seen edge-on and reads as a grey blade, not a rock.
         const above = i % 2 === 0
         const y = above ? 20 + Math.random() * 34 : -34 - Math.random() * 22
+        // Size from true slant distance, the same rule the far platforms and
+        // the debris use. Rolling scale independently of range let a near
+        // island cover a third of the screen and hang over the lighthouse.
+        const slant = Math.hypot(radius, y)
         return {
           x: Math.cos(angle) * radius,
           y,
           z: Math.sin(angle) * radius,
-          scale: 6 + Math.random() * 13,
+          scale: (slant / 13) * (0.8 + Math.random() * 0.6),
           // Tip the face toward the viewer so the cap is visible, not the rim
           tilt: (above ? 0.34 : -0.34) + (Math.random() - 0.5) * 0.3,
           spin: Math.random() * Math.PI * 2,
@@ -504,9 +510,12 @@ function PassingShips() {
           }}
           scale={ship.scale}
         >
-          {/* Dark hull — a silhouette, not a highlight */}
+          {/* Hull. A single box reads as a bar at any distance, so the shape
+              is built from a tapered spine, a swept wing pair and a raised
+              bridge -- the silhouette is what carries at this range, not the
+              surface. */}
           <mesh>
-            <boxGeometry args={ship.heavy ? [5.2, 0.7, 1.3] : [2.2, 0.26, 0.5]} />
+            <boxGeometry args={ship.heavy ? [5.2, 0.62, 1.15] : [2.2, 0.24, 0.46]} />
             <meshStandardMaterial
               color="#39435f"
               roughness={0.85}
@@ -515,13 +524,67 @@ function PassingShips() {
               fog={false}
             />
           </mesh>
-          <mesh position={ship.heavy ? [-1.3, 0.45, 0] : [-0.3, 0, 0]}>
-            <boxGeometry args={ship.heavy ? [1.8, 0.45, 0.8] : [0.9, 0.09, 1.6]} />
+          {/* Tapered prow */}
+          <mesh
+            position={[ship.heavy ? 3.5 : 1.5, 0, 0]}
+            rotation={[0, 0, -Math.PI / 2]}
+          >
+            <coneGeometry
+              args={ship.heavy ? [0.6, 1.9, 4] : [0.24, 0.85, 4]}
+            />
+            <meshStandardMaterial
+              color="#414c6a"
+              roughness={0.8}
+              emissive="#171f31"
+              emissiveIntensity={1}
+              fog={false}
+            />
+          </mesh>
+          {/* Swept wings */}
+          {[1, -1].map((s) => (
+            <mesh
+              key={`wing-${s}`}
+              position={[ship.heavy ? -0.9 : -0.35, 0, s * (ship.heavy ? 1.35 : 0.55)]}
+              rotation={[0, s * 0.3, 0]}
+            >
+              <boxGeometry
+                args={ship.heavy ? [3.1, 0.16, 1.9] : [1.3, 0.07, 0.8]}
+              />
+              <meshStandardMaterial
+                color="#333c56"
+                roughness={0.9}
+                emissive="#121828"
+                emissiveIntensity={1}
+                fog={false}
+              />
+            </mesh>
+          ))}
+          {/* Raised bridge */}
+          <mesh position={[ship.heavy ? -1.3 : -0.5, ship.heavy ? 0.5 : 0.2, 0]}>
+            <boxGeometry args={ship.heavy ? [1.7, 0.42, 0.75] : [0.7, 0.17, 0.3]} />
             <meshStandardMaterial
               color="#4b5674"
               roughness={0.8}
               emissive="#1b2337"
               emissiveIntensity={1}
+              fog={false}
+            />
+          </mesh>
+          {/* Lit bridge windows */}
+          <mesh
+            position={[
+              ship.heavy ? -1.3 : -0.5,
+              ship.heavy ? 0.55 : 0.22,
+              ship.heavy ? 0.38 : 0.16,
+            ]}
+          >
+            <planeGeometry args={ship.heavy ? [1.1, 0.1] : [0.44, 0.05]} />
+            <meshBasicMaterial
+              color="#cfe9ff"
+              transparent
+              opacity={0.55}
+              depthWrite={false}
+              blending={AdditiveBlending}
               fog={false}
             />
           </mesh>
