@@ -19,6 +19,8 @@ const terrainModes: TerrainMode[] = [
 ]
 
 const atmospherePresets: AtmospherePreset[] = [
+  'Golden Morning',
+  'Cosmic Dawn',
   'Clear Morning',
   'Sunset',
   'Rainy Day',

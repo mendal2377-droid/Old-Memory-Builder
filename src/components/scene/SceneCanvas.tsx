@@ -18,6 +18,8 @@ import type { AtmospherePreset } from '../../types/scene'
 const isometricCameraPosition: [number, number, number] = [28, 28, 28]
 
 const atmospherePresets: AtmospherePreset[] = [
+  'Golden Morning',
+  'Cosmic Dawn',
   'Clear Morning',
   'Sunset',
   'Rainy Day',

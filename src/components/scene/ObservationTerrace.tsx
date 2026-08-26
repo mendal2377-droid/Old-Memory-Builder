@@ -45,15 +45,14 @@ function InlaidLight() {
     refs.current.forEach((m, i) => {
       if (!m) return
       const mat = m.material as { opacity: number }
-      mat.opacity = 0.3 + Math.abs(Math.sin(t * 0.42 + i * 1.1)) * 0.28
+      mat.opacity = 0.16 + Math.abs(Math.sin(t * 0.35 + i * 1.1)) * 0.14
     })
   })
 
   const arcs = useMemo(
     () => [
-      { inner: 2.15, outer: 2.28, start: -0.5, sweep: Math.PI * 1.15 },
-      { inner: 3.5, outer: 3.62, start: Math.PI * 0.55, sweep: Math.PI * 1.05 },
-      { inner: 4.42, outer: 4.54, start: -1.15, sweep: Math.PI * 0.8 },
+      // One quiet arc, reading as a worn inlay rather than a landing pad
+      { inner: 3.62, outer: 3.7, start: Math.PI * 0.62, sweep: Math.PI * 0.86 },
     ],
     [],
   )
@@ -67,14 +66,14 @@ function InlaidLight() {
             refs.current[i] = el
           }}
           rotation={[-Math.PI / 2, 0, a.start]}
-          position={[0, 0.28, 0]}
+          position={[0, 0.13, 0]}
           raycast={() => null}
         >
           <ringGeometry args={[a.inner, a.outer, 46, 1, 0, a.sweep]} />
           <meshBasicMaterial
             color={GLOW}
             transparent
-            opacity={0.45}
+            opacity={0.22}
             side={DoubleSide}
             depthWrite={false}
             blending={AdditiveBlending}
@@ -90,9 +89,9 @@ function Railing() {
   const posts = useMemo(() => {
     // Only the outward-facing arc is railed; the garden side stays open so the
     // terrace has an obvious way in.
-    const start = -Math.PI * 0.62
-    const sweep = Math.PI * 1.24
-    const count = 15
+    const start = -Math.PI * 0.34
+    const sweep = Math.PI * 0.68
+    const count = 9
     return Array.from({ length: count }).map((_, i) => {
       const a = start + (i / (count - 1)) * sweep
       return { x: Math.cos(a) * (RADIUS - 0.32), z: Math.sin(a) * (RADIUS - 0.32), a }
@@ -102,19 +101,19 @@ function Railing() {
   return (
     <group>
       {posts.map((p, i) => (
-        <mesh key={`post-${i}`} position={[p.x, 0.72, p.z]} castShadow raycast={() => null}>
-          <boxGeometry args={[0.11, 0.85, 0.11]} />
+        <mesh key={`post-${i}`} position={[p.x, 0.42, p.z]} castShadow raycast={() => null}>
+          <boxGeometry args={[0.1, 0.66, 0.1]} />
           <meshStandardMaterial color={STONE_DARK} roughness={0.85} metalness={0.15} />
         </mesh>
       ))}
       {/* Top rail, following the same arc */}
       <mesh
-        position={[0, 1.16, 0]}
-        rotation={[Math.PI / 2, 0, -Math.PI * 0.62]}
+        position={[0, 0.79, 0]}
+        rotation={[Math.PI / 2, 0, -Math.PI * 0.34]}
         castShadow
         raycast={() => null}
       >
-        <torusGeometry args={[RADIUS - 0.32, 0.062, 6, 60, Math.PI * 1.24]} />
+        <torusGeometry args={[RADIUS - 0.32, 0.055, 6, 40, Math.PI * 0.68]} />
         <meshStandardMaterial color={STONE_EDGE} roughness={0.8} metalness={0.2} />
       </mesh>
     </group>
@@ -124,7 +123,7 @@ function Railing() {
 /** A plain wooden bench, turned to face the open horizon. */
 function Bench() {
   return (
-    <group position={[0, 0, 0.55]} rotation={[0, OUT_YAW, 0]}>
+    <group position={[0, 0, -1.15]}>
       {/* Seat */}
       <mesh position={[0, 0.52, 0]} castShadow receiveShadow raycast={() => null}>
         <boxGeometry args={[1.95, 0.09, 0.56]} />
@@ -152,61 +151,112 @@ function Bench() {
 }
 
 /**
- * Cut stone with light in it, growing out of a rock shoulder — the clearest
- * statement of the island's premise, that nature has grown through technology.
+ * Weathered stone worn back into the ground, with a seam of light still alive
+ * in it and moss taking the top. The upright column here read as a machine
+ * dropped on the lawn; low broken stone reads as something old that was
+ * repaired, which is what this place is meant to be.
  */
-function CyberStonework() {
+function SunkenStones() {
   const glowRef = useRef<Mesh>(null)
 
   useFrame(({ clock }) => {
     if (!glowRef.current) return
     const mat = glowRef.current.material as { opacity: number }
-    mat.opacity = 0.5 + Math.sin(clock.elapsedTime * 0.55) * 0.14
+    mat.opacity = 0.26 + Math.sin(clock.elapsedTime * 0.4) * 0.1
   })
 
+  const blocks = useMemo(
+    () => [
+      { a: 2.05, r: RADIUS + 0.55, w: 1.5, h: 0.62, d: 1.1, tilt: 0.12 },
+      { a: 2.62, r: RADIUS + 0.35, w: 1.1, h: 0.4, d: 0.95, tilt: -0.09 },
+      { a: 3.5, r: RADIUS + 0.7, w: 1.35, h: 0.5, d: 1.0, tilt: 0.07 },
+    ],
+    [],
+  )
+
   return (
-    <group position={[RADIUS * 0.86, 0, -RADIUS * 0.5]} rotation={[0, -0.5, 0]}>
-      {/* Rock shoulder */}
-      <mesh position={[0, 0.85, 0]} castShadow receiveShadow raycast={() => null}>
-        <boxGeometry args={[2.1, 1.7, 1.9]} />
-        <meshStandardMaterial color={CYBER_ROCK} roughness={1} flatShading />
-      </mesh>
-      {/* The cut column standing in it */}
-      <mesh position={[0, 2.15, 0.12]} castShadow raycast={() => null}>
-        <boxGeometry args={[1.25, 2.9, 1.15]} />
-        <meshStandardMaterial color={STONE_DARK} roughness={0.85} metalness={0.2} />
-      </mesh>
-      {/* Lit panels set into the face */}
-      {[-0.3, 0.3].map((sx) => (
-        <mesh
-          key={`panel-${sx}`}
-          ref={sx > 0 ? glowRef : undefined}
-          position={[sx, 2.2, 0.71]}
-          raycast={() => null}
+    <group>
+      {blocks.map((bl, i) => (
+        <group
+          key={`stone-${i}`}
+          position={[Math.cos(bl.a) * bl.r, 0, Math.sin(bl.a) * bl.r]}
+          rotation={[bl.tilt, bl.a, 0]}
         >
-          <planeGeometry args={[0.3, 1.85]} />
-          <meshBasicMaterial
-            color={GLOW}
-            transparent
-            opacity={0.55}
-            depthWrite={false}
-            blending={AdditiveBlending}
-          />
-        </mesh>
+          <mesh position={[0, bl.h * 0.42, 0]} castShadow receiveShadow raycast={() => null}>
+            <boxGeometry args={[bl.w, bl.h, bl.d]} />
+            <meshStandardMaterial color={CYBER_ROCK} roughness={1} flatShading />
+          </mesh>
+          {/* Moss along the top edge */}
+          <mesh position={[0, bl.h * 0.86, 0]} raycast={() => null}>
+            <boxGeometry args={[bl.w * 0.82, bl.h * 0.14, bl.d * 0.8]} />
+            <meshStandardMaterial color="#4f7a45" roughness={1} flatShading />
+          </mesh>
+          {/* A seam of light still running through the break */}
+          {i === 0 ? (
+            <mesh ref={glowRef} position={[0, bl.h * 0.45, bl.d * 0.52]} raycast={() => null}>
+              <planeGeometry args={[bl.w * 0.66, 0.055]} />
+              <meshBasicMaterial
+                color={GLOW}
+                transparent
+                opacity={0.3}
+                depthWrite={false}
+                blending={AdditiveBlending}
+              />
+            </mesh>
+          ) : null}
+        </group>
       ))}
-      {/* Light spilling onto the stone around it */}
-      <pointLight
-        position={[0, 2.3, 1.1]}
-        color={GLOW}
-        intensity={1.5}
-        distance={7}
-        decay={2}
-      />
-      {/* Growth taking the top back */}
-      <mesh position={[0.1, 3.68, 0.1]} raycast={() => null}>
-        <sphereGeometry args={[0.62, 10, 8]} />
-        <meshStandardMaterial color="#4f7a45" roughness={1} flatShading />
-      </mesh>
+    </group>
+  )
+}
+
+/** Rocks, tufts and small flowers softening where paving meets grass. */
+function EdgeDressing() {
+  const bits = useMemo(() => {
+    const out: Array<{
+      x: number
+      z: number
+      s: number
+      kind: 'rock' | 'tuft' | 'flower'
+      rot: number
+    }> = []
+    for (let i = 0; i < 26; i += 1) {
+      const a = (i / 26) * Math.PI * 2 + (i % 3) * 0.21
+      const r = RADIUS + 0.1 + ((i * 7919) % 100) / 100 * 1.5
+      const kind = i % 4 === 0 ? 'rock' : i % 4 === 1 ? 'flower' : 'tuft'
+      out.push({
+        x: Math.cos(a) * r,
+        z: Math.sin(a) * r,
+        s: 0.6 + ((i * 6131) % 100) / 100 * 0.7,
+        kind,
+        rot: (i * 1.37) % (Math.PI * 2),
+      })
+    }
+    return out
+  }, [])
+
+  return (
+    <group>
+      {bits.map((bt, i) => (
+        <group key={`edge-${i}`} position={[bt.x, 0, bt.z]} rotation={[0, bt.rot, 0]}>
+          {bt.kind === 'rock' ? (
+            <mesh position={[0, 0.1 * bt.s, 0]} castShadow raycast={() => null}>
+              <dodecahedronGeometry args={[0.22 * bt.s, 0]} />
+              <meshStandardMaterial color="#7b7d82" roughness={1} flatShading />
+            </mesh>
+          ) : bt.kind === 'flower' ? (
+            <mesh position={[0, 0.16 * bt.s, 0]} raycast={() => null}>
+              <sphereGeometry args={[0.09 * bt.s, 6, 5]} />
+              <meshStandardMaterial color="#e8dcc8" roughness={1} flatShading />
+            </mesh>
+          ) : (
+            <mesh position={[0, 0.17 * bt.s, 0]} raycast={() => null}>
+              <coneGeometry args={[0.13 * bt.s, 0.34 * bt.s, 5]} />
+              <meshStandardMaterial color="#6d9a55" roughness={1} flatShading />
+            </mesh>
+          )}
+        </group>
+      ))}
     </group>
   )
 }
@@ -246,19 +296,20 @@ export function ObservationTerrace() {
   return (
     <group position={[SITE_X, 0, SITE_Z]} rotation={[0, OUT_YAW, 0]}>
       {/* Paving slab, sunk just proud of the grass */}
-      <mesh position={[0, 0.13, 0]} receiveShadow raycast={() => null}>
-        <cylinderGeometry args={[RADIUS, RADIUS - 0.18, 0.26, 40]} />
+      <mesh position={[0, 0.055, 0]} receiveShadow raycast={() => null}>
+        <cylinderGeometry args={[RADIUS, RADIUS - 0.3, 0.13, 40]} />
         <meshStandardMaterial color={STONE} roughness={0.94} metalness={0.05} />
       </mesh>
       {/* A darker inner ring, so the paving is not one flat disc */}
-      <mesh position={[0, 0.265, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow raycast={() => null}>
+      <mesh position={[0, 0.122, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow raycast={() => null}>
         <ringGeometry args={[0, 2.9, 40]} />
         <meshStandardMaterial color={STONE_DARK} roughness={0.96} side={DoubleSide} />
       </mesh>
       <InlaidLight />
       <Railing />
       <Bench />
-      <CyberStonework />
+      <SunkenStones />
+      <EdgeDressing />
       <PathMarkers />
     </group>
   )

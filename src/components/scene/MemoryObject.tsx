@@ -449,7 +449,7 @@ function Lighthouse() {
       if (mat.emissiveIntensity !== undefined) {
         mat.emissiveIntensity = isBeamOn
           ? 2.6 + Math.sin(clock.elapsedTime * 2.2) * 0.3
-          : 0.6 + Math.sin(clock.elapsedTime * 1.4) * 0.12
+          : 1.5 + Math.sin(clock.elapsedTime * 1.4) * 0.22
       }
     }
     if (isBeamOn && beamRef.current) {
@@ -475,6 +475,23 @@ function Lighthouse() {
 
   return (
     <group>
+      {/* Rock shelf: the lighthouse should sit on ground that rose to meet it */}
+      <mesh position={[0, -0.06, 0]} receiveShadow>
+        <cylinderGeometry args={[1.55, 1.95, 0.42, 9]} />
+        <meshStandardMaterial color="#7e7d78" roughness={1} flatShading />
+      </mesh>
+      <mesh position={[0.65, 0.02, -0.5]} rotation={[0.2, 0.7, 0.1]} receiveShadow>
+        <dodecahedronGeometry args={[0.5, 0]} />
+        <meshStandardMaterial color="#74736f" roughness={1} flatShading />
+      </mesh>
+      {/* Warm lamp glow, on at every hour rather than only when the game is won */}
+      <pointLight
+        position={[0, foundationH + towerH + 0.55, 0]}
+        color="#ffcf87"
+        intensity={2.6}
+        distance={9}
+        decay={2}
+      />
       {/* Stone foundation */}
       <mesh position={[0, foundationH / 2, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[baseR + 0.18, baseR + 0.22, foundationH, 16]} />

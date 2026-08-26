@@ -65,6 +65,34 @@ const atmosphereConfigs: Record<AtmospherePreset, AtmosphereConfig> = {
     sound: 'morning',
     fog: { color: '#f7e8cf', near: 34, far: 112 },
   },
+  'Golden Morning': {
+    background: '#f8f0df',
+    skyTop: '#acd7f4',
+    skyBottom: '#fff3d3',
+    ambientIntensity: 0.58,
+    skyFillColor: '#b7dcff',
+    groundFillColor: '#efe0bf',
+    skyFillIntensity: 0.72,
+    directionalColor: '#ffe2a8',
+    directionalIntensity: 2.05,
+    directionalPosition: [-8, 9, 7],
+    sound: 'morning',
+    fog: { color: '#f7e8cf', near: 34, far: 112 },
+  },
+  'Cosmic Dawn': {
+    background: '#f8f0df',
+    skyTop: '#acd7f4',
+    skyBottom: '#fff3d3',
+    ambientIntensity: 0.58,
+    skyFillColor: '#b7dcff',
+    groundFillColor: '#efe0bf',
+    skyFillIntensity: 0.72,
+    directionalColor: '#ffe2a8',
+    directionalIntensity: 2.05,
+    directionalPosition: [-8, 9, 7],
+    sound: 'night',
+    fog: { color: '#f7e8cf', near: 34, far: 112 },
+  },
   Sunset: {
     background: '#e58d68',
     skyTop: '#8e536d',
@@ -541,7 +569,7 @@ function StarField({ masterOpacity }: { masterOpacity?: () => number }) {
   const materialRef = useRef<ShaderMaterial>(null)
 
   const geometry = useMemo(() => {
-    const count = 124
+    const count = 37
     const positions = new Float32Array(count * 3)
     const sizes = new Float32Array(count)
     const phases = new Float32Array(count)

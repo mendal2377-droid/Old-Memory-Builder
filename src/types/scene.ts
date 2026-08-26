@@ -48,6 +48,8 @@ export type TerrainMode =
 
 export type AtmospherePreset =
   | 'Clear Morning'
+  | 'Golden Morning'
+  | 'Cosmic Dawn'
   | 'Sunset'
   | 'Rainy Day'
   | 'Heavy Rain'

@@ -441,7 +441,7 @@ function FloatingIslands() {
  */
 function AsteroidField() {
   const meshRef = useRef<InstancedMesh>(null)
-  const count = 10
+  const count = 3
   const geometry = useMemo(
     () => jitter(new DodecahedronGeometry(1, 0), 0.42, 4.1),
     [],
@@ -505,8 +505,8 @@ function AsteroidField() {
 function PassingShips() {
   const ships = useMemo(
     () =>
-      Array.from({ length: 3 }).map((_, i) => {
-        const heavy = i % 3 === 0
+      Array.from({ length: 2 }).map((_, i) => {
+        const heavy = i % 2 === 0
         const depth = -58 - Math.random() * 60
         return {
           heavy,
@@ -788,11 +788,15 @@ function rimPoint(t: number, half: number) {
  */
 function RimInstallations() {
   const clusters = useMemo(() => {
-    const half = 22.5
+    const half = 27.5
     const groups = 5
     return Array.from({ length: groups }).map((_, g) => {
       const t = g / groups + (Math.random() - 0.5) * 0.05
       const p = rimPoint(t, half)
+      // Nothing directly behind the lighthouse: it needs a clean silhouette
+      const lighthouse = { x: 21, z: 8 }
+      const behindLighthouse =
+        Math.hypot(p.x - lighthouse.x, p.z - lighthouse.z) < 13
       const towers = Array.from({ length: 2 + Math.floor(Math.random() * 2) }).map(
         () => {
           // These stand only ~24 units away, so height here costs far more
@@ -830,7 +834,7 @@ function RimInstallations() {
           }
         },
       )
-      return { p, towers }
+      return { p, towers, behindLighthouse }
     })
   }, [])
 
@@ -856,6 +860,7 @@ function RimInstallations() {
     <group>
       {clusters.map((cluster, g) => {
         const { p } = cluster
+        if (cluster.behindLighthouse) return null
         // Along-edge direction is the outward normal turned 90 degrees
         const ax = -p.nz
         const az = p.nx

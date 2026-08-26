@@ -52,6 +52,10 @@ export interface AtmosphereCoord {
 /** Where each legacy preset sits in (time × weather) space. */
 export const presetCoords: Record<AtmospherePreset, AtmosphereCoord> = {
   'Clear Morning': { timeOfDay: 8.5, weather: 'clear', weatherIntensity: 0 },
+  // Low warm sun for the red tree and the river route
+  'Golden Morning': { timeOfDay: 7.1, weather: 'clear', weatherIntensity: 0 },
+  // Earlier and cooler, for the terrace: the sky still has space in it
+  'Cosmic Dawn': { timeOfDay: 5.7, weather: 'clear', weatherIntensity: 0 },
   Sunset: { timeOfDay: 18.2, weather: 'clear', weatherIntensity: 0 },
   'Rainy Day': { timeOfDay: 13, weather: 'rain', weatherIntensity: 0.55 },
   'Heavy Rain': { timeOfDay: 13.5, weather: 'storm', weatherIntensity: 1 },
