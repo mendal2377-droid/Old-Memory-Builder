@@ -1,4 +1,5 @@
 import { useMemo, useRef } from 'react'
+import { RoundedBox } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import {
   AdditiveBlending,
@@ -283,9 +284,10 @@ function Moons() {
     <group>
       <group position={[-78, 40, -92]}>
         <mesh renderOrder={-880}>
-          <sphereGeometry args={[26, 56, 40]} />
+          <sphereGeometry args={[20, 26, 18]} />
           <meshStandardMaterial
             map={textures.a}
+            flatShading
             roughness={1}
             metalness={0}
             // Enough self-lift that the unlit limb keeps its craters. At pure
@@ -297,7 +299,7 @@ function Moons() {
           />
         </mesh>
         <mesh renderOrder={-881}>
-          <sphereGeometry args={[28, 32, 24]} />
+          <sphereGeometry args={[21.6, 32, 24]} />
           <meshBasicMaterial
             color="#5c8fd6"
             transparent
@@ -312,9 +314,10 @@ function Moons() {
 
       <group position={[88, 30, -70]}>
         <mesh renderOrder={-880}>
-          <sphereGeometry args={[10, 44, 30]} />
+          <sphereGeometry args={[10, 20, 14]} />
           <meshStandardMaterial
             map={textures.b}
+            flatShading
             roughness={1}
             metalness={0}
             emissive="#2b3648"
@@ -341,8 +344,8 @@ function FloatingIslands() {
 
   const islands = useMemo(
     () =>
-      Array.from({ length: 7 }).map((_, i) => {
-        const angle = (i / 7) * Math.PI * 2 + Math.random() * 0.7
+      Array.from({ length: 4 }).map((_, i) => {
+        const angle = (i / 4) * Math.PI * 2 + Math.random() * 0.7
         const radius = 56 + Math.random() * 62
         // Keep them out of the eye-level band. An island sitting on the
         // horizon is seen edge-on and reads as a grey blade, not a rock.
@@ -449,7 +452,7 @@ function FloatingIslands() {
  */
 function AsteroidField() {
   const meshRef = useRef<InstancedMesh>(null)
-  const count = 30
+  const count = 10
   const geometry = useMemo(
     () => jitter(new DodecahedronGeometry(1, 0), 0.42, 4.1),
     [],
@@ -459,12 +462,12 @@ function AsteroidField() {
     const matrices = new Float32Array(count * 16)
     for (let i = 0; i < count; i += 1) {
       const a = Math.random() * Math.PI * 2
-      const r = 50 + Math.random() * 60
+      const r = 78 + Math.random() * 42
       // Size straight from distance so each rock holds ~2-3.5 degrees. A
       // flat size range made the near ones read as boulders overhead.
       dummy.position.set(
         Math.cos(a) * r,
-        -24 + Math.random() * 62,
+        -18 + Math.random() * 40,
         Math.sin(a) * r,
       )
       dummy.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3)
@@ -513,8 +516,8 @@ function AsteroidField() {
 function PassingShips() {
   const ships = useMemo(
     () =>
-      Array.from({ length: 10 }).map((_, i) => {
-        const heavy = i % 4 === 0
+      Array.from({ length: 4 }).map((_, i) => {
+        const heavy = i % 3 === 0
         const depth = -58 - Math.random() * 60
         return {
           heavy,
@@ -603,7 +606,7 @@ function PassingShips() {
                 args={ship.heavy ? [3.1, 0.16, 1.9] : [1.3, 0.07, 0.8]}
               />
               <meshStandardMaterial
-                color="#333c56"
+                color="#465272"
                 roughness={0.9}
                 emissive="#121828"
                 emissiveIntensity={1}
@@ -797,11 +800,11 @@ function rimPoint(t: number, half: number) {
 function RimInstallations() {
   const clusters = useMemo(() => {
     const half = 22.5
-    const groups = 9
+    const groups = 5
     return Array.from({ length: groups }).map((_, g) => {
       const t = g / groups + (Math.random() - 0.5) * 0.05
       const p = rimPoint(t, half)
-      const towers = Array.from({ length: 2 + Math.floor(Math.random() * 3) }).map(
+      const towers = Array.from({ length: 2 + Math.floor(Math.random() * 2) }).map(
         () => {
           // These stand only ~24 units away, so height here costs far more
           // screen than the same height on the far skyline does. Kept low
@@ -814,7 +817,7 @@ function RimInstallations() {
             h,
             w: 0.5 + Math.random() * 0.55,
             // Windows sit in horizontal registers, like floors
-            floors: 2 + Math.floor(Math.random() * 4),
+            floors: 2 + Math.floor(Math.random() * 2),
             masts: 1 + Math.floor(Math.random() * 3),
             mastH: 2 + Math.random() * 4.5,
             mastRatios: [1, 0.6 + Math.random() * 0.3, 0.6 + Math.random() * 0.3],
@@ -876,28 +879,32 @@ function RimInstallations() {
               return (
                 <group key={`tw-${j}`} position={[x, 0, z]} rotation={[0, p.yaw, 0]}>
                   {/* Base plinth */}
-                  <mesh position={[0, 0.35, 0]}>
-                    <boxGeometry args={[tw.w * 2.4, 0.7, tw.w * 2.4]} />
-                    <meshStandardMaterial color="#2b3145" roughness={0.9} />
-                  </mesh>
+                  <RoundedBox
+                    args={[tw.w * 2.4, 0.7, tw.w * 2.4]}
+                    radius={0.06}
+                    smoothness={2}
+                    position={[0, 0.35, 0]}
+                  >
+                    <meshStandardMaterial color="#414c68" roughness={0.8} metalness={0.25} />
+                  </RoundedBox>
                   {/* Lower shaft */}
-                  <mesh position={[0, tw.h * 0.32, 0]}>
-                    <boxGeometry args={[tw.w * 1.25, tw.h * 0.64, tw.w * 1.25]} />
-                    <meshStandardMaterial
-                      color="#39415c"
-                      roughness={0.75}
-                      metalness={0.25}
-                    />
-                  </mesh>
+                  <RoundedBox
+                    args={[tw.w * 1.25, tw.h * 0.64, tw.w * 1.25]}
+                    radius={0.05}
+                    smoothness={2}
+                    position={[0, tw.h * 0.32, 0]}
+                  >
+                    <meshStandardMaterial color="#4c577a" roughness={0.8} metalness={0.25} />
+                  </RoundedBox>
                   {/* Upper shaft, stepped in */}
-                  <mesh position={[0, tw.h * 0.8, 0]}>
-                    <boxGeometry args={[tw.w * 0.8, tw.h * 0.34, tw.w * 0.8]} />
-                    <meshStandardMaterial
-                      color="#454e6c"
-                      roughness={0.7}
-                      metalness={0.3}
-                    />
-                  </mesh>
+                  <RoundedBox
+                    args={[tw.w * 0.8, tw.h * 0.34, tw.w * 0.8]}
+                    radius={0.045}
+                    smoothness={2}
+                    position={[0, tw.h * 0.8, 0]}
+                  >
+                    <meshStandardMaterial color="#586489" roughness={0.8} metalness={0.25} />
+                  </RoundedBox>
                   {/* Light bands. One box that wraps the shaft, rather than
                       four separate planes per floor -- a quarter of the draw
                       calls, and it reads as a continuous lit storey the way
@@ -920,7 +927,7 @@ function RimInstallations() {
                         >
                           <boxGeometry args={[tw.w * 0.7, tw.h * 0.16, tw.w * 0.9]} />
                           <meshStandardMaterial
-                            color="#333b54"
+                            color="#465272"
                             roughness={0.85}
                             metalness={0.2}
                           />
@@ -935,7 +942,7 @@ function RimInstallations() {
                     >
                       <torusGeometry args={[tw.w * 1.15, tw.w * 0.075, 5, 12]} />
                       <meshStandardMaterial
-                        color="#525c7c"
+                        color="#63709a"
                         roughness={0.7}
                         metalness={0.35}
                       />
@@ -950,14 +957,14 @@ function RimInstallations() {
                       <mesh rotation={[Math.PI / 2, 0, 0]}>
                         <cylinderGeometry args={[tw.w * 0.62, tw.w * 0.12, 0.1, 10]} />
                         <meshStandardMaterial
-                          color="#5c6788"
+                          color="#6b779e"
                           roughness={0.6}
                           metalness={0.4}
                         />
                       </mesh>
                       <mesh position={[0, 0, -tw.w * 0.3]}>
                         <cylinderGeometry args={[0.03, 0.03, tw.w * 0.6, 5]} />
-                        <meshStandardMaterial color="#3a4560" roughness={0.9} />
+                        <meshStandardMaterial color="#4a5678" roughness={0.9} />
                       </mesh>
                     </group>
                   ) : null}
@@ -970,7 +977,7 @@ function RimInstallations() {
                       >
                         <cylinderGeometry args={[0.055, 0.055, tw.w * 2.4, 5]} />
                         <meshStandardMaterial
-                          color="#4a5470"
+                          color="#57638a"
                           roughness={0.8}
                           metalness={0.3}
                         />
@@ -978,7 +985,7 @@ function RimInstallations() {
                       <mesh position={[0, tw.h * tw.gantryY - 0.18, tw.w * 2.6]}>
                         <boxGeometry args={[tw.w * 1.1, 0.22, tw.w * 0.8]} />
                         <meshStandardMaterial
-                          color="#39415c"
+                          color="#4c577a"
                           roughness={0.85}
                           metalness={0.2}
                         />
@@ -996,7 +1003,7 @@ function RimInstallations() {
                       ]}
                     >
                       <boxGeometry args={[tw.w * 0.3, tw.h * 0.05, tw.w * 0.3]} />
-                      <meshStandardMaterial color="#4e587a" roughness={0.75} metalness={0.3} />
+                      <meshStandardMaterial color="#5c6890" roughness={0.75} metalness={0.3} />
                     </mesh>
                   ))}
                   {/* Antenna array on the crown */}
@@ -1010,7 +1017,7 @@ function RimInstallations() {
                       >
                         <cylinderGeometry args={[0.025, 0.06, mh, 5]} />
                         <meshStandardMaterial
-                          color="#5a6480"
+                          color="#6a7699"
                           roughness={0.8}
                           metalness={0.4}
                         />
@@ -1062,7 +1069,7 @@ function DistantSkyline() {
 
   const clusters = useMemo(
     () =>
-      Array.from({ length: 7 }).map(() => {
+      Array.from({ length: 4 }).map(() => {
         const angle = Math.random() * Math.PI * 2
         const radius = 72 + Math.random() * 58
         // Scale with distance. A fixed spread meant the near clusters
@@ -1132,14 +1139,14 @@ function DistantSkyline() {
                 position={[sx * c.spread * 0.62, 0.5, c.spread * 0.45]}
               >
                 <boxGeometry args={[c.spread * 0.3, 1, c.spread * 0.22]} />
-                <meshStandardMaterial color="#333c56" roughness={0.9} metalness={0.15} />
+                <meshStandardMaterial color="#465272" roughness={0.9} metalness={0.15} />
               </mesh>
             ))}
             {c.towers.map((t, j) => (
               <group key={`ft-${j}`} position={[t.offset, 0.2, t.depth]}>
                 <mesh position={[0, t.h / 2, 0]}>
                   <boxGeometry args={[t.w, t.h, t.w]} />
-                  <meshStandardMaterial color="#2c3550" roughness={0.85} metalness={0.2} />
+                  <meshStandardMaterial color="#3d4869" roughness={0.85} metalness={0.2} />
                 </mesh>
                 {/* Window slits at a fixed world height. Scaling them with the
                     tower gave big square panes, which read as an office block
@@ -1155,7 +1162,7 @@ function DistantSkyline() {
                 ))}
                 <mesh position={[0, t.h + t.mastH / 2, 0]}>
                   <cylinderGeometry args={[0.05, 0.12, t.mastH, 5]} />
-                  <meshStandardMaterial color="#3a4560" roughness={0.9} />
+                  <meshStandardMaterial color="#4a5678" roughness={0.9} />
                 </mesh>
               </group>
             ))}

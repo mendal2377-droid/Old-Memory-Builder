@@ -31,10 +31,12 @@ interface WalkMemoryTrigger {
 }
 
 const boardHalfSize = 22
-const eyeHeight = 1.65
+const eyeHeight = 1.7
 const transitionDuration = 2.4
-const walkSpeed = 1.62
-const playerRadius = 0.45
+const walkSpeed = 1.45
+/** Seconds-ish constant for easing into and out of a walk. */
+const walkAccel = 5.5
+const playerRadius = 0.6
 const lookSensitivity = 0.0032
 const minimumSpawnClearance = 1.25
 
@@ -474,6 +476,7 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
   const memoryCloseTimerRef = useRef<number | null>(null)
   const lastStepRef = useRef(-1)
   const swayRef = useRef(0)
+  const velocityRef = useRef(new Vector3())
   const holdRef = useRef(0)
   const poseClockRef = useRef(0)
   const cameraMode = useSceneStore((state) => state.cameraMode)
@@ -785,9 +788,19 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
 
     movement.addScaledVector(forward, moveZ)
     movement.addScaledVector(right, moveX)
+    if (movement.lengthSq() > 0) movement.normalize()
 
-    if (movement.lengthSq() > 0) {
-      movement.normalize().multiplyScalar(walkSpeed * delta)
+    // Ease into and out of a walk instead of snapping between full speed and
+    // a dead stop. A garden should feel strolled through, not driven.
+    const velocity = velocityRef.current
+    const ease = 1 - Math.exp(-walkAccel * delta)
+    velocity.x += (movement.x * walkSpeed - velocity.x) * ease
+    velocity.z += (movement.z * walkSpeed - velocity.z) * ease
+    if (Math.abs(velocity.x) < 0.001) velocity.x = 0
+    if (Math.abs(velocity.z) < 0.001) velocity.z = 0
+
+    if (velocity.lengthSq() > 0) {
+      movement.set(velocity.x * delta, 0, velocity.z * delta)
 
       const nextX = perspectiveCamera.position.clone()
       nextX.x = clampToBoard(nextX.x + movement.x)
@@ -806,7 +819,7 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
 
     const hasInput = moveX !== 0 || moveZ !== 0
     if (hasInput) {
-      walkTimeRef.current += delta * 5.2
+      walkTimeRef.current += delta * 5.2 * Math.min(1, velocityRef.current.length() / walkSpeed)
       const currentStep = Math.floor(walkTimeRef.current / Math.PI)
       if (currentStep !== lastStepRef.current) {
         lastStepRef.current = currentStep
@@ -814,10 +827,10 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
       }
     }
     const bobY = hasInput
-      ? Math.sin(walkTimeRef.current) * 0.082
-      : Math.sin(clock.elapsedTime * 0.65) * 0.009
+      ? Math.sin(walkTimeRef.current) * 0.026
+      : Math.sin(clock.elapsedTime * 0.65) * 0.005
     const targetSwayX = hasInput
-      ? Math.sin(walkTimeRef.current * 0.5) * 0.028
+      ? Math.sin(walkTimeRef.current * 0.5) * 0.012
       : 0
     swayRef.current += (targetSwayX - swayRef.current) * 0.18
 
@@ -939,8 +952,8 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
     <PerspectiveCamera
       ref={perspectiveCameraRef}
       makeDefault={isActive}
-      fov={58}
-      near={0.1}
+      fov={64}
+      near={0.08}
       far={300}
     />
   )
