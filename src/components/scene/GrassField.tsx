@@ -29,7 +29,7 @@ const riverBlobs: Array<[number, number, number, number]> = [
  * The observation terrace is paved. Keep blades off it, the same way they are
  * kept off the river, or grass grows straight up through the stone.
  */
-const terrace = { x: 2.4, z: -13.6, r: 5.35 }
+const terrace = { x: 2.4, z: -13.6, r: 4.15 }
 
 function isOnTerrace(x: number, z: number) {
   return Math.hypot(x - terrace.x, z - terrace.z) < terrace.r

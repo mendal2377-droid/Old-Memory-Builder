@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import {
   AdditiveBlending,
+  Color,
   DoubleSide,
   type Mesh,
 } from 'three'
@@ -18,9 +19,9 @@ import { hdr } from '../../data/emissive'
  * run through it, growing straight out of the rock.
  */
 
-const STONE = '#71767f'
-const STONE_DARK = '#4b5058'
-const STONE_EDGE = '#878d96'
+const STONE = '#9a9080'
+const STONE_DARK = '#6d6559'
+const STONE_EDGE = '#a89e8c'
 const CYBER_ROCK = '#3f4550'
 const GLOW = '#6fd8ff'
 
@@ -35,7 +36,73 @@ const SITE_Z = -13.6
 /** Facing out from the middle of the island, toward open space. */
 const OUT_YAW = Math.atan2(SITE_X, SITE_Z)
 
-const RADIUS = 5
+const RADIUS = 3.9
+
+/**
+ * Laid paving: a ring of slabs with gaps, each set a little differently.
+ *
+ * A single disc of flat grey at this size reads as asphalt -- as a car park
+ * dropped on the grass. Individual stones with joints between them, tilted
+ * and sunk by fractions, read as something laid by hand a long time ago.
+ */
+function Paving() {
+  const stones = useMemo(() => {
+    const out: Array<{
+      a: number
+      r: number
+      w: number
+      d: number
+      y: number
+      tilt: number
+      shade: number
+    }> = []
+    const rings = [
+      { r: 1.15, count: 6 },
+      { r: 2.25, count: 11 },
+      { r: 3.25, count: 15 },
+    ]
+    let i = 0
+    rings.forEach(({ r, count }) => {
+      for (let k = 0; k < count; k += 1) {
+        const n = Math.sin(i * 31.7 + 11.3) * 4391.77
+        const j = n - Math.floor(n)
+        i += 1
+        out.push({
+          a: (k / count) * Math.PI * 2 + j * 0.06,
+          r,
+          w: (Math.PI * 2 * r) / count - 0.13,
+          d: r === 1.15 ? 0.95 : 0.92,
+          y: 0.075 + j * 0.022,
+          tilt: (j - 0.5) * 0.045,
+          shade: 0.86 + j * 0.28,
+        })
+      }
+    })
+    return out
+  }, [])
+
+  return (
+    <group>
+      {stones.map((st, i) => (
+        <mesh
+          key={`pave-${i}`}
+          position={[Math.cos(st.a) * st.r, st.y, Math.sin(st.a) * st.r]}
+          rotation={[st.tilt, -st.a, st.tilt * 0.6]}
+          receiveShadow
+          castShadow
+          raycast={() => null}
+        >
+          <boxGeometry args={[st.d, 0.07, st.w]} />
+          <meshStandardMaterial
+            color={new Color(STONE).multiplyScalar(st.shade)}
+            roughness={0.97}
+            flatShading
+          />
+        </mesh>
+      ))}
+    </group>
+  )
+}
 
 /** Light run into the paving, breathing very slowly so the stone feels alive. */
 function InlaidLight() {
@@ -345,16 +412,12 @@ function PathMarkers() {
 export function ObservationTerrace() {
   return (
     <group position={[SITE_X, 0, SITE_Z]} rotation={[0, OUT_YAW, 0]}>
-      {/* Paving slab, sunk just proud of the grass */}
-      <mesh position={[0, 0.055, 0]} receiveShadow raycast={() => null}>
-        <cylinderGeometry args={[RADIUS, RADIUS - 0.3, 0.13, 40]} />
-        <meshStandardMaterial color={STONE} roughness={0.94} metalness={0.05} />
+      {/* Bed the whole thing sits in */}
+      <mesh position={[0, 0.03, 0]} receiveShadow raycast={() => null}>
+        <cylinderGeometry args={[RADIUS, RADIUS - 0.25, 0.09, 32]} />
+        <meshStandardMaterial color={STONE_DARK} roughness={0.98} flatShading />
       </mesh>
-      {/* A darker inner ring, so the paving is not one flat disc */}
-      <mesh position={[0, 0.122, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow raycast={() => null}>
-        <ringGeometry args={[0, 2.9, 40]} />
-        <meshStandardMaterial color={STONE_DARK} roughness={0.96} side={DoubleSide} />
-      </mesh>
+      <Paving />
       <InlaidLight />
       <Railing />
       <Bench />

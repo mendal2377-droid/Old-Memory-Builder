@@ -1366,9 +1366,26 @@ const skyFragment = /* glsl */ `
   uniform vec3 bottomColor;
   varying vec3 vWorldPos;
   void main() {
-    float h = normalize(vWorldPos).y;
-    float t = clamp(h * 0.5 + 0.5, 0.0, 1.0);
-    gl_FragColor = vec4(mix(bottomColor, topColor, pow(t, 0.8)), 1.0);
+    vec3 dir = normalize(vWorldPos);
+    float t = clamp(dir.y * 0.5 + 0.5, 0.0, 1.0);
+
+    // Concentrate the horizon colour into a band and let the zenith keep its
+    // depth. The old near-linear ramp put 57% of the zenith colour at the
+    // horizon line itself, which spread the bright part halfway up the dome
+    // and is what made the sky read as flat.
+    float k = smoothstep(0.40, 0.98, t);
+    vec3 col = mix(bottomColor, topColor, k);
+
+    // A little extra light right along the horizon, falling away fast
+    float band = exp(-pow((t - 0.5) * 9.0, 2.0));
+    col += bottomColor * band * 0.16;
+
+    // Ordered-ish dither: a smooth two-colour gradient across a whole sky
+    // dome shows 8-bit banding without it
+    float dither = fract(sin(dot(dir.xz * 512.0, vec2(12.9898, 78.233))) * 43758.5453);
+    col += (dither - 0.5) * 0.0045;
+
+    gl_FragColor = vec4(col, 1.0);
   }
 `
 

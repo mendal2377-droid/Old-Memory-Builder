@@ -55,7 +55,7 @@ export const presetCoords: Record<AtmospherePreset, AtmosphereCoord> = {
   // Low warm sun for the red tree and the river route
   'Golden Morning': { timeOfDay: 7.1, weather: 'clear', weatherIntensity: 0 },
   // Earlier and cooler, for the terrace: the sky still has space in it
-  'Cosmic Dawn': { timeOfDay: 5.7, weather: 'clear', weatherIntensity: 0 },
+  'Cosmic Dawn': { timeOfDay: 5.6, weather: 'clear', weatherIntensity: 0 },
   Sunset: { timeOfDay: 18.2, weather: 'clear', weatherIntensity: 0 },
   'Rainy Day': { timeOfDay: 13, weather: 'rain', weatherIntensity: 0.55 },
   'Heavy Rain': { timeOfDay: 13.5, weather: 'storm', weatherIntensity: 1 },
@@ -132,6 +132,7 @@ const cyberKeyframes: DayKeyframe[] = [
 const spaceKeyframes: DayKeyframe[] = [
   { h: 0, bg: '#050a1a', top: '#02040d', bot: '#0b1730', amb: 0.3, hemi: '#16305a', hemiG: '#050912', hemiI: 0.26, dir: '#7fb4ff', dirI: 0.7, fog: '#060b1c', fogN: 22, fogF: 150, star: 1 },
   { h: 5, bg: '#0d1c3e', top: '#061029', bot: '#1c3a66', amb: 0.36, hemi: '#22447a', hemiG: '#080e1e', hemiI: 0.32, dir: '#95c4ff', dirI: 1, fog: '#0e1c3c', fogN: 24, fogF: 155, star: 0.98 },
+  { h: 5.6, bg: '#2a3157', top: '#101a40', bot: '#5b5580', amb: 0.34, hemi: '#2c4488', hemiG: '#0d1024', hemiI: 0.32, dir: '#9db4ff', dirI: 0.95, fog: '#252a52', fogN: 30, fogF: 185, star: 0.95 },
   { h: 6.5, bg: '#8fa8bd', top: '#3c5c86', bot: '#f0c79c', amb: 0.5, hemi: '#6f9ecc', hemiG: '#5a4a38', hemiI: 0.6, dir: '#ffc98c', dirI: 2.5, fog: '#b6c3cc', fogN: 40, fogF: 210, star: 0.3 },
   { h: 9, bg: '#a8bccb', top: '#446d9c', bot: '#f7e0c0', amb: 0.58, hemi: '#7fb0da', hemiG: '#63563f', hemiI: 0.78, dir: '#ffdcae', dirI: 2.85, fog: '#c2ccd4', fogN: 46, fogF: 224, star: 0.16 },
   { h: 12, bg: '#b2c8d6', top: '#4a7aad', bot: '#eef0ee', amb: 0.62, hemi: '#8cbde4', hemiG: '#6a6248', hemiI: 0.86, dir: '#fff0d2', dirI: 3, fog: '#ccd6dc', fogN: 50, fogF: 234, star: 0.13 },
