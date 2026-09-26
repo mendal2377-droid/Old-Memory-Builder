@@ -5,6 +5,7 @@ import {
   DoubleSide,
   type Mesh,
 } from 'three'
+import { hdr } from '../../data/emissive'
 
 /**
  * The observation sanctuary: a built terrace where the island used to just
@@ -71,7 +72,8 @@ function InlaidLight() {
         >
           <ringGeometry args={[a.inner, a.outer, 46, 1, 0, a.sweep]} />
           <meshBasicMaterial
-            color={GLOW}
+            color={hdr(GLOW)}
+            toneMapped={false}
             transparent
             opacity={0.22}
             side={DoubleSide}
@@ -196,7 +198,8 @@ function SunkenStones() {
             <mesh ref={glowRef} position={[0, bl.h * 0.45, bl.d * 0.52]} raycast={() => null}>
               <planeGeometry args={[bl.w * 0.66, 0.055]} />
               <meshBasicMaterial
-                color={GLOW}
+                color={hdr(GLOW)}
+                toneMapped={false}
                 transparent
                 opacity={0.3}
                 depthWrite={false}
@@ -292,7 +295,8 @@ function ApproachPath() {
           <mesh position={[0, 0.075, 0]} rotation={[-Math.PI / 2, 0, 0]} raycast={() => null}>
             <planeGeometry args={[0.075, 0.95]} />
             <meshBasicMaterial
-              color={GLOW}
+              color={hdr(GLOW)}
+              toneMapped={false}
               transparent
               opacity={0.16}
               side={DoubleSide}
@@ -324,7 +328,8 @@ function PathMarkers() {
           <mesh position={[0, 0.5, 0]} raycast={() => null}>
             <boxGeometry args={[0.19, 0.06, 0.19]} />
             <meshBasicMaterial
-              color={GLOW}
+              color={hdr(GLOW)}
+              toneMapped={false}
               transparent
               opacity={0.7}
               depthWrite={false}

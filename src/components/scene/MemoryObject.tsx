@@ -449,7 +449,7 @@ function Lighthouse() {
       if (mat.emissiveIntensity !== undefined) {
         mat.emissiveIntensity = isBeamOn
           ? 2.6 + Math.sin(clock.elapsedTime * 2.2) * 0.3
-          : 1.5 + Math.sin(clock.elapsedTime * 1.4) * 0.22
+          : 2.9 + Math.sin(clock.elapsedTime * 1.4) * 0.3
       }
     }
     if (isBeamOn && beamRef.current) {

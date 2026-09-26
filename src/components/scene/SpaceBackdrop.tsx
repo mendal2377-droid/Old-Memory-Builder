@@ -15,6 +15,7 @@ import {
   type InstancedMesh,
   type Mesh,
 } from 'three'
+import { hdr } from '../../data/emissive'
 
 /**
  * Deep Space: the diorama as an island torn loose and left adrift.
@@ -211,7 +212,8 @@ function getBandMaterials() {
     bandMaterials = Array.from({ length: BAND_PHASES }).map(
       () =>
         new MeshBasicMaterial({
-          color: GLOW,
+          color: hdr(GLOW),
+          toneMapped: false,
           transparent: true,
           opacity: 0.7,
           depthWrite: false,
@@ -634,14 +636,15 @@ function PassingShips() {
           {/* Running light */}
           <mesh position={[ship.heavy ? 2.4 : 1.0, 0, 0]}>
             <sphereGeometry args={[ship.heavy ? 0.14 : 0.07, 8, 8]} />
-            <meshBasicMaterial color="#ff5a6e" toneMapped={false} fog={false} />
+            <meshBasicMaterial color={hdr('#ff5a6e', 1.9)} toneMapped={false} fog={false} />
           </mesh>
           {/* Engine glow. Short and small: a long bright plume turns the ship
               into a comet, and the hull stops being what you notice. */}
           <mesh position={[ship.heavy ? -2.8 : -1.18, 0, 0]}>
             <sphereGeometry args={[ship.heavy ? 0.24 : 0.11, 10, 10]} />
             <meshBasicMaterial
-              color={GLOW}
+              color={hdr(GLOW)}
+              toneMapped={false}
               transparent
               opacity={0.85}
               depthWrite={false}
@@ -731,7 +734,7 @@ function IslandCore() {
       </mesh>
       <mesh position={[0, -10.6, 0]}>
         <sphereGeometry args={[1.3, 20, 16]} />
-        <meshBasicMaterial color="#cdf4ff" toneMapped={false} />
+        <meshBasicMaterial color={hdr('#cdf4ff', 1.7)} toneMapped={false} />
       </mesh>
       {/* Halo ring */}
       <mesh ref={ringRef} position={[0, -6.5, 0]} rotation={[Math.PI / 2, 0, 0]}>

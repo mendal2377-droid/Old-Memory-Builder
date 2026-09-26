@@ -27,8 +27,12 @@ export function SceneCaptureBridge() {
         throw new Error('The WebGL canvas is not ready yet.')
       }
 
-      gl.render(scene, camera)
-
+      // Deliberately NOT gl.render(scene, camera) here. That draws the raw
+      // scene straight to the canvas and bypasses the post-processing pass,
+      // so the saved photo would come out without bloom and would not match
+      // what the player is looking at. The canvas is created with
+      // preserveDrawingBuffer, so it still holds the last composed frame --
+      // reading it directly is what captures the picture they actually see.
       const dataUrl = canvas.toDataURL('image/png')
 
       if (!dataUrl.startsWith('data:image/png')) {

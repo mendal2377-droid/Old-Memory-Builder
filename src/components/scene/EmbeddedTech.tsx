@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { AdditiveBlending, DoubleSide, type Mesh } from 'three'
+import { hdr } from '../../data/emissive'
 
 /**
  * Low technology worn into the ground.
@@ -147,7 +148,8 @@ function CableRock({ site, glowRef }: { site: Site; glowRef: (m: Mesh | null) =>
       <mesh ref={glowRef} position={[0, 0.42 * s, 0.09 * s]} raycast={() => null}>
         <planeGeometry args={[1.0 * s, 0.07 * s]} />
         <meshBasicMaterial
-          color={GLOW}
+          color={hdr(GLOW)}
+          toneMapped={false}
           transparent
           opacity={0.4}
           side={DoubleSide}
@@ -176,7 +178,8 @@ function Pillar({ site, glowRef }: { site: Site; glowRef: (m: Mesh | null) => vo
       <mesh ref={glowRef} position={[0, 0.62 * s, 0.18 * s]} raycast={() => null}>
         <planeGeometry args={[0.2 * s, 0.34 * s]} />
         <meshBasicMaterial
-          color={GLOW}
+          color={hdr(GLOW)}
+          toneMapped={false}
           transparent
           opacity={0.45}
           depthWrite={false}
