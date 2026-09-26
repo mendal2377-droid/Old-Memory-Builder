@@ -54,11 +54,26 @@ function useSites(): Site[] {
       river.some(([cx, cz, w, l]) => {
         const dx = (x - cx) / w
         const dz = (z - cz) / l
-        return dx * dx + dz * dz < 1.4
+        return dx * dx + dz * dz < 2.0
       })
 
+    // The walk from the bridge to the red tree is the one finished route on
+    // the island. Machinery standing beside it competes with the garden, so
+    // keep a real margin.
+    const routeA = { x: 16, z: 0 }
+    const routeB = { x: -2, z: 14 }
+    const distToRoute = (x: number, z: number) => {
+      const vx = routeB.x - routeA.x
+      const vz = routeB.z - routeA.z
+      const t = Math.max(
+        0,
+        Math.min(1, ((x - routeA.x) * vx + (z - routeA.z) * vz) / (vx * vx + vz * vz)),
+      )
+      return Math.hypot(x - (routeA.x + vx * t), z - (routeA.z + vz * t))
+    }
+
     const out: Site[] = []
-    const wanted = 14
+    const wanted = 11
     for (let i = 0; i < wanted * 8 && out.length < wanted; i += 1) {
       const a = hash(i, 1) * Math.PI * 2
       const r = 13.5 + hash(i, 2) * 4.5
@@ -67,6 +82,7 @@ function useSites(): Site[] {
       if (overWater(x, z)) continue
       // Leave the terrace its own ground
       if (Math.hypot(x - 2.4, z + 13.6) < 8) continue
+      if (distToRoute(x, z) < 5.5) continue
       // Nothing right on top of another
       if (out.some((s) => Math.hypot(s.x - x, s.z - z) < 3.4)) continue
 
@@ -84,22 +100,29 @@ function useSites(): Site[] {
   }, [])
 }
 
-/** A structural rib surfacing out of the soil, most of it still buried. */
-function Rib({ site }: { site: Site }) {
+/**
+ * A structural rib breaking the surface, most of its length still under the
+ * soil. Leaning and low on purpose: upright rectangles of plain dark stone
+ * read as headstones, which is precisely the wrong note for a memory garden.
+ * The lit seam at the soil line is what makes it read as machinery at all.
+ */
+function Rib({ site, glowRef }: { site: Site; glowRef: (m: Mesh | null) => void }) {
   const s = site.scale
   return (
     <group position={[site.x, 0, site.z]} rotation={[0, site.yaw, 0]}>
-      {[0, 1, 2].map((i) => {
-        const lean = (i - 1) * 0.16
+      {[0, 1, 2, 3].map((i) => {
+        // Each rib leans a little further, like a hull frame settling
+        const lean = 0.42 + i * 0.13
+        const h = (0.72 - i * 0.09) * s
         return (
           <mesh
             key={`rib-${i}`}
-            position={[(i - 1) * 0.85 * s, 0.34 * s, 0]}
+            position={[(i - 1.5) * 0.72 * s, h * 0.28, 0]}
             rotation={[0, 0, lean]}
             castShadow
             raycast={() => null}
           >
-            <boxGeometry args={[0.22 * s, 1.1 * s, 0.5 * s]} />
+            <boxGeometry args={[0.2 * s, h, 0.62 * s]} />
             <meshStandardMaterial
               color={METAL}
               roughness={0.85}
@@ -109,10 +132,24 @@ function Rib({ site }: { site: Site }) {
           </mesh>
         )
       })}
-      {/* Soil and moss banked against the base */}
-      <mesh position={[0, 0.12 * s, 0]} receiveShadow raycast={() => null}>
-        <boxGeometry args={[3.1 * s, 0.3 * s, 1.15 * s]} />
+      {/* Soil and moss banked over the buried length */}
+      <mesh position={[0, 0.1 * s, 0]} receiveShadow raycast={() => null}>
+        <boxGeometry args={[3.2 * s, 0.26 * s, 1.25 * s]} />
         <meshStandardMaterial color={MOSS} roughness={1} flatShading />
+      </mesh>
+      {/* A seam still lit along the soil line -- without this the ribs are
+          just dark stone standing in the grass */}
+      <mesh ref={glowRef} position={[0, 0.2 * s, 0.64 * s]} raycast={() => null}>
+        <planeGeometry args={[2.5 * s, 0.07 * s]} />
+        <meshBasicMaterial
+          color={hdr(GLOW)}
+          toneMapped={false}
+          transparent
+          opacity={0.34}
+          side={DoubleSide}
+          depthWrite={false}
+          blending={AdditiveBlending}
+        />
       </mesh>
     </group>
   )
@@ -215,7 +252,8 @@ export function EmbeddedTech() {
         const setGlow = (m: Mesh | null) => {
           glows.current[i] = m
         }
-        if (site.kind === 'rib') return <Rib key={`tech-${i}`} site={site} />
+        if (site.kind === 'rib')
+          return <Rib key={`tech-${i}`} site={site} glowRef={setGlow} />
         if (site.kind === 'cable')
           return <CableRock key={`tech-${i}`} site={site} glowRef={setGlow} />
         return <Pillar key={`tech-${i}`} site={site} glowRef={setGlow} />
