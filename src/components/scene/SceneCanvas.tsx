@@ -10,7 +10,8 @@ import { Minimap } from '../game/Minimap'
 import { GroundPlane } from './GroundPlane'
 import { HollowAsh } from './HollowAsh'
 import { HollowGate } from './HollowGate'
-import { HollowMist, HollowPresences } from './HollowPresences'
+import { HollowMist } from './HollowPresences'
+import { HollowSerpent } from './HollowSerpent'
 import { SceneBloom } from './SceneBloom'
 import { MemoryCompanions } from './MemoryCompanions'
 import { AssetModel, MemoryObject } from './MemoryObject'
@@ -300,7 +301,7 @@ export function SceneCanvas() {
       />
         <HollowGate />
         <HollowAsh />
-        <HollowPresences />
+        <HollowSerpent />
         <HollowMist />
         <SceneBloom />
       </Canvas>
