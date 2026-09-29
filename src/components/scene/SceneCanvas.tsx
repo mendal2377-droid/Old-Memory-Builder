@@ -8,6 +8,8 @@ import { AtmosphereEffects } from './AtmosphereEffects'
 import { GameHud } from '../game/GameHud'
 import { Minimap } from '../game/Minimap'
 import { GroundPlane } from './GroundPlane'
+import { HollowAsh } from './HollowAsh'
+import { HollowGate } from './HollowGate'
 import { SceneBloom } from './SceneBloom'
 import { MemoryCompanions } from './MemoryCompanions'
 import { AssetModel, MemoryObject } from './MemoryObject'
@@ -295,6 +297,8 @@ export function SceneCanvas() {
         maxZoom={95}
         target={[0, 0, 0]}
       />
+        <HollowGate />
+        <HollowAsh />
         <SceneBloom />
       </Canvas>
       {(cameraMode === 'walk' || isCameraTransitioning) ? (

@@ -1,8 +1,15 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { HalfFloatType } from 'three'
-import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing'
+import {
+  Bloom,
+  BrightnessContrast,
+  EffectComposer,
+  HueSaturation,
+  Vignette,
+} from '@react-three/postprocessing'
 import { createAtmosphereSample, sampleAtmosphere } from '../../data/atmosphere'
+import { hollow } from '../../data/hollow'
 import { useSceneStore } from '../../store/sceneStore'
 
 /**
@@ -29,6 +36,9 @@ const THRESHOLD = 1.0
 export function SceneBloom() {
   const sample = useMemo(() => createAtmosphereSample(), [])
   const bloomRef = useRef<{ intensity: number } | null>(null)
+  const satRef = useRef<{ saturation: number } | null>(null)
+  const bcRef = useRef<{ brightness: number; contrast: number } | null>(null)
+  const vignetteRef = useRef<{ darkness: number } | null>(null)
 
   useFrame(() => {
     const state = useSceneStore.getState()
@@ -40,11 +50,25 @@ export function SceneBloom() {
       sample,
     )
 
+    // Crossing into the Hollow drains the whole frame at once. Doing it here
+    // rather than per-material is the entire reason it is affordable: one
+    // colour-grade pass desaturates every object, the sky and the water
+    // together, and nothing in the scene graph needs to know about it.
+    const h = hollow.amount
+    if (satRef.current) satRef.current.saturation = -0.94 * h
+    if (bcRef.current) {
+      bcRef.current.brightness = -0.14 * h
+      bcRef.current.contrast = 0.12 * h
+    }
+    if (vignetteRef.current) vignetteRef.current.darkness = 0.42 + 0.3 * h
+
     if (!bloomRef.current) return
     // A lamp reads as a lamp at dusk and as a bulb at noon. Lean on the same
     // darkness term the stars use, so bloom swells as the sky goes down.
     const darkness = sample.starOpacity
-    const target = 0.46 + darkness * 0.6
+    // Over there almost nothing is still lit, so the little that is should
+    // carry further.
+    const target = (0.46 + darkness * 0.6) * (1 - h) + 1.25 * h
     // Ease rather than snap, so scrubbing the time control stays smooth
     bloomRef.current.intensity += (target - bloomRef.current.intensity) * 0.06
   })
@@ -61,7 +85,9 @@ export function SceneBloom() {
       />
       {/* A whisper of vignette to settle the frame edges. Any more and it
           reads as a camera effect rather than as the place itself. */}
-      <Vignette offset={0.32} darkness={0.42} eskil={false} />
+      <HueSaturation ref={satRef as never} saturation={0} />
+      <BrightnessContrast ref={bcRef as never} brightness={0} contrast={0} />
+      <Vignette ref={vignetteRef as never} offset={0.32} darkness={0.42} eskil={false} />
     </EffectComposer>
   )
 }

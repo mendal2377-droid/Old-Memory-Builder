@@ -1,5 +1,5 @@
 import { useFrame, useThree } from '@react-three/fiber'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   AdditiveBlending,
   BackSide,
@@ -27,6 +27,7 @@ import {
   representativePreset,
   sampleAtmosphere,
 } from '../../data/atmosphere'
+import { hollow, type HollowPhase } from '../../data/hollow'
 import { getWindVector, updateWind } from '../../data/wind'
 import { useSceneStore } from '../../store/sceneStore'
 import type { AtmospherePreset } from '../../types/scene'
@@ -247,9 +248,23 @@ function connectPulseTone(
   }
 }
 
-function useAtmosphereSound(preset: AtmospherePreset, isMuted: boolean) {
+/** Re-renders only on a phase flip, not every frame. */
+function useHollowPhase(): HollowPhase {
+  const [phase, setPhase] = useState<HollowPhase>('garden')
+  useFrame(() => {
+    if (hollow.phase !== phase) setPhase(hollow.phase)
+  })
+  return phase
+}
+
+function useAtmosphereSound(
+  preset: AtmospherePreset,
+  isMuted: boolean,
+  silent = false,
+) {
   useEffect(() => {
-    if (isMuted || typeof window === 'undefined') {
+    // The Hollow has no ambient bed. Silence is most of what makes it land.
+    if (silent || isMuted || typeof window === 'undefined') {
       return
     }
 
@@ -313,7 +328,7 @@ function useAtmosphereSound(preset: AtmospherePreset, isMuted: boolean) {
       gain.disconnect()
       void audioContext.close()
     }
-  }, [isMuted, preset])
+  }, [isMuted, preset, silent])
 }
 
 // A soft round sprite so points render as gentle circles, not squares.
@@ -1408,6 +1423,8 @@ function AtmosphereStage() {
     [],
   )
   const bgColor = useMemo(() => new Color('#eaf2f7'), [])
+  const hollowSky = useMemo(() => new Color('#2b2f33'), [])
+  const hollowZenith = useMemo(() => new Color('#101214'), [])
   const fog = useMemo(() => new Fog('#dfeef7', 34, 120), [])
   const ambientRef = useRef<AmbientLight>(null)
   const hemiRef = useRef<HemisphereLight>(null)
@@ -1454,15 +1471,23 @@ function AtmosphereStage() {
       sample,
     )
 
+    const h = hollow.amount
     bgColor.copy(sample.background)
     ;(skyMat.uniforms.topColor.value as Color).copy(sample.skyTop)
     ;(skyMat.uniforms.bottomColor.value as Color).copy(sample.skyBottom)
+    if (h > 0) {
+      // Pull the dome toward a dead slate. Without this the horizon keeps its
+      // sunrise shape and the crossing reads as a filter rather than a place.
+      bgColor.lerp(hollowSky, h)
+      ;(skyMat.uniforms.topColor.value as Color).lerp(hollowZenith, h)
+      ;(skyMat.uniforms.bottomColor.value as Color).lerp(hollowSky, h)
+    }
     fog.color.copy(sample.fogColor)
     fog.near = sample.fogNear
     fog.far = sample.fogFar
 
     if (ambientRef.current) {
-      ambientRef.current.intensity = sample.ambientIntensity
+      ambientRef.current.intensity = sample.ambientIntensity * (1 - h * 0.55)
     }
     if (hemiRef.current) {
       hemiRef.current.color.copy(sample.hemiSky)
@@ -1505,7 +1530,7 @@ function AtmosphereStage() {
       const p = sample.isDay ? sunPos : moonPos
       dirRef.current.position.set(p[0], Math.max(p[1], 3), p[2])
       dirRef.current.color.copy(sample.sunColor)
-      dirRef.current.intensity = sample.sunIntensity
+      dirRef.current.intensity = sample.sunIntensity * (1 - h * 0.82)
     }
 
     if (sunRaysRef.current) {
@@ -1520,7 +1545,7 @@ function AtmosphereStage() {
       mat.opacity = (scatterBase.current[i] ?? mat.opacity) * airless
     })
 
-    starOpacityRef.current = sample.starOpacity
+    starOpacityRef.current = sample.starOpacity * (1 - h)
   })
 
   /** Track a halo mesh and remember the opacity it was authored with. */
@@ -1700,7 +1725,12 @@ export function AtmosphereEffects() {
   const timeOfDay = useSceneStore((state) => state.timeOfDay)
   const isDay = timeOfDay >= 6 && timeOfDay <= 18
 
-  useAtmosphereSound(representativePreset(weather, isDay), isMuted)
+  const hollowPhase = useHollowPhase()
+  useAtmosphereSound(
+    representativePreset(weather, isDay),
+    isMuted,
+    hollowPhase !== 'garden',
+  )
 
   return (
     <>
