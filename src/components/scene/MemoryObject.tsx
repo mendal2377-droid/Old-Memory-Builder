@@ -25,6 +25,7 @@ import {
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import { assets } from '../../data/assets'
 import { applyWindSway, swayCategories } from '../../data/wind'
+import { hollow } from '../../data/hollow'
 import { useSceneStore } from '../../store/sceneStore'
 import type { AssetDefinition, SceneObject } from '../../types/scene'
 import { useWaterMaterial } from './StylizedWater'
@@ -449,11 +450,17 @@ function Lighthouse() {
       if (mat.emissiveIntensity !== undefined) {
         mat.emissiveIntensity = isBeamOn
           ? 2.6 + Math.sin(clock.elapsedTime * 2.2) * 0.3
-          : 2.9 + Math.sin(clock.elapsedTime * 1.4) * 0.3
+          : // The one light still burning over there. Everything else in the
+            // Hollow is dead, so this is both the only warm thing and the only
+            // reason to walk anywhere.
+            (2.9 + Math.sin(clock.elapsedTime * 1.4) * 0.3) *
+            (1 + hollow.amount * 2.6)
       }
     }
-    if (isBeamOn && beamRef.current) {
-      beamRef.current.rotation.y += delta * 0.7
+    // The beam turns in the Hollow too -- a lighthouse still sweeping an
+    // empty world is the whole idea in one image.
+    if ((isBeamOn || hollow.amount > 0.25) && beamRef.current) {
+      beamRef.current.rotation.y += delta * (isBeamOn ? 0.7 : 0.34)
     }
   })
 

@@ -1423,8 +1423,8 @@ function AtmosphereStage() {
     [],
   )
   const bgColor = useMemo(() => new Color('#eaf2f7'), [])
-  const hollowSky = useMemo(() => new Color('#2b2f33'), [])
-  const hollowZenith = useMemo(() => new Color('#101214'), [])
+  const hollowSky = useMemo(() => new Color('#8d9195'), [])
+  const hollowZenith = useMemo(() => new Color('#54585c'), [])
   const fog = useMemo(() => new Fog('#dfeef7', 34, 120), [])
   const ambientRef = useRef<AmbientLight>(null)
   const hemiRef = useRef<HemisphereLight>(null)
@@ -1487,7 +1487,8 @@ function AtmosphereStage() {
     fog.far = sample.fogFar
 
     if (ambientRef.current) {
-      ambientRef.current.intensity = sample.ambientIntensity * (1 - h * 0.55)
+      ambientRef.current.intensity =
+        sample.ambientIntensity * (1 - h * 0.1) + h * 0.5
     }
     if (hemiRef.current) {
       hemiRef.current.color.copy(sample.hemiSky)
@@ -1530,7 +1531,7 @@ function AtmosphereStage() {
       const p = sample.isDay ? sunPos : moonPos
       dirRef.current.position.set(p[0], Math.max(p[1], 3), p[2])
       dirRef.current.color.copy(sample.sunColor)
-      dirRef.current.intensity = sample.sunIntensity * (1 - h * 0.82)
+      dirRef.current.intensity = sample.sunIntensity * (1 - h * 0.45)
     }
 
     if (sunRaysRef.current) {

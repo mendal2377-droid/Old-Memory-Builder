@@ -57,10 +57,14 @@ export function SceneBloom() {
     const h = hollow.amount
     if (satRef.current) satRef.current.saturation = -0.94 * h
     if (bcRef.current) {
-      bcRef.current.brightness = -0.14 * h
-      bcRef.current.contrast = 0.12 * h
+      // Lift rather than darken. Desaturation alone carries the feeling; the
+      // first version stacked a brightness cut, a sun cut, an ambient cut and
+      // a heavier vignette on top of each other and the result was a place
+      // too dark to read. Bone-grey overcast is bleaker than black.
+      bcRef.current.brightness = 0.07 * h
+      bcRef.current.contrast = -0.09 * h
     }
-    if (vignetteRef.current) vignetteRef.current.darkness = 0.42 + 0.3 * h
+    if (vignetteRef.current) vignetteRef.current.darkness = 0.42 + 0.1 * h
 
     if (!bloomRef.current) return
     // A lamp reads as a lamp at dusk and as a bulb at noon. Lean on the same
