@@ -11,7 +11,7 @@ import { GroundPlane } from './GroundPlane'
 import { HollowAsh } from './HollowAsh'
 import { HollowGate } from './HollowGate'
 import { HollowMist } from './HollowPresences'
-import { HollowSerpent } from './HollowSerpent'
+import { HollowDragon } from './HollowDragon'
 import { SceneBloom } from './SceneBloom'
 import { MemoryCompanions } from './MemoryCompanions'
 import { AssetModel, MemoryObject } from './MemoryObject'
@@ -301,7 +301,7 @@ export function SceneCanvas() {
       />
         <HollowGate />
         <HollowAsh />
-        <HollowSerpent />
+        <HollowDragon />
         <HollowMist />
         <SceneBloom />
       </Canvas>
