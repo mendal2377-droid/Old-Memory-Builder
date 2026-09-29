@@ -20,12 +20,12 @@ export const ORBIT_SPEED = 0.13
  * The radius matters more than it looks. The model is about 30 units across,
  * and the walkable square has corners 27 units from the centre, so an orbit
  * that dips to 38 could put it 11 units from someone standing at the edge --
- * close enough to stop being scenery and start being a threat. At 53 minimum
+ * close enough to stop being scenery and start being a threat. At 51 minimum
  * it is always a giant in the distance.
  */
 export function dragonPath(t: number, out: { x: number; y: number; z: number }) {
   const a = t * ORBIT_SPEED
-  const radius = 60 + Math.sin(t * 0.07) * 7
+  const radius = 57 + Math.sin(t * 0.07) * 6
   out.x = Math.cos(a) * radius
   out.z = Math.sin(a) * radius
   out.y = 27 + Math.sin(t * 0.19) * 5 + Math.sin(t * 0.43 + 1.1) * 1.6

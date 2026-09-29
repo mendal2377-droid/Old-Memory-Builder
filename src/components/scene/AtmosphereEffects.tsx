@@ -1517,14 +1517,21 @@ function AtmosphereStage() {
     // sun would draw hundreds of pixels wide across the diorama.
     const inWalk = state.cameraMode === 'walk'
     const discVisible = inWalk && sample.cloudiness < 0.55
+    // There is no sun over the Hollow. The light is already gone (sun 0.55x,
+    // ambient up), but the disc, its halo and its rays stayed at full strength
+    // and made it look like an ordinary overcast day with a sun in it. Shrink
+    // the whole group to nothing with the crossing.
+    const discScale = Math.max(0.0001, 1 - h * 1.15)
     if (sunRef.current) {
       sunRef.current.position.set(...sunPos)
-      sunRef.current.visible = sample.isDay && discVisible
+      sunRef.current.visible = sample.isDay && discVisible && discScale > 0.02
+      sunRef.current.scale.setScalar(discScale)
       sunRef.current.lookAt(camera.position)
     }
     if (moonRef.current) {
       moonRef.current.position.set(...moonPos)
-      moonRef.current.visible = !sample.isDay && discVisible
+      moonRef.current.visible = !sample.isDay && discVisible && discScale > 0.02
+      moonRef.current.scale.setScalar(discScale)
       moonRef.current.lookAt(camera.position)
     }
     if (dirRef.current) {
