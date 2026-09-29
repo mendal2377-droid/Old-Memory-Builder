@@ -1,5 +1,6 @@
 import { Vector2, type Material } from 'three'
 import type { WeatherKind } from './atmosphere'
+import { hollow } from './hollow'
 
 /**
  * One shared wind for the whole scene. Foliage vertex-sway, rain slant and
@@ -57,7 +58,10 @@ export function updateWind(
   // Two gust rates so the air breathes instead of pulsing evenly
   const gust =
     0.72 + Math.sin(elapsed * 0.37) * 0.2 + Math.sin(elapsed * 0.93 + 1.1) * 0.12
-  windUniforms.uWindStrength.value = Math.max(0.04, base * gust)
+  // Nothing moves the air over there. Grass frozen mid-lean does more to say
+  // "this place stopped" than any amount of colour grading.
+  const stillness = 1 - hollow.amount * 0.94
+  windUniforms.uWindStrength.value = Math.max(0.04, base * gust) * stillness
 }
 
 /**

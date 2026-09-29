@@ -6,6 +6,7 @@ import {
   sampleAtmosphere,
 } from '../../data/atmosphere'
 import { windUniforms } from '../../data/wind'
+import { hollow } from '../../data/hollow'
 import { useSceneStore } from '../../store/sceneStore'
 
 // River centreline as [x, z, halfWidth, halfLength, rotation] blobs.
@@ -14,6 +15,8 @@ export type WaterBlob = [number, number, number, number, number]
 /** Body colour of the water itself, before the sky is mixed in. */
 const bodyDeep = new Color('#0d4a4e')
 const bodyShallow = new Color('#4fb8a6')
+/** What the river becomes when nothing is moving it. */
+const deadWater = new Color('#4a4e50')
 const white = new Color('#ffffff')
 
 const vertexShader = /* glsl */ `
@@ -153,9 +156,21 @@ export function useWaterMaterial(opacity = 0.6) {
 
     // Wind roughens the surface and speeds the flow
     const windStrength = windUniforms.uWindStrength.value
-    material.uniforms.uChoppy.value = 0.85 + windStrength * 2.2
+    const h = hollow.amount
+    material.uniforms.uChoppy.value = (0.85 + windStrength * 2.2) * (1 - h * 0.9)
+    // Time barely advances over there, so the surface stops travelling. Still
+    // water under a still sky is the whole feeling in one surface.
     material.uniforms.uTime.value =
-      clock.elapsedTime * (1.15 + windStrength * 1.6)
+      clock.elapsedTime * (1.15 + windStrength * 1.6) * (1 - h * 0.93)
+    if (h > 0) {
+      const dead = 0.08 + 0.12 * (1 - h)
+      deep.multiplyScalar(1 - h * 0.45)
+      shallow.lerp(deadWater, h * 0.85)
+      highlight.multiplyScalar(1 - h * 0.7)
+      material.uniforms.uOpacity.value = 0.6 * (1 - h) + dead + h * 0.34
+    } else {
+      material.uniforms.uOpacity.value = 0.6
+    }
   })
 
   return material
