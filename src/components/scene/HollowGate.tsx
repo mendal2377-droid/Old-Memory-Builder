@@ -11,6 +11,7 @@ import {
   advanceHollow,
   beginCrossing,
   hollow,
+  rearmGate,
   resetHollow,
 } from '../../data/hollow'
 import { useSceneStore } from '../../store/sceneStore'
@@ -60,17 +61,25 @@ export function HollowGate() {
 
     const crossing = advanceHollow(delta)
 
-    const onThreshold =
-      !crossing &&
+    // Physical position only. The earlier version folded "is a crossing in
+    // progress" into this test and then re-armed in the same else branch, so
+    // the gate re-armed *during* the crossing and fired again the moment it
+    // landed -- the oscillation you hit by standing still.
+    const nearThreshold =
       !!walkPose &&
       Math.hypot(walkPose.x - SITE_X, walkPose.z - SITE_Z) < THRESHOLD_RADIUS
 
-    if (onThreshold) {
-      hollow.dwell = Math.min(1, hollow.dwell + delta / DWELL_SECONDS)
-      if (hollow.dwell >= 1) beginCrossing()
-    } else if (!crossing) {
-      // Step off and the ring unwinds, faster than it filled
-      hollow.dwell = Math.max(0, hollow.dwell - delta / (DWELL_SECONDS * 0.5))
+    // Stepping clear is the only thing that re-arms the gate
+    if (!nearThreshold) rearmGate()
+
+    if (!crossing) {
+      if (nearThreshold && hollow.armed) {
+        hollow.dwell = Math.min(1, hollow.dwell + delta / DWELL_SECONDS)
+        if (hollow.dwell >= 1) beginCrossing()
+      } else if (!nearThreshold) {
+        // Step off and the ring unwinds, faster than it filled
+        hollow.dwell = Math.max(0, hollow.dwell - delta / (DWELL_SECONDS * 0.5))
+      }
     }
 
     const lit = Math.max(hollow.dwell, crossing ? 1 : 0)

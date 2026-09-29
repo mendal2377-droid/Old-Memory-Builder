@@ -30,6 +30,14 @@ export const hollow = {
   phase: 'garden' as HollowPhase,
   /** 0..1 while standing on the threshold, reset when you step off. */
   dwell: 0,
+  /**
+   * Whether the threshold may fire. Cleared the moment a crossing starts and
+   * only restored by stepping off the medallion. Without this you arrive, keep
+   * standing where you landed, the ring refills underneath you and you are
+   * thrown straight back -- the gate oscillates about every 4.4 seconds for as
+   * long as you stand on it.
+   */
+  armed: true,
 }
 
 /** Smoothstep, so the crossing eases at both ends instead of sliding. */
@@ -66,6 +74,12 @@ export function beginCrossing() {
   if (hollow.phase === 'garden') hollow.phase = 'entering'
   else if (hollow.phase === 'hollow') hollow.phase = 'leaving'
   hollow.dwell = 0
+  hollow.armed = false
+}
+
+/** Called when the player is clear of the threshold. */
+export function rearmGate() {
+  hollow.armed = true
 }
 
 /** Back to the garden with no transition — used when walk mode exits. */
@@ -74,4 +88,5 @@ export function resetHollow() {
   hollow.amount = 0
   hollow.rawAmount = 0
   hollow.dwell = 0
+  hollow.armed = true
 }
