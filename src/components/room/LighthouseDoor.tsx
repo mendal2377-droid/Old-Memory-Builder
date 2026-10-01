@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { assets } from '../../data/assets'
 import { isLighthouseCode } from '../../data/lighthouseCode'
+import { captureWorldSnapshots } from '../../data/worldSnapshots'
 import { useSceneStore } from '../../store/sceneStore'
 import { ArchitectRoom } from './ArchitectRoom'
 
-const DOOR_RANGE = 3.4
+const DOOR_RANGE = 5.5
 
 /**
  * The lighthouse door: a prompt when you stand beside it in Walk mode, a code
@@ -57,6 +58,8 @@ export function LighthouseDoor() {
 
   const submit = () => {
     if (isLighthouseCode(value)) {
+      // Photograph the garden before the diorama stops drawing
+      captureWorldSnapshots()
       setRoom('inside')
       return
     }
@@ -68,7 +71,10 @@ export function LighthouseDoor() {
   return (
     <>
       {isNear && room === 'none' ? (
-        <div className="lighthouse-prompt">Press E &mdash; the lighthouse door is locked</div>
+        <div className="lighthouse-prompt" role="status">
+          <strong>Please enter the code</strong>
+          <span>The lighthouse door is locked &middot; press E</span>
+        </div>
       ) : null}
 
       {room === 'code' ? (

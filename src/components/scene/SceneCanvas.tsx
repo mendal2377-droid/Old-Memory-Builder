@@ -15,6 +15,7 @@ import { HollowDragon } from './HollowDragon'
 import { SceneBloom } from './SceneBloom'
 import { DawnGrid, HollowHitboxes } from './WorldTraces'
 import { LighthouseCauseway } from './LighthouseCauseway'
+import { WorldSnapshotter } from './WorldSnapshotter'
 import { MemoryCompanions } from './MemoryCompanions'
 import { AssetModel, MemoryObject } from './MemoryObject'
 import { MemoryWalkCamera } from './MemoryWalkCamera'
@@ -305,6 +306,7 @@ export function SceneCanvas() {
         target={[0, 0, 0]}
       />
         <LighthouseCauseway />
+        <WorldSnapshotter />
         <DawnGrid />
         <HollowHitboxes />
         <HollowGate />

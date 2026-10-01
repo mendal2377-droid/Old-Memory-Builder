@@ -4,12 +4,14 @@ import { MeshReflectorMaterial } from '@react-three/drei'
 import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing'
 import { CanvasTexture, HalfFloatType, MathUtils, SRGBColorSpace } from 'three'
 import { useSceneStore } from '../../store/sceneStore'
+import { worldSnapshots } from '../../data/worldSnapshots'
 import {
   createFeed,
   drawAnimals,
   drawBuild,
   drawLog,
   drawModel,
+  drawPhoto,
   drawRain,
   drawWeather,
   updateFeed,
@@ -73,12 +75,18 @@ function Screens() {
       createFeed(384, 240, 1 / 8, drawLog()),
       createFeed(384, 240, 1 / 8, drawLog()),
     ]
-    return { main, weather, animals, smalls }
+    // Full-colour stills of the garden, taken as you came through the door.
+    // They take about half the small screens, so the room is not all green.
+    const photoCount = Math.min(worldSnapshots.frames.length, 7)
+    const photos = Array.from({ length: photoCount }, (_, i) =>
+      createFeed(384, 240, 1 / 12, drawPhoto(i)),
+    )
+    return { main, weather, animals, smalls, photos }
   }, [])
 
   useEffect(
     () => () => {
-      for (const f of [feeds.main, feeds.weather, feeds.animals, ...feeds.smalls]) {
+      for (const f of [feeds.main, feeds.weather, feeds.animals, ...feeds.smalls, ...feeds.photos]) {
         f.texture.dispose()
       }
     },
@@ -91,6 +99,7 @@ function Screens() {
     updateFeed(feeds.weather, t)
     updateFeed(feeds.animals, t)
     for (const f of feeds.smalls) updateFeed(f, t)
+    for (const f of feeds.photos) updateFeed(f, t)
   })
 
   const heroes: Hero[] = useMemo(
@@ -117,7 +126,10 @@ function Screens() {
             Math.abs(angle - hero.angle) < (hero.w / 2 + mw / 2 + 0.14) / SCREEN_R &&
             Math.abs(y - hero.y) < hero.h / 2 + mh / 2 + 0.14,
         )
-        if (!covered) out.push({ angle, y, feed: pickSmall(feeds.smalls, c, r) })
+        if (!covered) {
+          const pool = [...feeds.photos, ...feeds.photos, ...feeds.smalls]
+          out.push({ angle, y, feed: pickSmall(pool, c, r) })
+        }
       }
     }
     return out
@@ -153,7 +165,9 @@ function Screens() {
       {heroes.map((hero, i) =>
         screen(`hero-${i}`, hero.angle, hero.y, hero.w, hero.h, hero.feed, 1.35),
       )}
-      {small.map((m, i) => screen(`s-${i}`, m.angle, m.y, 1.8, 1.12, m.feed, 1.2))}
+      {small.map((m, i) =>
+        screen(`s-${i}`, m.angle, m.y, 1.8, 1.12, m.feed, feeds.photos.includes(m.feed) ? 1.0 : 1.2),
+      )}
     </>
   )
 }

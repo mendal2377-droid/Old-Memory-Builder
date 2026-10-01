@@ -6,6 +6,7 @@ import {
   weatherLabels,
 } from '../../data/atmosphere'
 import { useSceneStore } from '../../store/sceneStore'
+import { worldSnapshots } from '../../data/worldSnapshots'
 import { riverBlobs } from '../scene/RiverBankDressing'
 
 /**
@@ -573,6 +574,58 @@ export function drawRain(seed: number): Feed['draw'] {
           k === 0 ? '#eafff0' : `rgba(109,255,154,${Math.max(0.08, 1 - k / 10)})`
         ctx.fillText(glyph, x, r * cell)
       }
+    }
+  }
+}
+
+// ---------------------------------------------------------------- photo ----
+
+/**
+ * A full-colour still of the garden, drifting slowly as if on a camera, with
+ * the barest overlay so the picture stays the picture.
+ */
+export function drawPhoto(index: number): Feed['draw'] {
+  return (ctx, w, h, t) => {
+    const frames = worldSnapshots.frames
+    const shot = frames.length ? frames[index % frames.length] : null
+    ctx.fillStyle = BG
+    ctx.fillRect(0, 0, w, h)
+    if (!shot) {
+      ctx.fillStyle = GREEN_DIM
+      ctx.font = `${Math.round(h * 0.06)}px ${MONO}`
+      ctx.textBaseline = 'middle'
+      ctx.textAlign = 'center'
+      ctx.fillText('NO SIGNAL', w / 2, h / 2)
+      ctx.textAlign = 'left'
+      return
+    }
+
+    // Slow drift and breathe, never leaving the picture
+    const zoom = 1.06 + 0.04 * Math.sin(t * 0.22 + index * 1.7)
+    const sw = shot.canvas.width / zoom
+    const sh = shot.canvas.height / zoom
+    const sx = (shot.canvas.width - sw) / 2 + Math.sin(t * 0.17 + index) * (shot.canvas.width - sw) * 0.45
+    const sy = (shot.canvas.height - sh) / 2 + Math.cos(t * 0.13 + index * 2) * (shot.canvas.height - sh) * 0.45
+    ctx.drawImage(shot.canvas, sx, sy, sw, sh, 0, 0, w, h)
+
+    // A whisper of screen: faint lines, a darkened corner for the caption
+    ctx.fillStyle = 'rgba(0,0,0,0.07)'
+    for (let y = 0; y < h; y += 3) ctx.fillRect(0, y, w, 1)
+    const g = ctx.createLinearGradient(0, 0, 0, h * 0.2)
+    g.addColorStop(0, 'rgba(0,0,0,0.55)')
+    g.addColorStop(1, 'rgba(0,0,0,0)')
+    ctx.fillStyle = g
+    ctx.fillRect(0, 0, w, h * 0.2)
+
+    ctx.font = `${Math.round(h * 0.05)}px ${MONO}`
+    ctx.textBaseline = 'top'
+    ctx.fillStyle = '#ffffff'
+    ctx.fillText(`CAM ${String((index % frames.length) + 1).padStart(2, '0')}  ${shot.label}`, w * 0.04, h * 0.045)
+    if (Math.floor(t * 1.2) % 2 === 0) {
+      ctx.fillStyle = '#ff4a4a'
+      ctx.beginPath()
+      ctx.arc(w * 0.94, h * 0.075, h * 0.018, 0, Math.PI * 2)
+      ctx.fill()
     }
   }
 }

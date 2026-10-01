@@ -16,8 +16,8 @@ import type { SceneObject } from '../types/scene'
 
 /** How far from the lighthouse's centre the landing sits. Outside its collider. */
 const LANDING_DISTANCE = 2.5
-/** Spacing of the sampled centreline. */
-const STEP = 0.6
+/** How far the road carries on along the bridge's line before it bends. */
+const LEAVE_DISTANCE = 2.6
 /** How far back along the bridge the walkable road reaches. */
 const BRIDGE_LEAD_IN = 1.8
 
@@ -69,15 +69,33 @@ export function getCauseway(sceneObjects: SceneObject[]): Causeway | null {
     z: lz + (toStartZ / len) * LANDING_DISTANCE,
   }
 
-  const total = Math.hypot(end.x - start.x, end.z - start.z)
-  if (total < 1.5) return null
+  if (Math.hypot(end.x - start.x, end.z - start.z) < 1.5) return null
 
-  const count = Math.max(2, Math.round(total / STEP))
-  const points: CausewayPoint[] = []
-  for (let i = 0; i <= count; i += 1) {
-    const t = i / count
-    points.push({ x: start.x + (end.x - start.x) * t, z: start.z + (end.z - start.z) * t })
+  // Leave the bridge in line with it, then curve round to the landing. A road
+  // that turned sharply at the bridge's end would run straight across its
+  // railings.
+  const outX = -(bridge.position[0] - start.x)
+  const outZ = -(bridge.position[2] - start.z)
+  const outLen = Math.hypot(outX, outZ) || 1
+  const control = {
+    x: start.x + (outX / outLen) * LEAVE_DISTANCE,
+    z: start.z + (outZ / outLen) * LEAVE_DISTANCE,
   }
+  const samples = 28
+  const curve: CausewayPoint[] = []
+  for (let i = 0; i <= samples; i += 1) {
+    const t = i / samples
+    const u = 1 - t
+    curve.push({
+      x: u * u * start.x + 2 * u * t * control.x + t * t * end.x,
+      z: u * u * start.z + 2 * u * t * control.z + t * t * end.z,
+    })
+  }
+  let total = 0
+  for (let i = 1; i < curve.length; i += 1) {
+    total += Math.hypot(curve[i].x - curve[i - 1].x, curve[i].z - curve[i - 1].z)
+  }
+  const points = curve
   // Back toward the middle of the bridge, so the walker can step onto the road
   const bx = bridge.position[0] - start.x
   const bz = bridge.position[2] - start.z
