@@ -46,6 +46,18 @@ function pickViews(): View[] {
     { position: [cx - 17, 13, cz + 19], target: [cx, 0.4, cz], label: 'OVERVIEW' },
   ]
 
+  // Adrift in deep space, the interesting thing is overhead: look up and out
+  // at three bearings, where the sister islands, moons and ships hang.
+  if (useSceneStore.getState().worldStyle === 'space') {
+    ;[0.9, 2.7, 4.5].forEach((bearing, i) => {
+      views.push({
+        position: [cx + Math.cos(bearing) * 5, 1.9, cz + Math.sin(bearing) * 5],
+        target: [cx + Math.cos(bearing) * 60, 15 + i * 2, cz + Math.sin(bearing) * 60],
+        label: `SKY ${'ABC'[i]}`,
+      })
+    })
+  }
+
   const kindOf = (id: string) => assets.find((a) => a.id === id)
   const used = new Set<string>()
   const take = (match: (o: (typeof objects)[number]) => boolean, limit: number) => {

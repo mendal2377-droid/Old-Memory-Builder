@@ -19,6 +19,15 @@ import {
   updateFeed,
   type Feed,
 } from './feeds'
+import {
+  drawCore,
+  drawIslandModel,
+  drawNebula,
+  drawOrbit,
+  drawRadar,
+  drawSpaceConditions,
+  drawStarfield,
+} from './spaceFeeds'
 
 /**
  * The white room inside the lighthouse.
@@ -63,10 +72,27 @@ function pickSmall(feeds: Feed[], col: number, row: number) {
 function Screens() {
   const feeds = useMemo(() => {
     const main = createFeed(960, 540, 1 / 24, drawBuild(1.15, 1.6, 0))
-    const weather = createFeed(768, 432, 1 / 10, drawWeather())
+    // In the Deep Space world the screens watch what is out there instead
+    const inSpace = useSceneStore.getState().worldStyle === 'space'
+    const weather = createFeed(768, 432, 1 / 10, inSpace ? drawSpaceConditions() : drawWeather())
     const animals = createFeed(768, 432, 1 / 10, drawAnimals())
     const hollowScreen = createFeed(768, 432, 1 / 15, drawHollow())
-    const smalls: Feed[] = [
+    const spaceSmalls: Feed[] = [
+      createFeed(384, 240, 1 / 24, drawStarfield(1, 0.22)),
+      createFeed(384, 240, 1 / 24, drawStarfield(2, 0.14)),
+      createFeed(384, 240, 1 / 15, drawOrbit()),
+      createFeed(384, 240, 1 / 15, drawRadar()),
+      createFeed(384, 240, 1 / 15, drawCore()),
+      createFeed(384, 240, 1 / 12, drawNebula(1)),
+      createFeed(384, 240, 1 / 12, drawNebula(2)),
+      createFeed(384, 240, 1 / 12, drawIslandModel(0.5, 0)),
+      createFeed(384, 240, 1 / 12, drawIslandModel(-0.4, 2.4)),
+      createFeed(384, 240, 1 / 12, drawBuild(1.5, 1.1, 0.35)),
+      createFeed(384, 240, 1 / 8, drawLog()),
+    ]
+    const smalls: Feed[] = inSpace
+      ? spaceSmalls
+      : [
       createFeed(384, 240, 1 / 15, drawRain(1)),
       createFeed(384, 240, 1 / 15, drawRain(2)),
       createFeed(384, 240, 1 / 15, drawRain(3)),
