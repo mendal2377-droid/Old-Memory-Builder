@@ -14,6 +14,7 @@ import { HollowMist } from './HollowPresences'
 import { HollowDragon } from './HollowDragon'
 import { SceneBloom } from './SceneBloom'
 import { DawnGrid, HollowHitboxes } from './WorldTraces'
+import { LighthouseCauseway } from './LighthouseCauseway'
 import { MemoryCompanions } from './MemoryCompanions'
 import { AssetModel, MemoryObject } from './MemoryObject'
 import { MemoryWalkCamera } from './MemoryWalkCamera'
@@ -303,6 +304,7 @@ export function SceneCanvas() {
         maxZoom={95}
         target={[0, 0, 0]}
       />
+        <LighthouseCauseway />
         <DawnGrid />
         <HollowHitboxes />
         <HollowGate />

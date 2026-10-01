@@ -1,3 +1,4 @@
+import { getCauseway, isOnCauseway, type Causeway } from '../../data/causeway'
 import { PerspectiveCamera } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react'
@@ -102,7 +103,9 @@ function getObjectCollisionRadius(
     return 0
   }
 
-  if (asset.collisionRadius) {
+  // An explicit 0 means "nothing to bump into", which the bridge needs: it
+  // used to fall through to the Props default and put a wall mid-span.
+  if (asset.collisionRadius !== undefined) {
     return asset.collisionRadius * maxScale
   }
 
@@ -224,16 +227,22 @@ function isBlockedPosition(
   colliders: Collider[],
   extraClearance = playerRadius,
   bridges: BridgeCorridor[] = [],
+  causeway: Causeway | null = null,
 ) {
   if (
-    Math.abs(position.x) > boardHalfSize ||
-    Math.abs(position.z) > boardHalfSize
+    (Math.abs(position.x) > boardHalfSize ||
+      Math.abs(position.z) > boardHalfSize) &&
+    !isOnCauseway(position.x, position.z, causeway)
   ) {
     return true
   }
 
   // The river now flows through every terrain; block it unless on a bridge
-  if (isInRiverbankWater(position) && !isOnBridge(position, bridges)) {
+  if (
+    isInRiverbankWater(position) &&
+    !isOnBridge(position, bridges) &&
+    !isOnCauseway(position.x, position.z, causeway)
+  ) {
     return true
   }
 
@@ -505,6 +514,8 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
     () => getBridgeCorridors(sceneObjects),
     [sceneObjects],
   )
+  // The road from the bridge to the lighthouse counts as dry ground
+  const causeway = useMemo(() => getCauseway(sceneObjects), [sceneObjects])
   const gameTargets = useMemo(() => {
     const wood = sceneObjects.find((o) => o.assetId.startsWith('woodpile'))
     const bridge = sceneObjects.find((o) => o.assetId.startsWith('bridge'))
@@ -746,7 +757,13 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
 
   const canMoveTo = (nextPosition: Vector3) => {
     if (
-      isBlockedPosition(nextPosition, colliders, playerRadius, activeBridges)
+      isBlockedPosition(
+        nextPosition,
+        colliders,
+        playerRadius,
+        activeBridges,
+        causeway,
+      )
     ) {
       return false
     }
@@ -824,14 +841,25 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
       movement.set(velocity.x * delta, 0, velocity.z * delta)
 
       const nextX = perspectiveCamera.position.clone()
-      nextX.x = clampToBoard(nextX.x + movement.x)
+      // The board clamp would stop you at its edge and snap you back from
+      // beyond it, so on the causeway (the one way past the edge) leave the
+      // limits to the collision check.
+      const rawX = nextX.x + movement.x
+      nextX.x =
+        isOnCauseway(rawX, nextX.z, causeway) || Math.abs(nextX.x) > boardHalfSize
+          ? rawX
+          : clampToBoard(rawX)
 
       if (canMoveTo(nextX)) {
         perspectiveCamera.position.x = nextX.x
       }
 
       const nextZ = perspectiveCamera.position.clone()
-      nextZ.z = clampToBoard(nextZ.z + movement.z)
+      const rawZ = nextZ.z + movement.z
+      nextZ.z =
+        isOnCauseway(nextZ.x, rawZ, causeway) || Math.abs(nextZ.z) > boardHalfSize
+          ? rawZ
+          : clampToBoard(rawZ)
 
       if (canMoveTo(nextZ)) {
         perspectiveCamera.position.z = nextZ.z
