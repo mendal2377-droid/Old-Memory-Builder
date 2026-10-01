@@ -1371,3 +1371,158 @@
     opacity: 0;
   }
 }
+
+/* ---- The lighthouse door and the room inside it ---- */
+
+.lighthouse-prompt {
+  position: fixed;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  padding: 8px 18px;
+  border: 1px solid rgba(255, 250, 242, 0.32);
+  border-radius: 10px;
+  background: rgba(33, 29, 24, 0.66);
+  color: #fffaf2;
+  font-size: 14px;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  animation: vignette-fade-in 0.25s ease both;
+}
+
+.lighthouse-code {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(3, 8, 6, 0.72);
+  backdrop-filter: blur(6px);
+  animation: vignette-fade-in 0.3s ease both;
+}
+
+.lighthouse-code-box input {
+  width: min(320px, 78vw);
+  padding: 12px 16px;
+  border: 1px solid rgba(109, 255, 154, 0.55);
+  border-radius: 4px;
+  background: rgba(2, 10, 6, 0.9);
+  color: #6dff9a;
+  font: 20px/1 'Consolas', 'Courier New', monospace;
+  letter-spacing: 0.35em;
+  text-align: center;
+  outline: none;
+  caret-color: #6dff9a;
+  box-shadow: 0 0 24px rgba(109, 255, 154, 0.18);
+}
+
+.lighthouse-code-box.is-shaking {
+  animation: lighthouse-shake 0.4s ease;
+}
+
+@keyframes lighthouse-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(9px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(4px); }
+}
+
+.architect-room {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: #f2f3f2;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.architect-room canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.architect-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 74px;
+  transform: translateX(-50%);
+  max-width: min(720px, 86vw);
+  min-height: 1.4em;
+  color: #0c2a18;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+}
+
+.architect-hint {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  color: rgba(12, 42, 24, 0.62);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+}
+
+.architect-leave {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 7px 16px;
+  border: 1px solid rgba(12, 42, 24, 0.5);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #0c2a18;
+  font: 600 13px 'Consolas', monospace;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.architect-leave:hover {
+  background: #0c2a18;
+  color: #6dff9a;
+}
+
+.architect-prompt {
+  position: absolute;
+  left: 50%;
+  bottom: 120px;
+  transform: translateX(-50%);
+  padding: 8px 18px;
+  border: 1px solid rgba(109, 255, 154, 0.6);
+  border-radius: 4px;
+  background: rgba(3, 12, 7, 0.82);
+  color: #6dff9a;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+/* White in, white out */
+.architect-fade {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  pointer-events: none;
+  opacity: 0;
+  animation: architect-whiteout-in 1.6s ease both;
+}
+
+.architect-fade.is-leaving {
+  animation: architect-whiteout-out 0.55s ease both;
+}
+
+@keyframes architect-whiteout-in {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes architect-whiteout-out {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

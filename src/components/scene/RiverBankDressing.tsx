@@ -11,7 +11,7 @@ import { DoubleSide } from 'three'
  */
 
 /** Same blobs the water, the grass and the walk collision all use. */
-const riverBlobs: Array<[number, number, number, number]> = [
+export const riverBlobs: Array<[number, number, number, number]> = [
   [13, -22, 4.2, 5.2],
   [12, -15, 4.4, 5.4],
   [13, -8, 4.2, 5.2],

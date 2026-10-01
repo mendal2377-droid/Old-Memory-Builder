@@ -13,6 +13,7 @@ import { HollowGate } from './HollowGate'
 import { HollowMist } from './HollowPresences'
 import { HollowDragon } from './HollowDragon'
 import { SceneBloom } from './SceneBloom'
+import { DawnGrid, HollowHitboxes } from './WorldTraces'
 import { MemoryCompanions } from './MemoryCompanions'
 import { AssetModel, MemoryObject } from './MemoryObject'
 import { MemoryWalkCamera } from './MemoryWalkCamera'
@@ -115,6 +116,7 @@ export function SceneCanvas() {
   const atmospherePreset = useSceneStore((state) => state.atmospherePreset)
   const isGridVisible = useSceneStore((state) => state.isGridVisible)
   const cameraMode = useSceneStore((state) => state.cameraMode)
+  const isInLighthouse = useSceneStore((state) => state.lighthouseRoom === 'inside')
   const isCameraTransitioning = useSceneStore(
     (state) => state.isCameraTransitioning,
   )
@@ -227,6 +229,8 @@ export function SceneCanvas() {
         className="scene-canvas"
         gl={{ preserveDrawingBuffer: true }}
         shadows
+        // Nothing to draw while the lighthouse room covers the screen
+        frameloop={isInLighthouse ? 'never' : 'always'}
       >
       <OrthographicCamera
         makeDefault={!isWalkCameraActive}
@@ -299,6 +303,8 @@ export function SceneCanvas() {
         maxZoom={95}
         target={[0, 0, 0]}
       />
+        <DawnGrid />
+        <HollowHitboxes />
         <HollowGate />
         <HollowAsh />
         <HollowDragon />

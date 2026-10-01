@@ -1,5 +1,6 @@
 import { useSceneStore } from '../../store/sceneStore'
 import { AssetSidebar } from '../assets/AssetSidebar'
+import { LighthouseDoor } from '../room/LighthouseDoor'
 import { SceneCanvas } from '../scene/SceneCanvas'
 import { Toolbar } from '../toolbar/Toolbar'
 
@@ -19,6 +20,7 @@ export function AppLayout() {
           <SceneCanvas />
         </section>
       </main>
+      <LighthouseDoor />
     </div>
   )
 }

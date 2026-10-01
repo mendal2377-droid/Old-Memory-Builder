@@ -334,6 +334,8 @@ interface SceneState {
   isGridVisible: boolean
   areAnimalsWalking: boolean
   cameraMode: 'build' | 'walk'
+  /** The locked room inside the lighthouse: closed, asking for the code, or open. */
+  lighthouseRoom: 'none' | 'code' | 'inside'
   isCameraTransitioning: boolean
   selectedObjectId: string | null
   placementAssetId: string | null
@@ -352,6 +354,7 @@ interface SceneState {
   setGameTimeRemaining: (seconds: number) => void
   completeTask: (task: keyof GameTasks) => void
   setGamePrompt: (label: string | null, progress: number) => void
+  setLighthouseRoom: (state: 'none' | 'code' | 'inside') => void
   setWalkPose: (pose: { x: number; z: number; yaw: number } | null) => void
   setTimeOfDay: (hour: number) => void
   setWeather: (weather: WeatherKind, intensity?: number) => void
@@ -645,12 +648,14 @@ export const useSceneStore = create<SceneState>((set, get) => {
     set({ gamePrompt: label, gamePromptProgress: progress })
   },
   setWalkPose: (pose) => set({ walkPose: pose }),
+  setLighthouseRoom: (lighthouseRoom) => set({ lighthouseRoom }),
   terrainMode: defaultTerrainMode,
   atmospherePreset: defaultAtmospherePreset,
   isMuted: true,
   isGridVisible: false,
   areAnimalsWalking: false,
   cameraMode: 'build',
+  lighthouseRoom: 'none',
   isCameraTransitioning: false,
   selectedObjectId: null,
   placementAssetId: null,

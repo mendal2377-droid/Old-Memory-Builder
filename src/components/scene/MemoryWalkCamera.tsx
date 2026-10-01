@@ -38,7 +38,7 @@ const transitionDuration = 2.4
 const walkSpeed = 2.0
 /** Seconds-ish constant for easing into and out of a walk. */
 const walkAccel = 5.5
-const playerRadius = 0.6
+export const playerRadius = 0.6
 const lookSensitivity = 0.0032
 const minimumSpawnClearance = 1.25
 
@@ -137,7 +137,7 @@ function getObjectCollisionRadius(
   return 0
 }
 
-function createObjectColliders(
+export function createObjectColliders(
   sceneObjects: ReturnType<typeof useSceneStore.getState>['sceneObjects'],
 ) {
   return sceneObjects
@@ -553,6 +553,12 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (phaseRef.current !== 'walking') {
+        return
+      }
+
+      // The lighthouse code prompt and the room inside own the keyboard
+      if (useSceneStore.getState().lighthouseRoom !== 'none') {
+        pressedKeysRef.current.clear()
         return
       }
 
