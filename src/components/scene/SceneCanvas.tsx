@@ -22,6 +22,7 @@ import { MemoryWalkCamera } from './MemoryWalkCamera'
 import { SceneCaptureBridge } from './SceneCaptureBridge'
 import { useSceneStore } from '../../store/sceneStore'
 import type { AtmospherePreset } from '../../types/scene'
+import { audioOut, getAudioContext } from '../../audio/engine'
 
 const isometricCameraPosition: [number, number, number] = [28, 28, 28]
 
@@ -59,14 +60,15 @@ function playMemoryPointSound(
     return
   }
 
-  const audioContext = new AudioContextClass()
+  const audioContext = getAudioContext()
+  if (!audioContext) return
   const gain = audioContext.createGain()
   const now = audioContext.currentTime
 
   gain.gain.setValueAtTime(0.0001, now)
   gain.gain.exponentialRampToValueAtTime(0.06, now + 0.03)
   gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2)
-  gain.connect(audioContext.destination)
+  gain.connect(audioOut())
 
   if (sound === 'birds') {
     ;[920, 1260, 1480].forEach((frequency, index) => {
@@ -108,7 +110,7 @@ function playMemoryPointSound(
 
   window.setTimeout(() => {
     gain.disconnect()
-    void audioContext.close()
+    // The shared context stays open
   }, 1400)
 }
 

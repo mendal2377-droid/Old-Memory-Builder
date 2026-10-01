@@ -651,7 +651,7 @@ export const useSceneStore = create<SceneState>((set, get) => {
   setLighthouseRoom: (lighthouseRoom) => set({ lighthouseRoom }),
   terrainMode: defaultTerrainMode,
   atmospherePreset: defaultAtmospherePreset,
-  isMuted: true,
+  isMuted: false,
   isGridVisible: false,
   areAnimalsWalking: false,
   cameraMode: 'build',

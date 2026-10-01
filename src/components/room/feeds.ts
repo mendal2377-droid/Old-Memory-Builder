@@ -7,6 +7,7 @@ import {
 } from '../../data/atmosphere'
 import { useSceneStore } from '../../store/sceneStore'
 import { worldSnapshots } from '../../data/worldSnapshots'
+import { hollowMemory } from '../../data/hollow'
 import { riverBlobs } from '../scene/RiverBankDressing'
 
 /**
@@ -627,5 +628,104 @@ export function drawPhoto(index: number): Feed['draw'] {
       ctx.arc(w * 0.94, h * 0.075, h * 0.018, 0, Math.PI * 2)
       ctx.fill()
     }
+  }
+}
+
+// --------------------------------------------------------------- hollow ----
+
+/**
+ * The screen for the Hollow. Dead black until you have been across; after that
+ * it shows the garden with the colour drained out, ash falling, and the dragon
+ * crossing the sky now and then.
+ */
+export function drawHollow(): Feed['draw'] {
+  let wokeAt = -1
+  return (ctx, w, h, t) => {
+    if (!hollowMemory.visited) {
+      wokeAt = -1
+      ctx.fillStyle = '#010201'
+      ctx.fillRect(0, 0, w, h)
+      ctx.fillStyle = 'rgba(255,255,255,0.012)'
+      for (let y = 0; y < h; y += 4) ctx.fillRect(0, y, w, 1)
+      return
+    }
+    if (wokeAt < 0) wokeAt = t
+
+    const shot = worldSnapshots.frames[worldSnapshots.frames.length > 1 ? 1 : 0]
+    ctx.fillStyle = '#0a0b0c'
+    ctx.fillRect(0, 0, w, h)
+    if (shot) {
+      ctx.drawImage(shot.canvas, 0, 0, shot.canvas.width, shot.canvas.height, 0, 0, w, h)
+      // Drain it: a flat grey laid over in "saturation" mode removes the colour
+      ctx.globalCompositeOperation = 'saturation'
+      ctx.fillStyle = '#808080'
+      ctx.fillRect(0, 0, w, h)
+      ctx.globalCompositeOperation = 'source-over'
+      ctx.fillStyle = 'rgba(130,136,140,0.28)'
+      ctx.fillRect(0, 0, w, h)
+    }
+
+    // Ash
+    ctx.fillStyle = 'rgba(225,228,230,0.55)'
+    for (let i = 0; i < 70; i += 1) {
+      const x = (hash(i) * w + Math.sin(t * 0.4 + i) * 14) % w
+      const y = (hash(i + 31) * h + t * (8 + hash(i + 9) * 16)) % h
+      const s = 1 + hash(i + 5) * 2
+      ctx.fillRect(x, y, s, s)
+    }
+
+    // The dragon, crossing high up, wings working slowly
+    const span = w + 260
+    const dx = ((t * 22) % span) - 130
+    const dy = h * 0.2 + Math.sin(t * 0.5) * h * 0.03
+    const flap = Math.sin(t * 2.1)
+    const k = h / 430
+    ctx.fillStyle = 'rgba(10,12,13,0.9)'
+    ctx.beginPath()
+    ctx.ellipse(dx, dy, 34 * k, 9 * k, 0, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.beginPath() // tail
+    ctx.moveTo(dx - 30 * k, dy)
+    ctx.quadraticCurveTo(dx - 80 * k, dy + 14 * k, dx - 120 * k, dy - 4 * k)
+    ctx.lineTo(dx - 30 * k, dy + 4 * k)
+    ctx.fill()
+    ctx.beginPath() // neck and head
+    ctx.moveTo(dx + 28 * k, dy - 2 * k)
+    ctx.quadraticCurveTo(dx + 50 * k, dy - 12 * k, dx + 62 * k, dy - 8 * k)
+    ctx.lineTo(dx + 30 * k, dy + 6 * k)
+    ctx.fill()
+    for (const side of [-1, 1]) {
+      ctx.beginPath() // wing
+      ctx.moveTo(dx - 4 * k, dy - 4 * k)
+      ctx.lineTo(dx - 36 * k, dy + side * (46 + flap * 30) * k - 4 * k)
+      ctx.lineTo(dx + 20 * k, dy + side * (28 + flap * 22) * k)
+      ctx.closePath()
+      ctx.fill()
+    }
+
+    // Edges close in
+    const v = ctx.createRadialGradient(w / 2, h / 2, h * 0.25, w / 2, h / 2, h * 0.85)
+    v.addColorStop(0, 'rgba(0,0,0,0)')
+    v.addColorStop(1, 'rgba(0,0,0,0.7)')
+    ctx.fillStyle = v
+    ctx.fillRect(0, 0, w, h)
+
+    // Switching on: a short flicker the first moments after it wakes
+    const since = t - wokeAt
+    if (since < 0.9 && Math.floor(since * 24) % 3 === 0) {
+      ctx.fillStyle = 'rgba(0,0,0,0.85)'
+      ctx.fillRect(0, 0, w, h)
+    }
+
+    ctx.font = `${Math.round(h * 0.045)}px ${MONO}`
+    ctx.textBaseline = 'top'
+    ctx.fillStyle = 'rgba(210,214,216,0.85)'
+    ctx.fillText('HOLLOW // UNMAINTAINED', w * 0.03, h * 0.04)
+    ctx.fillStyle = 'rgba(210,214,216,0.45)'
+    ctx.textAlign = 'right'
+    ctx.fillText('NO KEEPER', w * 0.97, h * 0.04)
+    ctx.textAlign = 'left'
+    ctx.fillStyle = 'rgba(0,0,0,0.12)'
+    for (let y = 0; y < h; y += 3) ctx.fillRect(0, y, w, 1)
   }
 }

@@ -5,10 +5,12 @@ import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing'
 import { CanvasTexture, HalfFloatType, MathUtils, SRGBColorSpace } from 'three'
 import { useSceneStore } from '../../store/sceneStore'
 import { worldSnapshots } from '../../data/worldSnapshots'
+import { startRoomAudio, type RoomAudio } from '../../audio/roomAudio'
 import {
   createFeed,
   drawAnimals,
   drawBuild,
+  drawHollow,
   drawLog,
   drawModel,
   drawPhoto,
@@ -63,6 +65,7 @@ function Screens() {
     const main = createFeed(960, 540, 1 / 24, drawBuild(1.15, 1.6, 0))
     const weather = createFeed(768, 432, 1 / 10, drawWeather())
     const animals = createFeed(768, 432, 1 / 10, drawAnimals())
+    const hollowScreen = createFeed(768, 432, 1 / 15, drawHollow())
     const smalls: Feed[] = [
       createFeed(384, 240, 1 / 15, drawRain(1)),
       createFeed(384, 240, 1 / 15, drawRain(2)),
@@ -81,12 +84,12 @@ function Screens() {
     const photos = Array.from({ length: photoCount }, (_, i) =>
       createFeed(384, 240, 1 / 12, drawPhoto(i)),
     )
-    return { main, weather, animals, smalls, photos }
+    return { main, weather, animals, hollowScreen, smalls, photos }
   }, [])
 
   useEffect(
     () => () => {
-      for (const f of [feeds.main, feeds.weather, feeds.animals, ...feeds.smalls, ...feeds.photos]) {
+      for (const f of [feeds.main, feeds.weather, feeds.animals, feeds.hollowScreen, ...feeds.smalls, ...feeds.photos]) {
         f.texture.dispose()
       }
     },
@@ -98,6 +101,7 @@ function Screens() {
     updateFeed(feeds.main, t)
     updateFeed(feeds.weather, t)
     updateFeed(feeds.animals, t)
+    updateFeed(feeds.hollowScreen, t)
     for (const f of feeds.smalls) updateFeed(f, t)
     for (const f of feeds.photos) updateFeed(f, t)
   })
@@ -107,6 +111,8 @@ function Screens() {
       { angle: 0, y: 3.5, w: 7.4, h: 4.16, feed: feeds.main },
       { angle: -0.86, y: 3.2, w: 4.8, h: 2.7, feed: feeds.weather },
       { angle: 0.86, y: 3.2, w: 4.8, h: 2.7, feed: feeds.animals },
+      // Round to the side: dark until you have crossed into the Hollow
+      { angle: -1.62, y: 2.9, w: 3.4, h: 1.91, feed: feeds.hollowScreen },
     ],
     [feeds],
   )
@@ -163,7 +169,7 @@ function Screens() {
   return (
     <>
       {heroes.map((hero, i) =>
-        screen(`hero-${i}`, hero.angle, hero.y, hero.w, hero.h, hero.feed, 1.35),
+        screen(`hero-${i}`, hero.angle, hero.y, hero.w, hero.h, hero.feed, hero.feed === feeds.hollowScreen ? 1.0 : 1.35),
       )}
       {small.map((m, i) =>
         screen(`s-${i}`, m.angle, m.y, 1.8, 1.12, m.feed, feeds.photos.includes(m.feed) ? 1.0 : 1.2),
@@ -251,9 +257,11 @@ function Furniture() {
 interface RigProps {
   onLeave: () => void
   onNearDoor: (near: boolean) => void
+  onStep: () => void
 }
 
-function Rig({ onLeave, onNearDoor }: RigProps) {
+function Rig({ onLeave, onNearDoor, onStep }: RigProps) {
+  const stepClock = useRef(0)
   const { camera, gl } = useThree()
   const pos = useRef({ x: 0, z: 6.2 })
   const yaw = useRef(0)
@@ -342,6 +350,13 @@ function Rig({ onLeave, onNearDoor }: RigProps) {
       if (!inDesk(nx, pos.current.z) && Math.hypot(nx, pos.current.z) < WALK_R) pos.current.x = nx
       const nz = pos.current.z + dz
       if (!inDesk(pos.current.x, nz) && Math.hypot(pos.current.x, nz) < WALK_R) pos.current.z = nz
+      stepClock.current += dt
+      if (stepClock.current > 0.52) {
+        stepClock.current = 0
+        onStep()
+      }
+    } else {
+      stepClock.current = 0.4
     }
 
     camera.position.set(pos.current.x, EYE, pos.current.z)
@@ -357,7 +372,7 @@ function Rig({ onLeave, onNearDoor }: RigProps) {
   return null
 }
 
-function Room({ onLeave, onNearDoor }: RigProps) {
+function Room({ onLeave, onNearDoor, onStep }: RigProps) {
   return (
     <>
       <color attach="background" args={['#f2f3f2']} />
@@ -395,7 +410,7 @@ function Room({ onLeave, onNearDoor }: RigProps) {
       <Screens />
       <Furniture />
       <ExitDoor onLeave={onLeave} />
-      <Rig onLeave={onLeave} onNearDoor={onNearDoor} />
+      <Rig onLeave={onLeave} onNearDoor={onNearDoor} onStep={onStep} />
 
       <EffectComposer frameBufferType={HalfFloatType} multisampling={0}>
         <Bloom intensity={0.5} luminanceThreshold={1.0} luminanceSmoothing={0.2} mipmapBlur radius={0.7} />
@@ -413,6 +428,16 @@ export function ArchitectRoom() {
   const [nearDoor, setNearDoor] = useState(false)
   const [typed, setTyped] = useState('')
   const leavingRef = useRef(false)
+  const audioRef = useRef<RoomAudio | null>(null)
+
+  useEffect(() => {
+    const audio = startRoomAudio()
+    audioRef.current = audio
+    return () => {
+      audio?.stop()
+      audioRef.current = null
+    }
+  }, [])
 
   const onLeave = useMemo(
     () => () => {
@@ -441,7 +466,7 @@ export function ArchitectRoom() {
         dpr={[1, 1.75]}
         gl={{ antialias: true }}
       >
-        <Room onLeave={onLeave} onNearDoor={setNearDoor} />
+        <Room onLeave={onLeave} onNearDoor={setNearDoor} onStep={() => audioRef.current?.footstep()} />
       </Canvas>
 
       <div className="architect-caption" aria-live="polite">

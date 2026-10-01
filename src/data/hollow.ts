@@ -22,6 +22,32 @@ export const CROSSING_SECONDS = 2.4
 /** Seconds you must stand on the threshold before it opens. */
 export const DWELL_SECONDS = 2
 
+const VISITED_KEY = 'old-memory-builder.hollow-visited'
+
+/**
+ * Whether you have ever been across. Kept across sessions, because the screen
+ * in the lighthouse that shows the Hollow stays dark until you have.
+ */
+export const hollowMemory = {
+  visited: (() => {
+    try {
+      return typeof localStorage !== 'undefined' && localStorage.getItem(VISITED_KEY) === '1'
+    } catch {
+      return false
+    }
+  })(),
+}
+
+function rememberVisit() {
+  if (hollowMemory.visited) return
+  hollowMemory.visited = true
+  try {
+    localStorage.setItem(VISITED_KEY, '1')
+  } catch {
+    // Private windows and blocked storage: the visit lasts for this session only
+  }
+}
+
 export const hollow = {
   /** 0 in the garden, 1 fully across. Eased, so it settles at both ends. */
   amount: 0,
@@ -56,7 +82,10 @@ export function advanceHollow(delta: number): boolean {
   if (hollow.phase === 'entering') {
     hollow.rawAmount = Math.min(1, hollow.rawAmount + step)
     hollow.amount = ease(hollow.rawAmount)
-    if (hollow.rawAmount >= 1) hollow.phase = 'hollow'
+    if (hollow.rawAmount >= 1) {
+      hollow.phase = 'hollow'
+      rememberVisit()
+    }
     return true
   }
 

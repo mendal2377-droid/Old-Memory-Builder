@@ -1,5 +1,6 @@
 import { useSceneStore } from '../../store/sceneStore'
 import { AssetSidebar } from '../assets/AssetSidebar'
+import { AudioDirector } from '../../audio/AudioDirector'
 import { LighthouseDoor } from '../room/LighthouseDoor'
 import { SceneCanvas } from '../scene/SceneCanvas'
 import { Toolbar } from '../toolbar/Toolbar'
@@ -21,6 +22,7 @@ export function AppLayout() {
         </section>
       </main>
       <LighthouseDoor />
+      <AudioDirector />
     </div>
   )
 }

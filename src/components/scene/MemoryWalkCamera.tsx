@@ -11,6 +11,8 @@ import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { assets } from '../../data/assets'
 import { playBridgeRepaired, playWoodCollected } from '../game/gameAudio'
 import { useSceneStore } from '../../store/sceneStore'
+import { audioOut, getAudioContext } from '../../audio/engine'
+import { hollow } from '../../data/hollow'
 
 type WalkPhase = 'idle' | 'entering' | 'walking' | 'exiting'
 
@@ -342,6 +344,7 @@ function chooseSafeSpawnPoint(
 function playFootstepSound(
   terrainMode: ReturnType<typeof useSceneStore.getState>['terrainMode'],
   isMuted: boolean,
+  surface: 'wood' | 'stone' | null = null,
 ) {
   if (isMuted || typeof window === 'undefined') return
 
@@ -352,14 +355,68 @@ function playFootstepSound(
 
   if (!AudioContextClass) return
 
-  const audioContext = new AudioContextClass()
+  const audioContext = getAudioContext()
+  if (!audioContext) return
   const gain = audioContext.createGain()
   const now = audioContext.currentTime
 
   gain.gain.setValueAtTime(0.0001, now)
-  gain.connect(audioContext.destination)
+  // Over there the steps barely carry
+  const trim = audioContext.createGain()
+  trim.gain.value = 1 - 0.65 * hollow.amount
+  gain.connect(trim)
+  trim.connect(audioOut())
 
-  if (terrainMode === 'Village Road' || terrainMode === 'Courtyard') {
+  if (surface === 'wood') {
+    // Planks: a hollow knock with a dry tick on top
+    gain.gain.exponentialRampToValueAtTime(0.05, now + 0.006)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2)
+    const osc = audioContext.createOscillator()
+    const body = audioContext.createBiquadFilter()
+    osc.type = 'triangle'
+    osc.frequency.setValueAtTime(210, now)
+    osc.frequency.exponentialRampToValueAtTime(95, now + 0.12)
+    body.type = 'bandpass'
+    body.frequency.value = 240
+    body.Q.value = 1.4
+    osc.connect(body)
+    body.connect(gain)
+    osc.start(now)
+    osc.stop(now + 0.22)
+    const tick = audioContext.createBuffer(1, Math.floor(audioContext.sampleRate * 0.03), audioContext.sampleRate)
+    const tickData = tick.getChannelData(0)
+    for (let i = 0; i < tickData.length; i += 1) tickData[i] = (Math.random() * 2 - 1) * (1 - i / tickData.length)
+    const tickSource = audioContext.createBufferSource()
+    const tickFilter = audioContext.createBiquadFilter()
+    tickFilter.type = 'bandpass'
+    tickFilter.frequency.value = 1500
+    tickSource.buffer = tick
+    tickSource.connect(tickFilter)
+    tickFilter.connect(gain)
+    tickSource.start(now)
+  } else if (surface === 'stone') {
+    // Stone: short, hard, a little ring
+    gain.gain.exponentialRampToValueAtTime(0.03, now + 0.004)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12)
+    const click = audioContext.createBuffer(1, Math.floor(audioContext.sampleRate * 0.05), audioContext.sampleRate)
+    const clickData = click.getChannelData(0)
+    for (let i = 0; i < clickData.length; i += 1) clickData[i] = (Math.random() * 2 - 1) * (1 - i / clickData.length)
+    const clickSource = audioContext.createBufferSource()
+    const clickFilter = audioContext.createBiquadFilter()
+    clickFilter.type = 'bandpass'
+    clickFilter.frequency.value = 2300
+    clickFilter.Q.value = 1.6
+    clickSource.buffer = click
+    clickSource.connect(clickFilter)
+    clickFilter.connect(gain)
+    clickSource.start(now)
+    const ring = audioContext.createOscillator()
+    ring.type = 'sine'
+    ring.frequency.value = 880
+    ring.connect(gain)
+    ring.start(now)
+    ring.stop(now + 0.06)
+  } else if (terrainMode === 'Village Road' || terrainMode === 'Courtyard') {
     gain.gain.exponentialRampToValueAtTime(0.032, now + 0.008)
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.11)
     const osc = audioContext.createOscillator()
@@ -421,7 +478,7 @@ function playFootstepSound(
 
   window.setTimeout(() => {
     gain.disconnect()
-    void audioContext.close()
+    // The shared context stays open
   }, 320)
 }
 
@@ -872,7 +929,15 @@ export function MemoryWalkCamera({ controlsRef }: MemoryWalkCameraProps) {
       const currentStep = Math.floor(walkTimeRef.current / Math.PI)
       if (currentStep !== lastStepRef.current) {
         lastStepRef.current = currentStep
-        playFootstepSound(terrainMode, isMuted)
+        playFootstepSound(
+          terrainMode,
+          isMuted,
+          isOnBridge(perspectiveCamera.position, bridgeCorridors)
+            ? 'wood'
+            : isOnCauseway(perspectiveCamera.position.x, perspectiveCamera.position.z, causeway)
+              ? 'stone'
+              : null,
+        )
       }
     }
     const bobY = hasInput

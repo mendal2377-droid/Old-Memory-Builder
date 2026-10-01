@@ -1,32 +1,11 @@
+import { audioOut, getAudioContext } from '../../audio/engine'
+
 // Procedural sound effects for the Storm Game. A single shared AudioContext
 // keeps rapid-fire cues (hammer strikes, chimes) from exhausting the browser's
 // per-page context limit.
 
-let sharedContext: AudioContext | null = null
-
 function getContext(): AudioContext | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  const AudioContextClass =
-    window.AudioContext ||
-    (window as typeof window & { webkitAudioContext?: typeof AudioContext })
-      .webkitAudioContext
-
-  if (!AudioContextClass) {
-    return null
-  }
-
-  if (!sharedContext) {
-    sharedContext = new AudioContextClass()
-  }
-
-  if (sharedContext.state === 'suspended') {
-    void sharedContext.resume()
-  }
-
-  return sharedContext
+  return getAudioContext()
 }
 
 interface ToneOptions {
@@ -59,7 +38,7 @@ function playTone(context: AudioContext, options: ToneOptions) {
   gain.gain.exponentialRampToValueAtTime(0.0001, start + duration)
 
   oscillator.connect(gain)
-  gain.connect(context.destination)
+  gain.connect(audioOut())
   oscillator.start(start)
   oscillator.stop(start + duration + 0.02)
 }
@@ -99,7 +78,7 @@ function playNoise(context: AudioContext, options: NoiseOptions) {
   source.buffer = buffer
   source.connect(filter)
   filter.connect(gain)
-  gain.connect(context.destination)
+  gain.connect(audioOut())
   source.start(start)
   source.stop(start + duration + 0.02)
 }

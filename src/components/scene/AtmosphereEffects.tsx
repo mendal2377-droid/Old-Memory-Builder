@@ -31,6 +31,7 @@ import { hollow, type HollowPhase } from '../../data/hollow'
 import { getWindVector, updateWind } from '../../data/wind'
 import { useSceneStore } from '../../store/sceneStore'
 import type { AtmospherePreset } from '../../types/scene'
+import { audioOut, getAudioContext } from '../../audio/engine'
 
 interface AtmosphereConfig {
   background: string
@@ -278,7 +279,8 @@ function useAtmosphereSound(
       return
     }
 
-    const audioContext = new AudioContextClass()
+    const audioContext = getAudioContext()
+  if (!audioContext) return
     const config = atmosphereConfigs[preset]
     const gain = audioContext.createGain()
     gain.gain.value =
@@ -289,7 +291,7 @@ function useAtmosphereSound(
           : config.sound === 'snow'
             ? 0.018
             : 0.012
-    gain.connect(audioContext.destination)
+    gain.connect(audioOut())
     const cleanupNodes: Array<() => void> = []
 
     if (config.sound === 'morning') {
@@ -326,7 +328,7 @@ function useAtmosphereSound(
     return () => {
       cleanupNodes.forEach((cleanup) => cleanup())
       gain.disconnect()
-      void audioContext.close()
+    // The shared context stays open
     }
   }, [isMuted, preset, silent])
 }
@@ -909,7 +911,8 @@ function playProceduralThunder(strength: 'soft' | 'heavy') {
   }
 
   // Future swap point: replace this procedural rumble with /assets/audio/thunder.mp3.
-  const audioContext = new AudioContextClass()
+  const audioContext = getAudioContext()
+  if (!audioContext) return
   const duration = strength === 'heavy' ? 3.4 : 2.2
   const gain = audioContext.createGain()
   const filter = audioContext.createBiquadFilter()
@@ -943,7 +946,7 @@ function playProceduralThunder(strength: 'soft' | 'heavy') {
   noise.connect(filter)
   oscillator.connect(filter)
   filter.connect(gain)
-  gain.connect(audioContext.destination)
+  gain.connect(audioOut())
   noise.start(now)
   oscillator.start(now)
   noise.stop(now + duration)
@@ -954,7 +957,7 @@ function playProceduralThunder(strength: 'soft' | 'heavy') {
     oscillator.disconnect()
     filter.disconnect()
     gain.disconnect()
-    void audioContext.close()
+    // The shared context stays open
   }, duration * 1000 + 150)
 }
 
@@ -1006,7 +1009,11 @@ function LightningStorm({
           : (Math.random() * 1.6 + 0.4) * 1000
 
         addTimer(
-          () => playProceduralThunder(isHeavy || isUrgent ? 'heavy' : 'soft'),
+          () => {
+            if (useSceneStore.getState().lighthouseRoom !== 'inside') {
+              playProceduralThunder(isHeavy || isUrgent ? 'heavy' : 'soft')
+            }
+          },
           thunderDelay,
         )
       }
@@ -1734,10 +1741,12 @@ export function AtmosphereEffects() {
   const isDay = timeOfDay >= 6 && timeOfDay <= 18
 
   const hollowPhase = useHollowPhase()
+  // Inside the lighthouse the weather outside goes quiet
+  const inLighthouse = useSceneStore((state) => state.lighthouseRoom === 'inside')
   useAtmosphereSound(
     representativePreset(weather, isDay),
     isMuted,
-    hollowPhase !== 'garden',
+    hollowPhase !== 'garden' || inLighthouse,
   )
 
   return (
