@@ -2,9 +2,7 @@ import { useFrame, type ThreeEvent } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
 import {
   CanvasTexture,
-  ExtrudeGeometry,
   RepeatWrapping,
-  Shape,
   type GridHelper,
 } from 'three'
 import type { TerrainMode } from '../../types/scene'
@@ -15,6 +13,7 @@ import { EmbeddedTech } from './EmbeddedTech'
 import { GardenRoute } from './GardenRoute'
 import { RiverBankDressing } from './RiverBankDressing'
 import { GrassField } from './GrassField'
+import { MountainRange } from './MountainRange'
 import { ObservationTerrace } from './ObservationTerrace'
 import { PondWater, RiverWater, type WaterBlob } from './StylizedWater'
 
@@ -37,33 +36,6 @@ interface OrganicPatchProps {
 }
 
 const boardSize = 48
-
-function createRidgeGeometry(points: [number, number][], depth: number) {
-  const shape = new Shape()
-  shape.moveTo(points[0][0], 0)
-  shape.lineTo(points[0][0], points[0][1])
-  for (let i = 1; i < points.length - 1; i++) {
-    const curr = points[i]
-    const next = points[i + 1]
-    shape.quadraticCurveTo(curr[0], curr[1], (curr[0] + next[0]) / 2, (curr[1] + next[1]) / 2)
-  }
-  const last = points[points.length - 1]
-  shape.quadraticCurveTo(last[0], last[1], last[0], 0)
-  shape.closePath()
-  return new ExtrudeGeometry(shape, { depth, bevelEnabled: false })
-}
-
-const farRidgeGeo = createRidgeGeometry([
-  [-34, 0], [-24, 9.8], [-14, 6.4], [-4, 16.2], [6, 12.6], [17, 8.0], [27, 4.8], [34, 0],
-], 10)
-
-const midRidgeGeo = createRidgeGeometry([
-  [-28, 0], [-19, 8.4], [-8, 4.8], [3, 10.6], [14, 6.2], [26, 0],
-], 8)
-
-const frontRidgeGeo = createRidgeGeometry([
-  [-22, 0], [-14, 3.9], [-6, 2.6], [3, 5.5], [12, 3.6], [19, 1.6], [22, 0],
-], 6)
 
 function drawSpeckles(
   context: CanvasRenderingContext2D,
@@ -369,58 +341,12 @@ function SharedRiver() {
 }
 
 function DistantMountains({ terrainMode }: { terrainMode: TerrainMode }) {
+  // The courtyard is walled in; everywhere else the island sits in a valley
   if (terrainMode === 'Courtyard') {
     return null
   }
 
-  const frontColor =
-    terrainMode === 'Riverbank' ? '#7a9c78' :
-    terrainMode === 'Field Path' ? '#7a9860' : '#788c62'
-
-  const midColor =
-    terrainMode === 'Riverbank' ? '#5c8070' :
-    terrainMode === 'Field Path' ? '#607858' : '#607068'
-
-  const farColor =
-    terrainMode === 'Riverbank' ? '#4a6e6e' :
-    terrainMode === 'Field Path' ? '#506858' : '#526268'
-
-  return (
-    <group raycast={() => null}>
-      {/* Far ridge */}
-      <group position={[0, 0, -38]}>
-        <mesh geometry={farRidgeGeo}>
-          <meshStandardMaterial color={farColor} roughness={0.95} transparent opacity={0.21} depthWrite={false} />
-        </mesh>
-        {/* Snow caps on two tallest far peaks */}
-        <mesh position={[-4, 13.2, 5]} scale={[7.5, 3.8, 6]}>
-          <coneGeometry args={[1, 1, 9]} />
-          <meshStandardMaterial color="#e8f4f8" roughness={0.7} transparent opacity={0.38} depthWrite={false} />
-        </mesh>
-        <mesh position={[-23, 8.0, 5]} scale={[4.5, 2.2, 4]}>
-          <coneGeometry args={[1, 1, 9]} />
-          <meshStandardMaterial color="#e8f4f8" roughness={0.7} transparent opacity={0.28} depthWrite={false} />
-        </mesh>
-      </group>
-      {/* Mid ridge */}
-      <group position={[0, 0, -29]}>
-        <mesh geometry={midRidgeGeo}>
-          <meshStandardMaterial color={midColor} roughness={0.93} transparent opacity={0.36} depthWrite={false} />
-        </mesh>
-        {/* Snow cap on tallest mid peak */}
-        <mesh position={[3, 8.8, 4]} scale={[5.5, 2.5, 5]}>
-          <coneGeometry args={[1, 1, 9]} />
-          <meshStandardMaterial color="#ddeef5" roughness={0.75} transparent opacity={0.30} depthWrite={false} />
-        </mesh>
-      </group>
-      {/* Front ridge — closest, sharpest, no snow */}
-      <group position={[0, 0, -23.8]}>
-        <mesh geometry={frontRidgeGeo}>
-          <meshStandardMaterial color={frontColor} roughness={0.92} transparent opacity={0.62} depthWrite={false} />
-        </mesh>
-      </group>
-    </group>
-  )
+  return <MountainRange />
 }
 
 function EdgeWaterAndBeach({ terrainMode }: { terrainMode: TerrainMode }) {
