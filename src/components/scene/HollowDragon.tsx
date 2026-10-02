@@ -337,7 +337,7 @@ export function HollowDragon() {
     }
   })
 
-  const solid = <meshBasicMaterial color={HIDE} toneMapped={false} />
+  const solid = <meshBasicMaterial color={HIDE} toneMapped={false} fog={false} />
 
   return (
     <>
@@ -541,7 +541,7 @@ export function HollowDragon() {
               scale={[side, 1, 1]}
             >
               <mesh geometry={wingGeo.inner} raycast={() => null}>
-                <meshBasicMaterial color={HIDE_WING} side={DoubleSide} toneMapped={false} />
+                <meshBasicMaterial color={HIDE_WING} side={DoubleSide} toneMapped={false} fog={false} />
               </mesh>
               {/* Arm: shoulder to wrist */}
               <mesh position={ARM.position} quaternion={ARM.quaternion} raycast={() => null}>
@@ -555,7 +555,7 @@ export function HollowDragon() {
                 position={WRIST}
               >
                 <mesh geometry={wingGeo.outer} raycast={() => null}>
-                  <meshBasicMaterial color={HIDE_WING} side={DoubleSide} toneMapped={false} />
+                  <meshBasicMaterial color={HIDE_WING} side={DoubleSide} toneMapped={false} fog={false} />
                 </mesh>
                 {/* Finger bones give the membrane its ribs */}
                 {FINGER_BARS.map((b, bi) => (

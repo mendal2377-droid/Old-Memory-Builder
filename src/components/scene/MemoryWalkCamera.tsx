@@ -189,7 +189,7 @@ interface BridgeCorridor {
   sin: number
 }
 
-function getBridgeCorridors(
+export function getBridgeCorridors(
   sceneObjects: ReturnType<typeof useSceneStore.getState>['sceneObjects'],
 ): BridgeCorridor[] {
   return sceneObjects
@@ -224,7 +224,7 @@ function isOnBridge(position: Vector3, bridges: BridgeCorridor[]) {
   })
 }
 
-function isBlockedPosition(
+export function isBlockedPosition(
   position: Vector3,
   colliders: Collider[],
   extraClearance = playerRadius,

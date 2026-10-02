@@ -16,6 +16,7 @@ import { SceneBloom } from './SceneBloom'
 import { DawnGrid, HollowHitboxes } from './WorldTraces'
 import { LighthouseCauseway } from './LighthouseCauseway'
 import { WorldSnapshotter } from './WorldSnapshotter'
+import { PopIn } from './PopIn'
 import { MemoryCompanions } from './MemoryCompanions'
 import { AssetModel, MemoryObject } from './MemoryObject'
 import { MemoryWalkCamera } from './MemoryWalkCamera'
@@ -256,7 +257,9 @@ export function SceneCanvas() {
         onGroundPointerMove={handleGroundPointerMove}
       />
       {sceneObjects.map((object) => (
-        <MemoryObject key={object.id} object={object} />
+        <PopIn key={object.id}>
+          <MemoryObject object={object} />
+        </PopIn>
       ))}
       {placementAsset && previewPosition ? (
         <group
